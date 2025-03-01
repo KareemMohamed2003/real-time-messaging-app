@@ -1,0 +1,37 @@
+{
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules"],
+  // "exclude": ["node_modules"],
+  "compilerOptions": {
+    "lib": ["ES2017"],
+    "outDir": "./dist",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "allowJs": true, // Allow the use of JavaScript files in your project
+    // "checkJs": true,
+    "rootDir": "./src",
+    /* Visit https://aka.ms/tsconfig to read more about this file */
+
+    // "sourceMap": true, // remeber to include source maps on production to make debugging easier
+    "target": "ES2020" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+
+    /* Modules */
+    "module": "ES2020" /* Specify what module code is generated. */,
+
+    "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
+    // "preserveSymlinks": true,                         /* Disable resolving symlinks to their realpath. This correlates to the same flag in node. */
+    "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
+    // "moduleResolution": ,
+    /* Type Checking */
+    "strict": true /* Enable all strict type-checking options. */,
+    /* Completeness */
+    // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
+    "skipLibCheck": false,
+    "moduleResolution": "Node",
+    "noImplicitAny": true
+
+    /* Skip type checking all .d.ts files. */
+  },
+  
+ "compileOnSave": true
+}
