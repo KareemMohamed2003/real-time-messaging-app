@@ -9,7 +9,6 @@ import {
   getUserData,
   getUserFriendsList,
 } from "../models/Users.ts";
-import { handleFetchError } from "../prisma/prismaHandlers/errorHandlers.ts";
 
 interface AuthRequest extends Request {
   token?: {
@@ -19,9 +18,10 @@ interface AuthRequest extends Request {
     expires: unknown;
   };
 }
+
 export const addFriend = async (req: Request, res: Response) => {
   console.log("request", req);
-  const { senderName, recieverName } = req.body;
+  const { senderName, recieverName } = req.body; 
   console.log("senderName: ", senderName, "recieverName :", recieverName);
   const friendRequest = await sendFriendRequest(senderName, recieverName);
   if (!friendRequest?.success) {
@@ -44,12 +44,14 @@ export const getLoggedUserAction = async (req: AuthRequest, res: Response) => {
     const { username, email } = req?.token!;
     // console.log(username, email);
     const userData = await getLoggedUserData(username, email);
-    // console.log("userdata", userData);
+     console.log("userdata", userData);
     const user = {
       username: userData?.username,
       email: userData?.email,
       profile_img: userData?.profile_img,
       friends: userData.friendsList,
+      uuid: userData.uuid,
+      id: userData.id,
     };
     res.json(user);
   } catch (e) {

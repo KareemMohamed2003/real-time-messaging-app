@@ -1,7 +1,7 @@
 'use client';
 import { z } from 'zod';
 import { ZodFormattedError } from 'zod';
-import { serverURL } from '../constants';
+import { login_URL, register_URL } from '../constants';
 
 const registerSchema = z.object({
   username: z
@@ -39,7 +39,7 @@ export const validateCredentials = (formData: FormData): IRegisterUser => {
 export const registerUser = async (credentials: unknown): Promise<INewUser> => {
   let res;
   try {
-    const req = await fetch(`${serverURL}/auth/register`, {
+    const req = await fetch(register_URL, {
       method: 'POST',
       body: JSON.stringify({ credentials }),
       headers: {
@@ -57,7 +57,7 @@ export const registerUser = async (credentials: unknown): Promise<INewUser> => {
 export const signIn = async (credentials: unknown) => {
   let res;
   try {
-    const req = await fetch(`${serverURL}/auth/login`, {
+    const req = await fetch(login_URL, {
       method: 'POST',
       body: JSON.stringify({ credentials }),
       credentials: 'include',
@@ -70,13 +70,11 @@ export const signIn = async (credentials: unknown) => {
     console.log(res);
     if (!res.success)
       return { success: false, error: { credentials: res.error } };
+    return res;
   } catch (e) {
     return {
       success: false,
       error: { internal: 'we are having trouble signing  you in' },
     };
   }
-  console.log(res);
-  localStorage.setItem('user_s_ts', new Date(res.expires) + '');
-  return res;
 };

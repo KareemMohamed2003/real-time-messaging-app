@@ -1,13 +1,13 @@
 'use client';
-import { socket } from '@/app/lib/socket';
+import { socketClient } from '@/app/lib/socket';
+import { useUserStore } from '@/app/store/user-store';
 import Chats from '@/components/Chats';
 import Input from '@/components/Input';
 import { Box } from '@mui/material';
-import { useState } from 'react';
+import { useEffect } from 'react';
 
 export default function Home() {
-  const [userData, setUserData] = useState<{ [key: string]: unknown }>();
-  const userSocket = socket;
+
   return (
     <Box
       display={'flex'}

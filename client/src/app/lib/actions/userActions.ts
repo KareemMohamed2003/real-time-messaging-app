@@ -1,9 +1,8 @@
-import { Dispatch, FormEvent, ReactEventHandler, SetStateAction } from 'react';
+import { Dispatch, FormEvent, SetStateAction } from 'react';
 import { accept_friend_request_URL, addFriendURL } from '../constants';
 import { zustandStore, type TProfile } from '@/app/store/user-store';
 import { friendForm } from '@/components/AddFriends';
-import getUser from '../getUser';
-import { userStoreContext } from '@/app/store/StoreContextProvider';
+import { getFriendsQuery } from '../api/queries';
 interface FormElements extends HTMLFormControlsCollection {
   friendInput: HTMLInputElement;
 }
@@ -43,18 +42,17 @@ export const acceptFriendRequest = async () => {
   const acceptReq = await fetch(accept_friend_request_URL, {
     method: 'GET',
     credentials: 'include',
-    // body: JSON.stringify({ reciever: username }),
     headers: {
       'Content-Type': 'application/json',
     },
   });
   console.log(acceptReq);
-  // const resReq = acceptReq.json();
-  // if (
+
   if (acceptReq.ok) {
-    zustandStore.setState((state) => ({ friends: state.updateFriends() }));
-    // zustandStore.subscribe();
-    // zustandStore.setState((state)=>state.setFriends())
-    console.log('acceptReq.ok');
+    const newFriends = await getFriendsQuery();
+    
+    zustandStore.setState((state) => ({
+      friends: state.updateFriends(newFriends),
+    }));
   }
 };

@@ -2,18 +2,18 @@ import { useContext } from 'react';
 import { createStore } from 'zustand/vanilla';
 import { useStore } from 'zustand';
 import { userStoreContext } from './StoreContextProvider';
-import { queryClient } from '../lib/api/ReactQueryClient';
-import { getFriendsQuery } from '../lib/api/queries';
 
 export type TProfile = {
   username: string | null;
   email: string | null;
   uuid: string | null;
+  id: number | null;
 };
 // actions set rooms , set friends
+
 export type UserState = {
   rooms: any[];
-  friends: any;
+  friends: { online?: any; pending: any; all: any; isReceiver: boolean | null };
   profile: TProfile;
   notifications: any[];
 };
@@ -21,15 +21,14 @@ export type userActions = {
   setRooms: (rooms: []) => void;
   setProfile: (userProfile: TProfile) => void;
   setFriends: (friends: any) => void;
-  updateFriends: () => void;
+  updateFriends: (newFriends:any) => void;
   setNotifications: (notifications: []) => void;
 };
-//
 export type userStore = userActions & UserState;
 export const defaultUserState = {
   rooms: [],
-  friends: [],
-  profile: { username: null, email: null, uuid: null },
+  friends: { pending: [], all: [], online: [], isReceiver: null },
+  profile: { username: null, email: null, uuid: null, id: null },
   notifications: [],
 };
 
@@ -48,23 +47,33 @@ export const zustandStore = createStore<userStore>()((set) => ({
         username: profile.username,
         email: profile.email,
         uuid: profile.uuid,
+        id: profile.id,
       },
     })),
   setNotifications: () => ({}),
-  updateFriends: async () => {
-    const newFriends = await queryClient.fetchQuery({
-      queryKey: ['friends'],
-      queryFn: getFriendsQuery,
-    });
+  updateFriends:  (newFriends:any) => {
+    // const newFriends = await queryClient.fetchQuery({
+    //   queryKey: ['friends'],
+    //   queryFn: getFriendsQuery,
+    // });
+    console.log('updatedFriends ()');
 
     set(() => ({
-      friends: { ...newFriends },
+      friends: {
+        pending: newFriends.pending,
+        all: newFriends.all,
+        // online: [], // `online` property may cause issues in the future because when we call the update Function we are setting it to an empty array
+        isReceiver: newFriends.isReceiver,
+      },
     }));
+    
   },
-  setFriends: (data: any) =>
+  setFriends: (data: any) => {
     set(() => ({
       friends: data,
-    })),
+    }));
+    console.log('setFriends()');
+  },
 }));
 
 export const createUserStore = () => {

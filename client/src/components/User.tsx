@@ -9,10 +9,10 @@ interface UserProps {
   status?: string;
   css?: any;
   avatar?: any;
-  isFriendRequestReceiver?: boolean;
+  isFriendRequestReceiver?: boolean | null;
   // we need to add a link to the chat with this user
 }
-
+// maybe we should add a connection status property , the `status ` in this
 export default function User({
   name,
   status,
@@ -54,7 +54,6 @@ export default function User({
             }}
           ></Box>
         </Box>
-
         <Typography
           sx={{
             fontWeight: '500',
@@ -64,8 +63,7 @@ export default function User({
           {name}
         </Typography>
       </Box>
-
-      {status === 'SENT' && isFriendRequestReceiver && (
+      {status && status === 'SENT' && isFriendRequestReceiver && (
         <Box display={'flex'} gap={2}>
           <Box
             component={'div'}

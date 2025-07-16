@@ -7,19 +7,19 @@ type Props = {
   setPopup: Dispatch<SetStateAction<boolean>>;
 };
 export default function SessionMonitor({ children, setPopup }: Props) {
-  console.log('session monitor');
   const router = useRouter();
   useEffect(() => {
     const id = setInterval(() => {
-      const currentSession = localStorage.getItem('user_s_ts');
+      const currentSession = localStorage.getItem('user_socket_session');
       if (!currentSession) return;
-      const currentSessionDate = new Date(currentSession);
-      console.log('interval created');
+      const parsedSession=JSON.parse(currentSession);
+      const currentSessionDate = new Date(parsedSession.expires_at);
       const currentDate = new Date();
       if (currentSessionDate <= currentDate) {
-        localStorage.removeItem('user_s_ts');
+        localStorage.removeItem('user_socket_session');
         setPopup(true);
         setTimeout(() => {
+          setPopup(false)
           togglePortalEffect();
           router.replace(process.env.NEXT_PUBLIC_LOGOUT_URL as string);
         }, 10000);

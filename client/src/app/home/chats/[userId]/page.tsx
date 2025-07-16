@@ -1,27 +1,24 @@
-// 'use client';
+'use client';
 /// in this page we can query the chat  between the user , friend by using the userId (friendId )
-import { getUserByIdQuery } from '@/app/lib/api/queries';
 import profileImg from '../../../people pics/pexels-marcelo-dias-2010877.jpg';
 import Input from '@/components/Input';
 import Message from '@/components/Message';
 import User from '@/components/User';
 import AttachmentIcon from '@mui/icons-material/Attachment';
 import SendIcon from '@mui/icons-material/Send';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { grey } from '@/app/lib/constants';
-
+import { sendMessage, socketClient } from '@/app/lib/socket';
 // we need to get the friend profile we're chatting with via uuid
-export default async function PrivateChat() {
-  //   {
-  //   params,
-  // }: {
-  //   params: Promise<{ slug: string }>;
-  // }
-  // const slug = await params;
-  // console.log(slug);
+export default function PrivateChat() {
+  // const friend = await getUserByIdQuery('212');
+  // console.log('friend', friend);
 
-  const friend = await getUserByIdQuery('212');
-  console.log('friend', friend);
+  //we need to create a function to take the data from the sender and store it in the database
+  // we need to take the data from the sender socket to reciever socket
+
+// we need to take the input from the input field maybe submit it pass it to our send Message function 
+//  we need to obtain the reciever socket id 
   return (
     <Box
       display={'flex'}
@@ -39,9 +36,6 @@ export default async function PrivateChat() {
         // boxShadow={' 1px 7px 8px 1px rgba(255, 255, 255, 0.05)'}
       >
         <User name="miranda " />
-        {/* <Typography fontWeight={'bold'} textAlign={'center'}>
-          last seen
-          </Typography> */}
       </Box>
       <Box
         height="100%"
@@ -77,7 +71,14 @@ export default async function PrivateChat() {
             width={45}
             borderRadius={'50%'}
           >
-            <SendIcon width={25} height={25} />
+            <SendIcon
+              width={25}
+              height={25}
+              onClick={() => {
+                console.log('send btn');
+                sendMessage('hello socket Io', 'to john', socketClient);
+              }}
+            />
           </Box>
         </Box>
       </Box>

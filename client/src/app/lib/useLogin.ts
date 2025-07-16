@@ -2,6 +2,8 @@ import { signIn, validateCredentials } from './actions/authActions';
 import { ZodFormattedError } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useState, FormEvent, FormEventHandler } from 'react';
+import { createSocketSession } from './utils';
+
 interface IFormState {
   errors: ZodFormattedError<{ [propety: string]: any }> | null;
   disableForm: boolean;
@@ -18,6 +20,7 @@ export default function useLogin(): [
 ] {
   const router = useRouter();
   const [formState, setFormState] = useState<IFormState>(initialState);
+
   const dispatchForm: FormEventHandler<HTMLFormElement> | null = async (
     e: FormEvent
   ) => {
@@ -48,7 +51,9 @@ export default function useLogin(): [
           disableForm: false,
         });
       }
-      router.refresh(); // purge next js router memory to avoid going back to login page after authentication
+      const { expires, sessionId } = loggedUser;
+      createSocketSession({ expires_at: expires, sessionId });
+      router.refresh(); // purge next-js router memory to avoid going back to login page after authentication
       router.replace('/home/chats');
     }
   };

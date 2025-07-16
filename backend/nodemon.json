@@ -2,5 +2,5 @@
   "watch": ["src"],
   "ext": ".js,.ts",
   "ignore": [],
-  "exec": "node --inspect  --loader ts-node/esm src/index.ts"
+  "exec": "tsx --inspect src/index.ts"
 }

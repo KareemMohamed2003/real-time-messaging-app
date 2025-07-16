@@ -13,14 +13,6 @@ export function encrypt(key, jwt) {
 }
 
 export async function signToken(payload) {
-  // console.log(
-  //   "(await keystore).sign_verify_key",
-  //   (await keystore).sign_verify_key,
-  // );
-  // console.log(
-  //   "(await keystore).sign_verify_key.alg",
-  //   (await keystore).sign_verify_key.alg,
-  // );
   const signedJwt = jose.JWS.createSign((await keystore).sign_verify_key)
     .update(JSON.stringify(payload))
     .final();

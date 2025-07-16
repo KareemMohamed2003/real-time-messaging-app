@@ -1,3 +1,4 @@
+
 import { Avatar, Stack, Typography, Box } from '@mui/material';
 import { deepOrange } from '@mui/material/colors';
 import { NavLink } from '@/components/NavLink';
@@ -26,12 +27,12 @@ export default function Sidebar() {
     {
       name: 'logout',
       icon: LogoutIcon,
-      href: process.env.NEXT_PUBLIC_LOGOUT_URL as string,
+      href: process.env.NEXT_PUBLIC_LOGOUT_URL!,
     },
   ];
 
-  const { profile, friends } = useUserStore((state) => state);
-  console.log(profile, friends);
+  const { profile } = useUserStore((state) => state);
+  // console.log(profile, friends);
   return (
     <Stack
       alignItems={'center'}
@@ -44,9 +45,9 @@ export default function Sidebar() {
         background: primaryBg,
       }}
     >
-      {icons.map((el) => (
+      {icons.map((el, index) => (
         <NavLink
-          key={Math.random()}
+          key={index}
           Icon={el.icon}
           href={el.href}
           name={el.name}

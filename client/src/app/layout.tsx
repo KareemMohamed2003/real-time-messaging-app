@@ -1,3 +1,4 @@
+// 'use client'
 import './globals.css';
 import type { Metadata } from 'next';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
@@ -5,7 +6,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from '../themes';
 import { Inter } from 'next/font/google';
 import UserStoreProvider from './store/StoreContextProvider';
-import ReactQueryClient from './lib/api/ReactQueryClient';
+import ReactQueryClient from './lib/api/QueryClient';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -24,9 +25,9 @@ export default function RootLayout({
         <ThemeProvider theme={theme}>
           <body className={inter.className}>
             <div id="portal"></div>
-            <UserStoreProvider>
-              <ReactQueryClient>{children}</ReactQueryClient>
-            </UserStoreProvider>
+            <ReactQueryClient>
+              <UserStoreProvider>{children}</UserStoreProvider>
+            </ReactQueryClient>
           </body>
         </ThemeProvider>
       </AppRouterCacheProvider>

@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { signInUser, registerUser } from "../models/Users.ts";
-import { generateEncryptedJwt } from "../lib/auth/auth.js";
+import {  generateEncryptedJwt, verifyToken } from "../lib/auth/auth.js";
+import { randomId } from "../lib/helpers.ts";
+import { deleteUserSession } from "../lib/sql.ts";
 
 export const loginAction = async (req: Request, res: Response) => {
   console.log("login end point");
@@ -9,19 +11,21 @@ export const loginAction = async (req: Request, res: Response) => {
   if (authenticateUser?.errorMsg) {
     return res.json({ success: false, error: authenticateUser.errorMsg });
   }
-
   const oneDay = 24 * 60 * 60 * 1000; // Milliseconds in a day
-  const fiveMins = 5 * 60 * 1000;
-  const oneMins = 1 * 60 * 1000;
   const now = new Date();
-  const fiveMinutesLater = new Date(now.getTime() + 5 * 60 * 1000);
-  const expiresIn7Days = new Date(Date.now() + 7 * oneDay); // Expire after 7 days
+   const fiveMins = 5 * 60 * 1000;
+   const oneMins = 1 * 60 * 1000;
+   const threeMins = 3 * 60 * 1000;
+  // const fiveMinutesLater = new Date(now.getTime() + 5 * 60 * 1000);
+  // const expiresIn7Days = new Date(Date.now() + 7 * oneDay); // Expire after 7 days
   const expirationTime = new Date(now.getTime() + oneDay);
   console.log("expiration Time", expirationTime);
+  const sessionId= randomId();
   const accessToken = await generateEncryptedJwt({
     it: new Date(),
     exp: expirationTime,
     ...authenticateUser?.user,
+    sessionId
   });
 
   res.cookie("chat_accessToken", accessToken, {
@@ -30,11 +34,14 @@ export const loginAction = async (req: Request, res: Response) => {
     sameSite: "lax",
     secure: false, //this should be true in production
   });
+  // generate and return a socket id return an encrypted version of the user uuid .
 
   return res.json({
     success: true,
     ...authenticateUser!.user,
     expires: expirationTime,
+    // socketId: randomId(),
+    // sessionId: sessionId,
   });
 };
 
@@ -55,12 +62,19 @@ export const registerAction = async (req: Request, res: Response) => {
   }
 };
 
-export const logoutAction = (req: Request, res: Response) => {
+export const logoutAction = async (req: Request, res: Response) => {
+  const cookie = JSON.parse(
+    (await verifyToken(req.cookies.chat_accessToken)) as string,
+  );
+
+  console.log("decrypted cookie at logoutAction: ", cookie);
+  deleteUserSession(cookie.sessionId);
   res.clearCookie("chat_accessToken");
   res.setHeader(
     "Cache-Control",
     "no-store, no-cache, must-revalidate, proxy-revalidate",
   );
+
   res.redirect("http://localhost:3000/login");
 };
 

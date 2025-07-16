@@ -1,7 +1,7 @@
 import { user_friends_URL, userById_URL, userProfileURL } from '../constants';
 
 export const getUserQuery = async () => {
-  console.log('get user');
+  // console.log('get user');
   const req = await fetch(userProfileURL, {
     method: 'GET',
     credentials: 'include',
@@ -10,7 +10,6 @@ export const getUserQuery = async () => {
     },
   });
   const userData = await req.json();
-  console.log(userData);
   return userData;
 };
 

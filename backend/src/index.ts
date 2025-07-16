@@ -1,47 +1,34 @@
+//  "exec": "node --inspect  --loader ts-node/esm src/index.ts"
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import authRouter from "./routers/authRouter.ts";
+import userRouter from "./routers/userRouter.ts";
 import { urlencoded } from "express";
-import {
-  loginAction,
-  logoutAction,
-  registerAction,
-} from "./controllers/authController.ts";
-import {
-  acceptFriendAction,
-  addFriend,
-  getFriendsAction,
-  getLoggedUserAction,
-  getUserAction,
-} from "./controllers/dbController.ts";
-import { authorizeUser } from "./lib/middleware.ts";
 import { createServer } from "http";
 import { corsOptions } from "./lib/constants.ts";
-import initSocketServer from "./lib/socket.ts";
-
+import { initSocketServer } from "./lib/socket.ts";
+import { listUsersTable } from "./lib/sql.ts";
+import { checkSessionExpiry } from "./lib/helpers.ts";
 const app = express();
-const server = createServer(app);
+export const server = createServer(app);
 initSocketServer(server);
-app.use(urlencoded({ extended: true })); // parsed requests bodies .
+listUsersTable();
+app.use(urlencoded({ extended: true })); // parsed  requests bodies .
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json()); // parses json bodies
-app.post("/auth/register", registerAction);
-app.post("/auth/login", loginAction);
-app.get("/auth/logout", logoutAction);
-app.post("/add_friend", authorizeUser, addFriend);
-app.get("/user/me", authorizeUser, getLoggedUserAction);
-app.get("/user/accept_friend_request", authorizeUser, acceptFriendAction);
-app.get("/user/friends", authorizeUser, getFriendsAction);
-app.get("/user/:id", authorizeUser, getUserAction);
-
+app.use("/auth", authRouter);
+app.use("/user", userRouter);
+const intervalId = checkSessionExpiry(); // this will delete expired user sessions every 5 minutes
+process.on("SIGTERM", () => {
+  console.log("shutting down server...");
+  clearInterval(intervalId);
+});
 server.listen(3333, () => {
   console.log("server is listening on  http://localhost:3333");
 });
-
-// app.listen(3333, () => {
-//   console.log("server is listening on  http://localhost:3333");
-// });
+// addUserEntry("12873hd1d1@","ahmed","acc31072-e177-41cf-9b48-701a51fc1ba4")
 // app.get("/auth/refresh_token", (req: Request, res: Response) => {
 //   //client app will request a refresh token
 // });

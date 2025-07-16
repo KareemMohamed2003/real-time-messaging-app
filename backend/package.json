@@ -4,7 +4,7 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "nodemon",
     "start": "ts-node src/index.ts",
     "dev": "nodemon  ts-node/esm --inspect src/index.ts & tsc --watch"
   },
@@ -23,7 +23,10 @@
     "express": "^4.19.2",
     "node-jose": "^2.2.0",
     "nodemon": "^3.1.4",
-    "socket.io": "^4.8.1"
+    "redis": "^4.7.0",
+    "socket.io": "^4.8.1",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",

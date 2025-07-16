@@ -5,7 +5,6 @@ import {
 } from "../prisma/prismaHandlers/errorHandlers.ts";
 import bc from "bcryptjs";
 import { checkPassword } from "../lib/auth/auth.js";
-import { profileEnd } from "console";
 
 type user = {
   username: string;
@@ -100,7 +99,7 @@ export const getUserFriendsList = async (username: string, email: string) => {
   const userAsSenderList = userQuery?.friends.map((friend) => {
     if (friend) {
       return {
-        friend_name: friend.receiverName,
+        username: friend.receiverName,
         friendId: friend.receiverId,
         request_status: friend.request_status,
       };
@@ -112,7 +111,7 @@ export const getUserFriendsList = async (username: string, email: string) => {
   const userAsReceiverList = userQuery?.friendBy.map((user) => {
     if (user) {
       return {
-        friend_name: user.senderName,
+        username: user.senderName,
         friendId: user.senderId,
         request_status: user.request_status,
       };
@@ -171,3 +170,4 @@ export const getUserData = async (userId: string) => {
     return handleAuthError(error);
   }
 };
+

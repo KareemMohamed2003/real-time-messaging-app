@@ -11,17 +11,15 @@ interface FriendsListProps {
 export default function FriendsList({ selectedList }: FriendsListProps) {
   // remeber to ask chat gpt what's the purpose of friends query Key
   const { friends } = useUserStore((state) => state);
-  console.log(friends);
   const [list, setList] = useState<[] | null>(null);
   const router = useRouter();
+  console.log(friends);
   // in the friends List component we could 2 things either we fetch the online,offline friends etc.. /
   // with something like getServerSideProps  or we could rely on our state when u load the app .
   useEffect(() => {
     switch (selectedList) {
       case 'online':
         setList(friends.online);
-      case 'offline':
-        setList(friends.offline);
         break;
       case 'pending':
         setList(friends.pending);
@@ -31,9 +29,10 @@ export default function FriendsList({ selectedList }: FriendsListProps) {
         break;
       case 'add_friend':
         setList(null);
+        break;
     }
-  }, [selectedList, friends]);
-
+  }, [selectedList, friends, list]);
+  console.log('selected friends list', list);
   // query the database for the selected users
   return (
     <Stack
@@ -56,24 +55,27 @@ export default function FriendsList({ selectedList }: FriendsListProps) {
         <AddFriends />
       ) : (
         <Box gap={3} display={'flex'} flexDirection={'column'}>
-          {list?.map((user: any, index: number) => (
-            <Box
-              sx={{ cursor: 'pointer' }}
-              key={index}
-              component={'div'}
-              onClick={() => {
-                if (user.request_status == 'ACCEPTED')
-                  router.push(`/home/chats/${user?.friendId}`);
-              }}
-            >
-              <User
+          {list?.map((user: any, index: number) => {
+            const id = user.friendId ? user.friendId : user.userId;
+            return (
+              <Box
+                sx={{ cursor: 'pointer' }}
                 key={index}
-                name={user?.friend_name}
-                status={user.request_status}
-                isFriendRequestReceiver={friends?.isReceiver}
-              />
-            </Box>
-          ))}
+                component={'div'}
+                onClick={() => {
+                  if (user.request_status == 'ACCEPTED' || user.connected)
+                    router.push(`/home/chats/${id}`);
+                }}
+              >
+                <User
+                  key={index}
+                  name={user?.username}
+                  status={user.request_status}
+                  isFriendRequestReceiver={friends?.isReceiver}
+                />
+              </Box>
+            );
+          })}
         </Box>
       )}
     </Stack>

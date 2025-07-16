@@ -20,7 +20,8 @@ export function NavLink({ Icon, href, name }: INavLink) {
       style={{ width: '100%' }}
       onClick={() => {
         if (name == 'logout') {
-          localStorage.removeItem('user_s_ts');
+          localStorage.clear();
+          
         }
         router.push(href);
       }}
