@@ -1,14 +1,13 @@
 'use client';
 import { Typography, Stack, Box, CircularProgress } from '@mui/material';
 import CustomLink from '@/components/CustomLink';
-import Button from '@/components/Button';
-import Input from '@/components/Input';
+import Button from '@/components/UI/Button';
+import Input from '@/components/UI/Input';
 import useLogin from '../lib/useLogin';
 import { useState } from 'react';
 export default function LoginPage() {
   const [formState, dispatchForm] = useLogin();
   const [showPassword, setShowPassword] = useState<boolean>(false);
-
   return (
     <Stack alignItems="center" height={'100%'}>
       <Stack width="30%" height="100%" justifyContent="center" gap={5}>
@@ -34,7 +33,6 @@ export default function LoginPage() {
           onSubmit={dispatchForm}
         >
           <Input placeholder={'email'} name="email" type={'email'} required />
-
           <Input
             setShowpassword={setShowPassword}
             showPassword={showPassword}
@@ -49,7 +47,8 @@ export default function LoginPage() {
             </Typography>
           )}
           <Button
-            css={{
+            type="submit"
+            sx={{
               fontSize: '1.3rem',
               bgColor: '#CB6013',
               borderRadius: 16,
@@ -57,7 +56,6 @@ export default function LoginPage() {
               p: '6px 35px',
             }}
             variant="contained"
-            type="submit"
             disabled={formState.disableForm}
           >
             {formState.disableForm ? (

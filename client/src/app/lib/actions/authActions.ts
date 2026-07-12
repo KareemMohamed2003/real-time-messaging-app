@@ -37,7 +37,6 @@ export const validateCredentials = (formData: FormData): IRegisterUser => {
 };
 
 export const registerUser = async (credentials: unknown): Promise<INewUser> => {
-  let res;
   try {
     const req = await fetch(register_URL, {
       method: 'POST',
@@ -47,11 +46,10 @@ export const registerUser = async (credentials: unknown): Promise<INewUser> => {
       },
       cache: 'no-cache',
     });
-    res = await req.json();
+    return await req.json();
   } catch (e) {
     return { success: false, error: { internal: 'something went wrong' } };
   }
-  return res;
 };
 
 export const signIn = async (credentials: unknown) => {

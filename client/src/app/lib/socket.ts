@@ -1,73 +1,113 @@
-'use client';
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { serverURL } from './constants';
 import { zustandStore } from '../store/user-store';
+import { handleAnswer, handleOffer } from './webrtc';
+export const socketClient = io(serverURL, {
+  autoConnect: false,
+  reconnection: true,
+  withCredentials: true,
+});
+export const sendMessage = (content: string, to: string, from: string) => {
+  socketClient.emit('private message', { to, content, from });
+  const newMessage = {
+    id: null,
+    message: content,
+    receiverUUID: to,
+    senderUUID: from,
+    isEditing: false,
+  };
+  zustandStore.getState().updateMessages(newMessage);
+};
 
-export const socketClient = io(serverURL, { autoConnect: false });
-export const initSocket = (username: string, userId: number) => {
-  // the if else code needs to be refactored looks bad for me .
-  console.log('init Socket called');
-  console.log('socketClient status', socketClient.connected);
+export const initSocket = (
+  username: string,
+  userId: number,
+  uuid: string,
+  profile_img: string
+) => {
+  const store = zustandStore.getState();
+  const resetAudioCallState = store.resetAudioCallState;
   const socket_session = JSON.parse(
     localStorage.getItem('user_socket_session')!
   );
-  // if (socketClient.connected) return;
-  if (socket_session.sessionId) {
-    console.log('socket_session condition');
-    // const session = JSON.parse(socket_session);
-    // here we need to send  the uuid,username to our websocket server
-    // we will recieve them from the store maybe we can recieve them from localStorage .
-    // i also want to move the initSocket to the login action after we sign in we connect to the websocket
-    // server without needing to rely on the store to get our uuid,username of current user from the store
-    // we will depend on localStorage .
-    // we need to call our zustand store here to get the rest of the user credentials which we need
-    // to store in the `users_sessions` table .
-    socketClient.auth = {
-      username,
-      userId,
-      expires_at: socket_session.expires_at,
-      sessionId: socket_session.sessionId,
-    };
-    socketClient.connect();
-
-    return;
-  }
+  socketClient.auth = {
+    username,
+    userId,
+    expires_at: socket_session?.expires_at,
+    sessionId: socket_session?.sessionId,
+    profile_img: profile_img,
+    uuid,
+  };
   socketClient.connect();
-  console.log('initSocket else');
-  // here we can send the uuid of the logged user
-  // const storedSession= JSON.parse(localStorage.getItem("user_socket_session")!);
-  // console.log("stored Session : ",storedSession);
+  socketClient.on('private message', (message, ack) => {
+    console.log('on private message handler message', message);
+    ack({ status: 'delieverd' });
+    zustandStore.getState().updateMessages(message);
+  });
+  socketClient.on('connect', () => {
+    // console.log('socketClient is connected UUID : ', socketClient);
+  });
+  socketClient.on('disconnect', (reason) => {
+    // we  may need to delete user sessions when the user disconnects
+    // idk if that is necessary we need to research that later on .
+    console.log(socketClient.id); //  prints undefined when socket disconnects
+    console.log('disconnect handler');
+    console.log(reason);
+    // const store = zustandStore.getState();
+    // cancelCall(store.audioCall.friendId, store.profile.uuid!);
+  });
+
+  socketClient.on('connect_error', (err) => {
+    if (err) {
+      console.log('socket  Error occured while connecting  : ', err);
+    }
+  });
+  socketClient.on('friendsSessions', (onlineFriends) => {
+    console.log('friendsSessions : ', onlineFriends);
+    zustandStore.setState((state) => ({
+      friends: { ...state.friends, online: onlineFriends },
+    }));
+    // we may need mutliple events when it comes to user friends a
+    //  user can get connected or disconnected we need to handle that in our state
+    // we will either create a user:connected , user:disconnected events + a friend disocnnected ,
+    // connected events  or just create the events for the user
+    //we may not need this event anyways
+  });
+  //--------------------------------- web rtc signaling-------------------------------------------------
+  socketClient.on('voiceCall', async ({ callerInfo }) => {
+    const { callerName, profile_img, callerID } = callerInfo;
+    zustandStore.getState().setIncomingCall(callerName, callerID, profile_img);
+    console.log('callerID', callerID);
+    console.log(profile_img);
+  });
+
+  socketClient.on('onVoiceCallAnswer', async (message) => {
+    const store = zustandStore.getState();
+    const localPeer = store.localPeer!;
+    if (message.type == 'offer') {
+      // caller side recieved offer from callee
+      handleOffer(message, socketClient, localPeer);
+    }
+    if (message.type == 'answer') {
+      handleAnswer(message, localPeer);
+    }
+    console.log('message', message);
+    if (message.type === 'rejected') {
+      resetAudioCallState();
+    }
+    if (message.type === 'cancelled') {
+      console.log('call cancelled');
+      resetAudioCallState();
+      store.deleteIncomingCall(message.callerID);
+    }
+  });
 };
-socketClient.on('private message', (socket: Socket) => {});
-socketClient.on('disconnect', () => {
-  // we  may need to delete user sessions when the user disconnects
-  // idk if that is necessary we need to research that later on .
-  console.log(socketClient.id); // undefined
-});
-socketClient.on('connect_error', (err) => {
-  if (err) {
-    console.log('socket  Error occured while connecting ');
+
+socketClient.on('new-icecandidate', async ({ candidate }) => {
+  try {
+    const localPeer = zustandStore.getState().localPeer;
+    await localPeer!.addIceCandidate(candidate);
+  } catch (error) {
+    console.log(error);
   }
 });
-socketClient.on('friendsSessions', (onlineFriends) => {
-  console.log('friendsSessions : ', onlineFriends);
-  // retrieve friends session includes socket id for each friend , connection status
-  zustandStore.setState((state) => ({
-    friends: { ...state.friends, online: onlineFriends },
-  }));
-});
-socketClient.on('userSession', ({ sessionId }) => {
-  const userSession = localStorage.getItem('user_socket_session');
-  localStorage.setItem(
-    'user_socket_session',
-    JSON.stringify({
-      expires_at: JSON.parse(userSession!),
-      sessionId: sessionId,
-    })
-  );
-});
-
-export const sendMessage = (message: string, to: string, socket: Socket) => {
-  // obtain the  sender socket id and reciever socket id .
-  socket.emit('private message', { to, message });
-};

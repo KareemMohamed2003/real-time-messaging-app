@@ -13,6 +13,7 @@
     "allowImportingTsExtensions": true,
     "jsx": "preserve",
     "incremental": true,
+    "target": "es2016",
     "plugins": [
       {
         "name": "next"
@@ -22,6 +23,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/UserChats.tsx", "src/app/home/global-error.js", "src/components/messages/MessageContext.js", "src/app/lib/webrtc.ts"],
   "exclude": ["node_modules"]
 }

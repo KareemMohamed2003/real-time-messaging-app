@@ -8,27 +8,29 @@ import { urlencoded } from "express";
 import { createServer } from "http";
 import { corsOptions } from "./lib/constants.ts";
 import { initSocketServer } from "./lib/socket.ts";
-import { listUsersTable } from "./lib/sql.ts";
+import { checkDB } from "./lib/db.ts";
 import { checkSessionExpiry } from "./lib/helpers.ts";
-const app = express();
-export const server = createServer(app);
-initSocketServer(server);
-listUsersTable();
+import { authorizeUser } from "./lib/middleware.ts";
+import { getUserJoinedRooms } from "./models/Rooms.ts";
+const app = express(); 
+export const server = createServer(app);       
 app.use(urlencoded({ extended: true })); // parsed  requests bodies .
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json()); // parses json bodies
 app.use("/auth", authRouter);
-app.use("/user", userRouter);
+app.use("/user", authorizeUser, userRouter);
+const port = process.env.port || 3000;
 const intervalId = checkSessionExpiry(); // this will delete expired user sessions every 5 minutes
 process.on("SIGTERM", () => {
   console.log("shutting down server...");
   clearInterval(intervalId);
 });
 server.listen(3333, () => {
+  checkDB();
+  initSocketServer(server);
   console.log("server is listening on  http://localhost:3333");
 });
-// addUserEntry("12873hd1d1@","ahmed","acc31072-e177-41cf-9b48-701a51fc1ba4")
 // app.get("/auth/refresh_token", (req: Request, res: Response) => {
 //   //client app will request a refresh token
 // });

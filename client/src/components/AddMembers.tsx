@@ -1,9 +1,9 @@
 import { Box, Stack, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
-import Button from './Button';
+import Button from './UI/Button';
 import User from './User';
-import Input from './Input';
+import Input from './UI/Input';
 export default function AddMembers({ setAddMembersDisplay }: any) {
   return (
     <Stack
@@ -13,6 +13,10 @@ export default function AddMembers({ setAddMembersDisplay }: any) {
       boxShadow={'6px 25px 27px -25px #000000'}
       alignSelf={'flex-end'}
       height={'50%'}
+      position={'absolute'}
+      zIndex={10}
+      top={60}
+      right={10}
       sx={{
         background:
           'linear-gradient(0deg,  rgba(32,35,43,0.17) 0%,  rgba(92,104,135,0.17) 100%); ',

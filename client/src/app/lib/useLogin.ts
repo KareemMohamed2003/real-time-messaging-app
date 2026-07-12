@@ -52,7 +52,8 @@ export default function useLogin(): [
         });
       }
       const { expires, sessionId } = loggedUser;
-      createSocketSession({ expires_at: expires, sessionId });
+      console.log('expires ,sessionId', expires, sessionId);
+      createSocketSession(expires, sessionId);
       router.refresh(); // purge next-js router memory to avoid going back to login page after authentication
       router.replace('/home/chats');
     }

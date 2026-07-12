@@ -1,11 +1,11 @@
 import { Stack, Typography } from '@mui/material';
 import User from '@/components/User';
-import { primaryBg } from '@/app/lib/constants';
+import { mainStyles } from '@/themes';
 
 export default function Chats() {
   //  remember to add a ref to the input component
   //  this component will take an Array of recent chats with the  logged in user
-
+  const { primaryBg } = mainStyles;
   return (
     <Stack
       sx={{

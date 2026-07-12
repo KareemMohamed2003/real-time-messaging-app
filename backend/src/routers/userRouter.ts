@@ -1,16 +1,41 @@
 import { Router } from "express";
+import multer from "multer";
 import {
   addFriend,
   getLoggedUserAction,
-  acceptFriendAction,
+  acceptFriendRequestAction,
   getFriendsAction,
   getUserAction,
-} from "../controllers/dbController.ts";
-import { authorizeUser } from "../lib/middleware.ts";
+  getPrivateMessagesAction,
+  updateUserProfileAction,
+  deleteProfileImgAction,
+  deleteMessageAction,
+  updateMessageAction,
+  createRoomAction,
+  getUserJoinedRoomsAction,
+  createChannelAction,
+  getChannelsActions,
+  getChannelMessagesAction,
+} from "../controllers/db.controller.ts";
 const userRouter = Router();
-userRouter.post("/add_friend", authorizeUser, addFriend);
-userRouter.get("/me", authorizeUser, getLoggedUserAction);
-userRouter.get("/accept_friend_request", authorizeUser, acceptFriendAction);
-userRouter.get("/friends", authorizeUser, getFriendsAction);
-userRouter.get("/:id", authorizeUser, getUserAction);
+const multerUpload = multer({ storage: multer.memoryStorage() });
+userRouter.post("/add_friend", addFriend);
+userRouter.get("/me", getLoggedUserAction);
+userRouter.post("/accept_friend_request", acceptFriendRequestAction);
+userRouter.get("/friends", getFriendsAction);
+userRouter.get("/profile/:id", getUserAction);
+userRouter.get("/private-messages/:userId/:friendId", getPrivateMessagesAction);
+userRouter.post(
+  "/upload_profile_pic/:uuid",
+  multerUpload.single("uploaded_file"),
+  updateUserProfileAction,
+);
+userRouter.post("/update_message", updateMessageAction);
+userRouter.delete("/profile_pic", deleteProfileImgAction);
+userRouter.delete("/delete_message/:messageId", deleteMessageAction);
+userRouter.post("/createRoom", createRoomAction);
+userRouter.post("/get_rooms", getUserJoinedRoomsAction);
+userRouter.post("/add_channel", createChannelAction);
+userRouter.post("/get_channels", getChannelsActions);
+userRouter.post("/get_channel_messages", getChannelMessagesAction);
 export default userRouter;

@@ -1,13 +1,11 @@
 'use client';
 import { Box, Typography } from '@mui/material';
-import Input from '@/components/Input';
-import Button from '@/components/Button';
-import FriendsList from '@/components/FriendsList';
+import Input from '@/components/UI/Input';
+import Button from '@/components/UI/Button';
+import FriendsList from '@/components/features/friends/FriendsList';
 import useFriends from '@/app/hooks/useFriends';
 
 export default function page() {
-  //  this page will take some array that contains the online
-  //  user on the logged in user friends list
   const { friends, selectedList, setList } = useFriends();
   console.log('friends', friends);
   console.log('selectedList', selectedList);
@@ -49,12 +47,12 @@ export default function page() {
           <Button
             key={index}
             onClick={() => setList(btn.text)}
-            sx={{ height: 'auto' }}
-            css={{
+            sx={{
               bgColor: btn.color,
               borderRadius: 13,
               color: 'white',
               p: btn.p,
+              height: 'auto',
             }}
           >
             <Typography fontWeight={600} variant={'inherit'}>

@@ -1,4 +1,4 @@
-import { addUserSession, getUserSession } from "./sql";
+import { addUserSession, getUserSession } from "./db";
 
 interface TSession {
   username: string;
@@ -6,7 +6,8 @@ interface TSession {
   sessionId: string;
   socketId: string;
   connected: boolean;
-  expires_at:string
+  expires_at:string;
+  profileImg:string
 }
 export default class SocketSession {
   // friendsSessions:any[];
@@ -21,7 +22,8 @@ export default class SocketSession {
     sessionId,
     userId,
     connected,
-    expires_at
+    expires_at,
+    profileImg
   }: TSession) {
     console.log("save Session function()");
     // if the socket is connected we should have a user session by default + the connected property should be always true
@@ -29,7 +31,7 @@ export default class SocketSession {
     // the user connected property should be set by the client by getting the friends of the user who are in the user_session table
     // what if the user disconnects unexpectedly or intentionally we need to handle that
   
-    addUserSession(socketId, username, sessionId, userId, connected,expires_at);
+    addUserSession(socketId, username, sessionId, userId, connected,expires_at,profileImg);
   }
   // findAllSession() {
   //   return [...this.sessions.values()];

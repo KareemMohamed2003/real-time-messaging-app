@@ -11,13 +11,22 @@ const roboto = Roboto({
 export const mainStyles = {
   mainGradient:
     'linear-gradient(360deg, rgba(17,21,25,1) 0%, rgba(35,39,46,1) 100%)',
+  primaryBg:
+    'linear-gradient(360deg, rgba(17,21,25,1) 0%, rgba(35,39,46,1) 100%)',
+  primaryGreen: '#13CB7E',
+  primaryRed: '#A40B0B',
+  // glassBg:"rgba(255,232,232,0.10)",
+  grey: 'rgba(255,255,255,0.07)',
+  mainGrey:'#232323',
+  primaryLight:'  linear-gradient(180deg, #151A1F 0%, #23272e5f 100%);',
+  darkGrey: 'rgba(255, 255, 255, 0.16)',
+  mainBlue: 'linear-gradient(0deg, rgba(5,87,163,1) 0%, rgba(47,149,245,1) 100%);'
 };
 
 export const styles = (theme: any) => ({
   // root: {
   //     fontSize: 10,
   //     padding: themes.spacing(1),
-  //
   //     [themes.breakpoints.down('md')]: {
   //         backgroundColor: themes.palette.secondary.main,
   //     },
@@ -56,6 +65,13 @@ const defaultTheme = createTheme({
   palette: {
     primary: {
       main: '#17191C',
+    },
+    error: {
+      main: mainStyles.primaryRed,
+    },
+    text: {
+      // primary: ,
+      secondary: '#1794BB',
     },
   },
 });

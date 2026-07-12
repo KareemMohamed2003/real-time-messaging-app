@@ -13,6 +13,8 @@ export default function ReactQueryClient({
   children: React.ReactNode;
 }) {
   const [queryClient] = useState(() => new QueryClient({}));
+window.TANSTACK_QUERY_CLIENT = queryClient;
+  
   return (
     <QueryClientProvider client={queryClient}>
       <HydrationBoundary state={dehydrate(queryClient)}>

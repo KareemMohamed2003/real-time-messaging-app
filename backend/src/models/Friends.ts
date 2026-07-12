@@ -17,7 +17,6 @@ import { prisma } from "../prisma/prisma.ts";
 export const sendFriendRequest = async (
   sender: string,
   recipientName: string,
-  // sender_uuid: string,
 ) => {
   console.log("sender ", sender, "recipentName :", recipientName);
   if (sender == recipientName) {
@@ -70,7 +69,7 @@ export const sendFriendRequest = async (
       .then(
         () => ({
           success: true,
-          msg: "friend request sent",
+          msg: "friend request sent", 
         }),
         (error) => {
           console.log("error with creating a new friends record");
@@ -83,12 +82,17 @@ export const sendFriendRequest = async (
     await acceptFriendRequest(friendsRecord?.receiverName);
   }
 };
-export const acceptFriendRequest = async (receiver: string) => {
+export const acceptFriendRequest = async (
+  receiver: string,
+  sender?: string,
+) => {
   try {
+    console.log("friend Request Receiver", receiver);
+
     const recordId = await prisma.friends
       .findFirst({
         where: {
-          OR: [{ receiverName: receiver }, { senderName: receiver }],
+          OR: [{ receiverName: receiver }, { senderName: sender }],
         },
       })
       .then((res) => res?.id);

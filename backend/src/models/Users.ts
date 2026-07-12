@@ -2,19 +2,51 @@ import { prisma } from "../prisma/prisma.ts";
 import {
   handleAuthError,
   handleRegisterationError,
-} from "../prisma/prismaHandlers/errorHandlers.ts";
+} from "../prisma/prismaHandlers/PrismaErrorHandlers.ts";
 import bc from "bcryptjs";
 import { checkPassword } from "../lib/auth/auth.js";
-
-type user = {
+import { $Enums } from "@prisma/client";
+type TUser = {
   username: string;
   email: string;
   password: string;
 };
+type TFriend = {
+  username: string;
+  friendId: number;
+  request_status: $Enums.friend_request_enum;
+  uuid: string;
+  isRequestSender: boolean;
+  profile_img:string
+};
+type TUserFriends = {
+  all: any[];
+  pending: any[];
+};
+
+type IFriendRequest = {
+  receiver: {
+    username: string;
+    uuid: string;
+  } | null;
+  sender: {
+    username: string;
+    uuid: string;
+  } | null;
+} & {
+  id: number;
+  createdAt: Date;
+  senderName: string;
+  receiverId: number;
+  email: string;
+  receiverName: string;
+  request_status: $Enums.friend_request_enum;
+  senderId: number;
+};
 const bcrypt = bc;
-export const registerUser = async (data: user) => {
+export const registerUser = async (data: TUser) => {
   try {
-    const { username, email, password }: user = data;
+    const { username, email, password }: TUser = data;
     console.log(username, email, password);
     const salt = bcrypt.genSaltSync(10);
     const passwordHash = bcrypt.hashSync(password, salt);
@@ -74,87 +106,63 @@ export const getLoggedUserData = async (username: string, email: string) => {
 };
 
 export const getUserFriendsList = async (username: string, email: string) => {
-  const userQuery = await prisma.users.findFirst({
+  const friendRequests = await prisma.friends.findMany({
     include: {
-      friends: {
-        // friends -> when  userId==id
-        where: {
-          OR: [{ request_status: "ACCEPTED" }, { request_status: "SENT" }],
-        },
+      receiver: {
+        select: { uuid: true, username: true, profile_img: true },
       },
-      friendBy: {
-        // friend By -> when  friend_id==id
-        where: {
-          OR: [{ request_status: "ACCEPTED" }, { request_status: "SENT" }],
-        },
-      },
+      sender: { select: { uuid: true, username: true, profile_img: true } },
     },
-
     where: {
-      username: username,
-      email: email,
+      OR: [{ request_status: "ACCEPTED" }, { request_status: "SENT" }],
     },
   });
-  console.log("user friends query", userQuery);
-  const userAsSenderList = userQuery?.friends.map((friend) => {
-    if (friend) {
-      return {
-        username: friend.receiverName,
-        friendId: friend.receiverId,
-        request_status: friend.request_status,
+  // determine if user is sender or reciever
+  const userFriends: TUserFriends = {
+    all: [],
+    pending: [],
+  };
+  friendRequests.map((request) => {
+    const receiverName = request.receiverName;
+    const senderName = request.senderName;
+    const request_status = request.request_status;
+    const assignFriendRequests = (
+      request: IFriendRequest,
+      userFriends: TUserFriends,
+      friendObj: TFriend,
+    ) => {
+      request.request_status === "ACCEPTED"
+        ? userFriends.all.push(friendObj)
+        : userFriends.pending.push(friendObj);
+    };
+    if (senderName === username) {
+      const receiver = {
+        username: receiverName,
+        friendId: request.receiverId,
+        request_status,
+        uuid: request.receiver!?.uuid,
+        isRequestSender: false,
+        profile_img: request.receiver?.profile_img!,
+        senderName: request.senderName,
       };
-    } else {
-      return;
+      assignFriendRequests(request, userFriends, receiver!);
+    } else if (receiverName === username) {
+      const sender = {
+        username: senderName,
+        friendId: request.senderId,
+        request_status,
+        uuid: request.sender!?.uuid,
+        isRequestSender: true,
+        profile_img: request.sender?.profile_img!,
+        senderName: request.senderName,
+      };
+      assignFriendRequests(request, userFriends, sender);
     }
   });
 
-  const userAsReceiverList = userQuery?.friendBy.map((user) => {
-    if (user) {
-      return {
-        username: user.senderName,
-        friendId: user.senderId,
-        request_status: user.request_status,
-      };
-    } else {
-      return;
-    }
-  });
-  // get the all , pending friends of the user ,identify if the user is a sender or a reciever
-  //  if the user is a sender then we should  return the list
-  // i should return if the user in the array is a sender or a reciever maybe a boolean property to incidate that `isSender`
+  // console.log("friendRquest grok : ", friendRequests);
 
-  const isUserAReceiver = userQuery?.friendBy.find(
-    (user) => user.receiverName == username,
-  );
-  const isUserASender = userQuery?.friends.find(
-    (user) => user.senderName == username,
-  );
-
-  if (isUserAReceiver) {
-    return {
-      pending: userAsReceiverList?.filter(
-        (user) => user?.request_status == "SENT",
-      ),
-      all: userAsReceiverList?.filter(
-        (user) => user?.request_status == "ACCEPTED",
-      ),
-      isReceiver: true,
-    };
-  } else if (isUserASender) {
-    return {
-      pending: userAsSenderList?.filter(
-        (user) => user?.request_status == "SENT",
-      ),
-      all: userAsSenderList?.filter(
-        (user) => user?.request_status == "ACCEPTED",
-      ),
-    };
-  } else {
-    return {
-      all: [],
-      pending: [],
-    };
-  }
+  return userFriends;
 };
 
 export const getUserData = async (userId: string) => {
@@ -163,11 +171,34 @@ export const getUserData = async (userId: string) => {
       where: {
         uuid: userId,
       },
+      include:{
+        roomMemberships:true
+      }
     });
-
     return userData;
   } catch (error) {
     return handleAuthError(error);
   }
 };
+
+export const updateUser = async (profileImg: string | null, uuid: string) => {
+  try {
+    console.log("profileImg , uuid", profileImg, uuid);
+    const user = await prisma.users.update({
+      data: {
+        profile_img: profileImg,
+      },
+      where: {
+        uuid,
+      },
+    });
+    if (!user) throw new Error("failed to update user Profile !");
+    return user;
+  } catch (e) {
+    console.log("error at updateUser() ", e);
+    // return false;
+    // create an update handler for Errors .
+  } 
+};
+
 

@@ -1,7 +1,7 @@
 'use client';
-import Button from '@/components/Button';
+import Button from '@/components/UI/Button';
 import { Stack, Typography, Box, CircularProgress } from '@mui/material';
-import Input from '@/components/Input';
+import Input from '@/components/UI/Input';
 import useRegister from '../lib/useRegister';
 export default function RegisterPage() {
   const [formState, dispatchForm] = useRegister();
@@ -66,7 +66,7 @@ export default function RegisterPage() {
             disabled={formState.disableForm}
             variant="contained"
             type="submit"
-            css={{
+            sx={{
               fontSize: '1.3rem',
               bgColor: '#13CB7E',
               borderRadius: 16,

@@ -8,31 +8,46 @@ datasource db {
 }
 
 model Users {
-  id          Int        @id @default(autoincrement())
-  createdAt   DateTime   @default(now())
-  username    String     @unique
-  email       String     @unique
-  password    String
-  uuid        String     @default(uuid())
-  profile_img Bytes?     @db.MediumBlob //? makes fieldss optional
-  status      Int        @default(1) @db.TinyInt // 0 offline // 1 online 
-  messages    Messages[]
-  friendBy    Friends[]  @relation("userAsFriend")
-  friends     Friends[]  @relation("userAsSender")
-  // posts     Post[]
-  // rooms       rooms[]  @relation(fields: [uuid],references: [roomuuid])
-  // age       Int
-  // country   String 
-  // status  
-  // notifications []
-  // rooms    rooms[]
-  // friends  []
-  // Friends Friends[]
+  id              Int          @id @default(autoincrement())
+  createdAt       DateTime     @default(now())
+  username        String       @unique
+  email           String       @unique
+  password        String
+  uuid            String       @unique @default(uuid())
+  profile_img     String?
+  status          Int          @default(1) @db.TinyInt // 0 offline // 1 online 
+  messages        Messages[]
+  friendBy        Friends[]    @relation("userAsFriend")
+  friends         Friends[]    @relation("userAsSender")
+  roomMemberships RoomMember[]
+}
+
+// we can add this model later when we decide if there will be restrications on who can view channels in rooms. 
+model ChannelParticipant {
+  id        Int      @id @default(autoincrement())
+  channelId Int
+  userId    String
+  joinedAt  DateTime @default(now())
+  channel   Channel  @relation(fields: [channelId], references: [channelId])
+
+  @@unique([channelId, userId])
 }
 
 // user a : sara user b : john 
 // user a -> user b ., friend_id : john  userId:sara, status:sent 
 // user b -> user friend_id:sara userId:john
+enum userRole {
+  ADMIN
+  OWNER
+  MEMBER
+}
+
+enum ChannelType {
+  TEXT // normal channel in a Room/server
+  VOICE
+  DIRECT_MESSAGE
+}
+
 enum friend_request_enum {
   SENT
   REJECTED
@@ -46,26 +61,23 @@ model Friends {
   receiverId     Int //  we may remove this field later since we are gonna add friend_name later 
   email          String // we may not need this also 
   receiverName   String
-  // friendship_status Boolean
   request_status friend_request_enum
-  // 0 :sent , 1:approved 2:rejected . null 
-  // rooms     rooms[] 
-  Friend         Users?              @relation("userAsFriend", fields: [receiverId], references: [id])
-  Users          Users?              @relation("userAsSender", fields: [senderId], references: [id])
-  senderId       Int?
+  receiver       Users?              @relation("userAsFriend", fields: [receiverId], references: [id]) // friendBy
+  sender         Users?              @relation("userAsSender", fields: [senderId], references: [id]) // friends
+  senderId       Int
 
   @@unique([senderId, receiverId])
 }
 
 model Messages {
-  id         Int      @id @default(autoincrement())
-  messageId  String   @default(uuid())
-  senderId   String
-  recieverId String
-  createdAt  DateTime @default(now())
-  Users      Users?   @relation(fields: [userId], references: [id])
-  userId     Int?
-  // user // realtion  
+  id           Int      @id @default(autoincrement())
+  channelId    Int
+  senderUUID   String
+  receiverUUID String
+  createdAt    DateTime @default(now())
+  message      String
+  user         Users    @relation(fields: [senderUUID], references: [uuid])
+  channel      Channel? @relation(fields: [channelId], references: [channelId])
 }
 
 model Notifications {
@@ -77,4 +89,38 @@ model Notifications {
   entity           String
   entityId         String
   createdAt        DateTime @default(now())
+  
+}
+
+model Channel {
+  channelId           Int                  @id @default(autoincrement())
+  roomUUID            String               
+  channelName         String               
+  type                ChannelType          @default(DIRECT_MESSAGE)
+  room                Rooms?               @relation(fields: [roomUUID], references: [roomUUID])
+  messages             Messages[]
+  channelParticipants ChannelParticipant[]
+
+  @@index([type]) // helps when filtering DMs vs room channels
+}
+
+model Rooms {
+  roomName String
+  roomUUID String       @unique @default(uuid())
+  icon     Bytes?
+  ownerId  String
+  members  RoomMember[]
+  channels Channel[]
+
+  @@id([roomName, ownerId])
+}
+
+model RoomMember {
+  roomUUID String
+  userId   String
+  role     userRole
+  room     Rooms    @relation(fields: [roomUUID], references: [roomUUID])
+  user     Users    @relation(fields: [userId], references: [uuid])
+
+  @@id([roomUUID, userId])
 }
