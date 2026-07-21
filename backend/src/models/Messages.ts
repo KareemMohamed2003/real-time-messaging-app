@@ -1,32 +1,32 @@
 import { prisma } from "../prisma/prisma.ts";
 import {
   handleCreateRowError,
-  handleFetchError,
 } from "../prisma/prismaHandlers/PrismaErrorHandlers.ts";
+import { findOrCreateDirectChannel } from "./Channels.ts";
 export const createMessage = async (
   message: string,
   senderUUID: string,
   receiverUUID: string,
 ) => {
   try {
-    // const createChannel= await prisma.channel.create({data:{
-    //   channelParticipants:{
-    
-    //   }
-    // }})
+    const channel = await findOrCreateDirectChannel(senderUUID, receiverUUID);
+    console.log(message, senderUUID, receiverUUID);
+    console.log(channel)
     const newMessage = await prisma.messages.create({
       data: {
-        senderUUID,
-        message,
-        receiverUUID,
+        senderUUID: senderUUID,
+        message: message,
+        receiverUUID: receiverUUID,
+        channelId: channel.channelId,
       },
-      
     });
     console.log(
       `createMessage : senderId${senderUUID} message${message} receiverId${receiverUUID}`,
     );
+    console.log(newMessage)
     return newMessage;
   } catch (e) {
+    console.log(e);
     handleCreateRowError(e, "createMessage");
   }
 };
@@ -73,7 +73,7 @@ export const deleteMessage = async (uuid: string, id: number) => {
 };
 
 export const updateMessage = async (newContent: string, messageId: number) => {
-  const updatedMessage=await prisma.messages.update({
+  const updatedMessage = await prisma.messages.update({
     data: {
       message: newContent,
     },
@@ -83,3 +83,25 @@ export const updateMessage = async (newContent: string, messageId: number) => {
   });
   console.log(updatedMessage);
 };
+
+export const createRoomMessage = async (
+  message: string,
+  senderUUID: string,
+  channelId:number,
+) => {
+    console.log(message, senderUUID, channelId);
+    const newMessage = await prisma.messages.create({
+      data: {
+        senderUUID: senderUUID,
+        message: message,
+        channelId: channelId,
+      },
+    });
+    console.log(
+      `createMessage : senderId${senderUUID} message${message}`,
+    );
+    return newMessage;
+   
+};
+
+

@@ -14,7 +14,7 @@ import {
   createRoomAction,
   getUserJoinedRoomsAction,
   createChannelAction,
-  getChannelsActions,
+  getRoomChannelsAction,
   getChannelMessagesAction,
 } from "../controllers/db.controller.ts";
 const userRouter = Router();
@@ -36,6 +36,6 @@ userRouter.delete("/delete_message/:messageId", deleteMessageAction);
 userRouter.post("/createRoom", createRoomAction);
 userRouter.post("/get_rooms", getUserJoinedRoomsAction);
 userRouter.post("/add_channel", createChannelAction);
-userRouter.post("/get_channels", getChannelsActions);
+userRouter.post("/get_channels", getRoomChannelsAction);
 userRouter.post("/get_channel_messages", getChannelMessagesAction);
 export default userRouter;

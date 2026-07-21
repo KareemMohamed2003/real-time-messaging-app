@@ -2,15 +2,15 @@
 import { Box } from '@mui/material';
 import { mainStyles } from '@/themes';
 import { Suspense } from 'react';
-import { getFriendSocketId } from '@/app/lib/utils';
+import { getFriendSocketId } from '@/app/shared/lib/utils';
 import { useParams } from 'next/navigation';
 import { useUserStore } from '@/app/store/user-store';
-import { useMessageContext } from '@/components/messages/PrivateChatContext';
-import PrivateChatModal from '@/components/messages/PrivateChatModal';
-import Loading from '@/components/UI/loading';
-import Portal from '@/components/Portal';
-import PrivateChatComponent from '@/components/PrivateChatComponent';
-import CallManager from '@/components/voice-call/CallManager';
+import { useMessageContext } from '@/app/features/messages/components/PrivateChatContext';
+import PrivateChatModal from '@/app/features/messages/components/PrivateChatModal';
+import Loading from '@/app/shared/components/UI/loading';
+import Portal from '@/app/shared/components/Portal';
+import PrivateChatComponent from '@/app/shared/components/PrivateChatComponent';
+import CallManager from '@/app/features/voice-call/components/CallManager';
 export default function PrivateChat() {
   const dynamicParam = useParams<{ friendId: string }>();
   const friendId = dynamicParam.friendId;

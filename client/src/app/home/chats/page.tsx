@@ -1,6 +1,6 @@
 'use client';
-import Chats from '@/components/Chats';
-import Input from '@/components/UI/Input';
+import Chats from '@/app/shared/components/Chats';
+import Input from '@/app/shared/components/UI/Input';
 import { Box } from '@mui/material';
 export default function Home() {
   return (

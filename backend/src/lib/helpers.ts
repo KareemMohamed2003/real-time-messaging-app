@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { deleteExpiredUsersSessions } from "./db";
 import { Server } from "socket.io";
-import { ISocket } from "./socket";
+import { ISocket } from "./sockets/socket";
 export const randomId = () => crypto.randomBytes(8).toString("hex");
 export const checkSessionExpiry = () => {
   const interval = setInterval(() => {
@@ -42,4 +42,24 @@ export const resendPendingCall = (
       callerInfo: { profile_img, callerName: name, callerID: socketId },
     });
   }, 3500);
+};
+type AckCallback = (response: any) => void;
+type SocketHandler<Args extends any[]> = (
+  ...args: [...Args, AckCallback?]
+) => Promise<void> | void;
+export const safeAckHandler = (handler: SocketHandler<any>) => {
+  return (...args: unknown[]) => {
+    const callback = args[args.length - 1];
+    const hasCallback = typeof callback === "function";
+    const actualArgs = hasCallback ? args.slice(0, -1) : args;
+
+    try {
+      handler(...actualArgs, callback);
+    } catch (error) {
+      console.error("socket Error captured", error);
+      if (hasCallback) {
+        callback({ sent: false, error: "internal error " });
+      }
+    }
+  };
 };

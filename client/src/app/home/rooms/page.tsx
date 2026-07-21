@@ -1,18 +1,18 @@
 'use client';
 import React, { useState } from 'react';
 import { Box, Typography, Button, Grid } from '@mui/material';
-import RoomsIcon from '@/components/icons/RoomsIcon';
-import AddRoomIcon from '@/components/icons/AddRoom';
-import RoomLink from '@/components/rooms/RoomLink';
-import CreateRoomForm from '@/components/rooms/CreateRoomForm';
-import Portal from '@/components/Portal';
-import useRooms from '@/app/hooks/useRooms';
-import { togglePortalEffect } from '@/app/lib/utils';
+import RoomsIcon from '@/app/shared/components/icons/RoomsIcon';
+import AddRoomIcon from '@/app/shared/components/icons/AddRoom';
+import Portal from '@/app/shared/components/Portal';
+import { togglePortalEffect } from '@/app/shared/lib/utils';
 import { useUserStore } from '@/app/store/user-store';
+import { mainStyles } from '@/themes';
+import useRooms from '@/app/features/rooms/api/useRooms';
+import CreateRoomForm from '@/app/features/rooms/components/CreateRoomForm';
+import RoomLink from '@/app/features/rooms/components/RoomLink';
 import slack from '../../../components/icons/svg/slack.png';
 import ts from '../../../components/icons/svg/ts.png';
 import nextjs from '../../../components/icons/svg/nextJs.png';
-import { mainStyles } from '@/themes';
 export default function Rooms() {
   const { uuid } = useUserStore((state) => state.profile!);
   const { rooms } = useRooms(uuid!);

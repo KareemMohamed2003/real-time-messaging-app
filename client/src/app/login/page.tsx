@@ -1,9 +1,9 @@
 'use client';
 import { Typography, Stack, Box, CircularProgress } from '@mui/material';
-import CustomLink from '@/components/CustomLink';
-import Button from '@/components/UI/Button';
-import Input from '@/components/UI/Input';
-import useLogin from '../lib/useLogin';
+import CustomLink from '@/app/shared/components/CustomLink';
+import Button from '@/app/shared/components/UI/Button';
+import Input from '@/app/shared/components/UI/Input';
+import useLogin from '../features/authentication/api/useLogin';
 import { useState } from 'react';
 export default function LoginPage() {
   const [formState, dispatchForm] = useLogin();

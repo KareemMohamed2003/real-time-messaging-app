@@ -1,18 +1,14 @@
-export type TProfile = {
-  username: string | null;
-  email: string | null;
-  uuid: string | null;
-  id: number | null;
-  profile_img: string;
-};
-export type TMessage = {
-  id: number | null;
-  senderUUID: string;
-  receiverUUID: string;
-  message: string;
-  createdAt?: Date;
-  error?: string;
-};
+import { TMessage, User } from "../shared/types/api.types";
+
+
+// export type TMessage = {
+//   id: number | null;
+//   senderUUID: string;
+//   message: string;
+//   receiverUUID?: string;
+//   createdAt?: Date;
+//   error?: string;
+// };
 export type tCall = {
   callState: TCallState;
   friendId: string;
@@ -44,7 +40,7 @@ export type UserState = {
     pending: TFriend[];
     all: TFriend[];
   };
-  profile: TProfile;
+  profile: User;
   notifications: any[];
   privateMessages: Map<number, any>;
 };
@@ -55,7 +51,7 @@ export type TNotification = {
 };
 export type userActions = {
   setRooms: (rooms: []) => void;
-  setProfile: (userProfile: TProfile) => void;
+  setProfile: (userProfile: User) => void;
   setFriends: (friends: any) => void;
   updateFriends: (newFriends: any) => void;
   setNotification: (notifications: TNotification) => void;

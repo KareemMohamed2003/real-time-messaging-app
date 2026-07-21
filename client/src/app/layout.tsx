@@ -5,7 +5,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from '../themes';
 import { Inter } from 'next/font/google';
 import UserStoreProvider from './store/StoreContextProvider';
-import ReactQueryClient from './lib/api/QueryClient';
+import ReactQueryClient from './shared/lib/api/QueryClient';
 
 export const metadata: Metadata = {
   title: 'Create Next App',

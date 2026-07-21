@@ -1,34 +1,81 @@
 import { $Enums } from "@prisma/client";
 import { prisma } from "../prisma/prisma.ts";
 export const createChannel = async (
-  roomUUID: string,
   type: $Enums.ChannelType,
   channelName: string,
+  roomUUID: string,
 ) => {
   const channel = await prisma.channel.create({
     data: { channelName, type, roomUUID },
   });
   return channel;
 };
-export const addChannelParticpant = async (uuid: string, channelId: number) => {
-  const channelParticipant = await prisma.channelParticipant.create({
-    data: {
-      userId: uuid,
-      channelId: channelId,
+
+export const getRoomChannels = async (roomUUID: string) => {
+  const channels = await prisma.channel.findMany({
+    where: {
+      roomUUID: roomUUID,
+      NOT: {
+        type: "DIRECT_MESSAGE",
+      },
     },
   });
-};
-export const getChannels = async (roomUUID: string) => {
-  const channels = await prisma.channel.findMany({ where: { roomUUID } });
   return channels;
 };
-
-export const getChannelMessages = async (channelId: number) => {
-  const messages = await prisma.channel.findMany({
-    include: { messages: true },
-    where: { channelId },
+export const findOrCreateDirectChannel = async (
+  senderUUID: string,
+  receiverUUID: string,
+) => {
+  const existingChannel = await prisma.channel.findFirst({
+    where: {
+      type: "DIRECT_MESSAGE",
+      channelParticipants: {
+        every: { userId: { in: [senderUUID, receiverUUID] } },
+      },
+    },
   });
+  if (!existingChannel) {
+    const newChannel = await prisma.channel.create({
+      data: {
+        channelName: "DIRECT_MESSAGE",
+        type: "DIRECT_MESSAGE",
+      },
+    });
+    // this code may need to change as we will rely on the channelId + channelType instead of having receiverUUID ,
+    //
+    const senderParticpant = await createChannelParticipant(
+      newChannel.channelId,
+      senderUUID,
+    );
+    const receiverParticpant = await createChannelParticipant(
+      newChannel.channelId,
+      receiverUUID,
+    );
+    return newChannel;
+  }
+  return existingChannel;
+  // return channels;
+};
+export const getChannelMessages = async (id: number) => {
+  console.log(id);
+  const messages = await prisma.messages.findMany({
+    where: { channelId: id },
+  });
+  console.log(messages);
   return messages;
+};
+
+export const createChannelParticipant = async (
+  channelId: number,
+  userId: string,
+) => {
+  const channelParticipant = await prisma.channelParticipant.create({
+    data: {
+      channelId,
+      userId,
+    },
+  });
+  return channelParticipant;
 };
 // channel particpants should be the user
 // enum ChannelType {

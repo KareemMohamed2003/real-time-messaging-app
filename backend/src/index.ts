@@ -7,7 +7,7 @@ import userRouter from "./routers/userRouter.ts";
 import { urlencoded } from "express";
 import { createServer } from "http";
 import { corsOptions } from "./lib/constants.ts";
-import { initSocketServer } from "./lib/socket.ts";
+import { initSocketServer } from "./lib/sockets/socket.ts";
 import { checkDB } from "./lib/db.ts";
 import { checkSessionExpiry } from "./lib/helpers.ts";
 import { authorizeUser } from "./lib/middleware.ts";

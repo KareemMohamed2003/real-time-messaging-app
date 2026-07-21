@@ -73,11 +73,11 @@ model Messages {
   id           Int      @id @default(autoincrement())
   channelId    Int
   senderUUID   String
-  receiverUUID String
+  receiverUUID String?
   createdAt    DateTime @default(now())
   message      String
   user         Users    @relation(fields: [senderUUID], references: [uuid])
-  channel      Channel? @relation(fields: [channelId], references: [channelId])
+  channel      Channel  @relation(fields: [channelId], references: [channelId])
 }
 
 model Notifications {
@@ -89,16 +89,15 @@ model Notifications {
   entity           String
   entityId         String
   createdAt        DateTime @default(now())
-  
 }
 
 model Channel {
   channelId           Int                  @id @default(autoincrement())
-  roomUUID            String               
-  channelName         String               
+  roomUUID            String?
+  channelName         String
   type                ChannelType          @default(DIRECT_MESSAGE)
   room                Rooms?               @relation(fields: [roomUUID], references: [roomUUID])
-  messages             Messages[]
+  messages            Messages[]
   channelParticipants ChannelParticipant[]
 
   @@index([type]) // helps when filtering DMs vs room channels

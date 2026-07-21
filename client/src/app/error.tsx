@@ -1,5 +1,5 @@
 'use client';
-import Button from "@/components/UI/Button";
+import Button from "@/app/shared/components/UI/Button";
 import { Stack } from "@mui/material";
 export default function Error({
   error,

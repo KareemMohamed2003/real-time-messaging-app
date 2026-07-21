@@ -2,9 +2,10 @@ import { useContext } from 'react';
 import { createStore } from 'zustand/vanilla';
 import { useStore } from 'zustand';
 import { userStoreContext } from './StoreContextProvider';
-import { cancelCall, RTCConfiguration } from '../lib/webrtc';
-import { socketClient } from '../lib/socket';
-import { TProfile, TMessage, UserState, userActions } from './types';
+import { cancelCall, RTCConfiguration } from '../shared/lib/webrtc';
+import { socketClient } from '../shared/lib/socket';
+import {   UserState, userActions } from './types';
+import { User ,TMessage} from '../shared/types/api.types';
 export type userStore = userActions & UserState;
 export const defaultUserState = {
   localPeer: new RTCPeerConnection(RTCConfiguration),
@@ -21,10 +22,10 @@ export const defaultUserState = {
   rooms: [],
   friends: { pending: [], all: [], online: [] },
   profile: {
-    username: null,
-    email: null,
-    uuid: null,
-    id: null,
+    username: '',
+    email: '',
+    uuid: '',
+    id: 0,
     profile_img: '',
   },
   privateMessages: new Map(),
@@ -40,21 +41,21 @@ export const zustandStore = createStore<userStore>()((set, get) => ({
   // when it comes to setting rooms , friends we need to decided whether we're gonna udate the state directly or refetch
   //  the data from the database after we let's say add a friend first , or join a new room for example
   setRooms: (rooms: []) => set(() => ({ rooms })), //  these functions may change later
-  setProfile: (profile: TProfile) => {
+  setProfile: (profile: User) => {
     set(() => ({
       profile: {
-        username: profile.username,
-        email: profile.email,
-        uuid: profile.uuid,
-        id: profile.id,
-        profile_img: profile.profile_img,
+        username: profile.username!,
+        email: profile.email!,
+        uuid: profile.uuid!,
+        id: profile?.id!,
+        profile_img: profile.profile_img!,
       },
     }));
   },
   updateProfile: (newProfileData: { [key: string]: any }) => {
     set((state) => ({
       profile: {
-        ...state.profile,
+        ...state.profile!,
         ...newProfileData,
       },
     }));

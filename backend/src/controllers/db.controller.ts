@@ -27,7 +27,7 @@ import { createRoom, getUserJoinedRooms } from "../models/Rooms.ts";
 import {
   createChannel,
   getChannelMessages,
-  getChannels,
+  getRoomChannels,
 } from "../models/Channels.ts";
 
 export interface AuthRequest extends Request {
@@ -42,14 +42,20 @@ export interface AuthRequest extends Request {
 }
 
 export const addFriend = async (req: Request, res: Response) => {
-  console.log("request", req);
-  const { senderName, recieverName } = req.body;
-  console.log("senderName: ", senderName, "recieverName :", recieverName);
-  const friendRequest = await sendFriendRequest(senderName, recieverName);
-  if (!friendRequest?.success) {
-    return res.json({ success: false, msg: friendRequest?.msg });
+  try {
+    console.log("request", req);
+    const { senderName, recieverName } = req.body;
+    console.log("senderName: ", senderName, "recieverName :", recieverName);
+    const friendRequest = await sendFriendRequest(senderName, recieverName);
+    if (!friendRequest?.success) {
+      return res.json({ success: false, msg: friendRequest?.msg });
+    }
+    return res.status(201).end();
+  } catch (e) {
+    const { statusCode, message } = handlePrismaError(e, "friend");
+    console.log(e);
+    res.status(statusCode).json(message);
   }
-  return res.status(201).end();
 };
 
 export const getLoggedUserAction = async (req: AuthRequest, res: Response) => {
@@ -299,15 +305,15 @@ export const createChannelAction = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getChannelsActions = async (req: AuthRequest, res: Response) => {
+export const getRoomChannelsAction = async (req: AuthRequest, res: Response) => {
   try {
     const { roomUUID } = req.body;
-    const channels = await getChannels(roomUUID);
+    const channels = await getRoomChannels(roomUUID);
     res.status(200).json(channels);
   } catch (e) {
     const { statusCode, message } = handlePrismaError(e, "channel");
     console.log(e);
-    res.status(statusCode).json(message);
+    res.status(statusCode).json(message); 
   }
 };
 
@@ -317,6 +323,8 @@ export const getChannelMessagesAction = async (
 ) => {
   try {
     const { channelId } = req.body;
+    console.log(typeof channelId);
+    
     const channelMessages = await getChannelMessages(channelId);
     res.status(200).json(channelMessages);
   } catch (e) {
