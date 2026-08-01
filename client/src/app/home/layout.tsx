@@ -1,7 +1,7 @@
 'use client';
-import Loading from '../shared/components/UI/loading';
-import useUserLoadedStore from '../shared/hooks/useUserLoadedStore';
-import Main from '@/app/shared/components/Main';
+import Main from '@/shared/components/Main';
+import Loading from '@/shared/components/UI/loading';
+import useUserLoadedStore from '@/shared/hooks/useUserLoadedStore';
 import { ReactNode } from 'react';
 export default function Template({ children }: { children: ReactNode }) {
   const { isUserStateInit } = useUserLoadedStore();

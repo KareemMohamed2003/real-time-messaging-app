@@ -1,13 +1,14 @@
 'use client';
-import { updateProfilePic } from '@/app/shared/lib/actions/userActions';
+import { updateProfilePic } from '@/shared/lib/actions/userActions';
 import { mainStyles } from '@/themes';
-import { checkFileSize, togglePortalEffect } from '@/app/shared/lib/utils';
+import { checkFileSize, togglePortalEffect } from '@/shared/lib/utils';
 import { useUserStore } from '@/app/store/user-store';
-import Button from '@/app/shared/components/UI/Button';
-import Portal from '@/app/shared/components/Portal';
+import Button from '@/shared/components/UI/Button';
+import Portal from '@/shared/components/Portal';
 import { Avatar, Stack, Typography } from '@mui/material';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import UpdateProfilePopup from '@/app/features/profile/components/UpdateProfilePopup';
+import UpdateProfilePopup from '@/entities/profile/ui/UpdateProfilePopup';
+// import UpdateProfilePopup from '@/features/profile/ui/UpdateProfilePopup';
 export interface selectedFile {
   file: File | null;
   url: string;

@@ -1,4 +1,8 @@
 import { prisma } from "../prisma/prisma.ts";
+import {
+  BadRequestError,
+  NotFoundError,
+} from "../prisma/prismaHandlers/AppError.js";
 // search for the user the user wants to send a request to
 // if that user exists add to the friends table a friend ship request status
 // between the two users
@@ -15,94 +19,68 @@ import { prisma } from "../prisma/prisma.ts";
 // username (sender in this case )is the original  reciever  meaning he is in the friend_name columns
 
 export const sendFriendRequest = async (
-  sender: string,
-  recipientName: string,
+  senderId: number,
+  receiverName: string,
 ) => {
-  console.log("sender ", sender, "recipentName :", recipientName);
-  if (sender == recipientName) {
-    return {
-      success: false,
-      msg: "user attempted to send request to himself",
-    };
+  if (!senderId || !receiverName) {
+    throw new BadRequestError(`senderId,  receiverName`);
   }
+  const senderRecord = await prisma.users.findUniqueOrThrow({
+    where: { id: senderId },
+  });
+  // understand how would you know that users Model throwed the error using prisma  .
+  // now we have to think how do we deal with not having the receiverId ,
   const recipientRecord = await prisma.users.findUnique({
-    where: { username: recipientName },
+    where: { username: receiverName },
   });
+  if (!recipientRecord) {
+    throw new NotFoundError("User", "user not found");
+  }
+  const receiverId = recipientRecord.id;
+  const userAId = Math.min(senderId, receiverId);
+  const userBId = Math.max(senderId, receiverId);
+
   console.log("recipientRecord record", recipientRecord);
-  const senderRecord = await prisma.users.findFirst({
-    where: { username: sender },
-  });
-  const friendsRecord = await prisma.friends.findFirst({
-    where: {
-      OR: [
-        { senderName: recipientName, receiverName: sender },
-        { receiverName: recipientName, senderName: sender },
-      ],
+
+  const newFriendShip = await prisma.friends.create({
+    data: {
+      senderName: senderRecord?.username!,
+      receiverName: recipientRecord!.username,
+      receiverId: recipientRecord!.id,
+      request_status: "SENT", // this was probably set to tiny int,
+      senderId: senderRecord!.id,
+      userAId,
+      userBId,
     },
   });
-  console.log("friends Record", friendsRecord);
-  if (friendsRecord?.request_status == "ACCEPTED") {
-    return {
-      success: false,
-      msg: `users  are already  friends`,
-    };
-  }
 
-  if (!recipientRecord) {
-    console.log("receipent condition");
-    return { success: false, msg: "user doesn't exist" };
-  }
-
-  if (!friendsRecord) {
-    console.log("friends Record condition");
-    await prisma.friends
-      .create({
-        data: {
-          senderName: sender,
-          email: senderRecord!.email,
-          receiverName: recipientRecord!.username,
-          receiverId: recipientRecord!.id,
-          request_status: "SENT", // this was probably set to tiny int,
-          senderId: senderRecord!.id,
-        },
-      })
-      .then(
-        () => ({
-          success: true,
-          msg: "friend request sent", 
-        }),
-        (error) => {
-          console.log("error with creating a new friends record");
-          console.log(error);
-          return { success: false, msg: "something went wrong" };
-        },
-      );
-  }
-  if (friendsRecord?.receiverName === sender) {
-    await acceptFriendRequest(friendsRecord?.receiverName);
-  }
+  // if this throws a conflict Error ,
+  // case 1: we may then fetch the row and update it's contents if let's say the receiver sends a  friend request to the sender
+  //  maybe check which field is not populated  we auto accept
+  // case 2 the user just accepts the friend request again
+  // consider the following also how would we handle if the is not  `userNotFound`
+  return newFriendShip;
 };
+// what we are gonna do here first we will delete the second parameter `sender` ,
 export const acceptFriendRequest = async (
-  receiver: string,
-  sender?: string,
+  receiverId: number,
+  senderId: number,
 ) => {
   try {
-    console.log("friend Request Receiver", receiver);
-
-    const recordId = await prisma.friends
-      .findFirst({
-        where: {
-          OR: [{ receiverName: receiver }, { senderName: sender }],
-        },
-      })
-      .then((res) => res?.id);
-    console.log("friends record id", recordId);
-    await prisma.friends.update({
+    const userAId = Math.min(senderId, receiverId);
+    const userBId = Math.max(senderId, receiverId);
+    const updateFriendShip = await prisma.friends.update({
       where: {
-        id: recordId,
+        userAId_userBId: {
+          userAId,
+          userBId,
+        },
       },
-      data: { request_status: "ACCEPTED" },
+      data: {
+        request_status: "ACCEPTED",
+      },
     });
+
     console.log("friend ship established ");
     return { success: true, msg: "Friendship established" };
   } catch (e) {

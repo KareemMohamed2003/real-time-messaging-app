@@ -2,10 +2,11 @@ import { useContext } from 'react';
 import { createStore } from 'zustand/vanilla';
 import { useStore } from 'zustand';
 import { userStoreContext } from './StoreContextProvider';
-import { cancelCall, RTCConfiguration } from '../shared/lib/webrtc';
-import { socketClient } from '../shared/lib/socket';
-import {   UserState, userActions } from './types';
-import { User ,TMessage} from '../shared/types/api.types';
+import { UserState, userActions } from './types';
+import { TMessage, User } from '@/shared/types/api.types';
+import { socketClient } from '@/shared/lib/socket';
+import { RTCConfiguration, cancelCall } from '@/shared/lib/webrtc';
+
 export type userStore = userActions & UserState;
 export const defaultUserState = {
   localPeer: new RTCPeerConnection(RTCConfiguration),
@@ -20,7 +21,8 @@ export const defaultUserState = {
   },
   incomingCalls: new Map(),
   rooms: [],
-  friends: { pending: [], all: [], online: [] },
+  // friends: { pending: [], all: [], online: [] },
+  onlineFriends: [],
   profile: {
     username: '',
     email: '',
@@ -76,12 +78,9 @@ export const zustandStore = createStore<userStore>()((set, get) => ({
       notifications: state.notifications.filter((el) => el.id != id),
     }));
   },
-  updateFriends: (newFriends: any) => {
-    set(() => ({
-      friends: {
-        pending: newFriends.pending,
-        all: newFriends.all,
-      },
+  updateOnlineFriends: (newFriends: any) => {
+    set((state) => ({
+      onlineFriends: [state.onlineFriends, ...newFriends],
     }));
   },
   loadMessages: (messages: Map<number, TMessage>) => {
@@ -124,9 +123,9 @@ export const zustandStore = createStore<userStore>()((set, get) => ({
       };
     });
   },
-  setFriends: (data: any) => {
+  setOnlineFriends: (data: any) => {
     set(() => ({
-      friends: data,
+      onlineFriends: data,
     }));
   },
 

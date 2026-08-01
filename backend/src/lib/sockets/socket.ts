@@ -3,6 +3,7 @@ import { DefaultEventsMap, Server, Socket } from "socket.io";
 import { clientOrigin } from "../constants.ts";
 import { socketMiddleware } from "./socket.middleware.ts";
 import { onConnection } from "./onConnectionHandler.ts";
+import { client } from "../redisClient.ts";
 export interface ISocket
   extends Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> {
   sessionId?: string;

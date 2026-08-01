@@ -17,8 +17,21 @@ export const createRoom = async (userId: string, name: string) => {
 export const getUserJoinedRooms = async (userId: string) => {
   const roomMemberships = await prisma.roomMember.findMany({
     where: { userId },
-    include:{room:true}
+    include: { room: true },
   });
   console.log("user joined rooms ", roomMemberships);
   return roomMemberships;
+};
+
+export const getRoomMembers = async (roomUUID: string) => {
+  const roomMembers = await prisma.rooms.findFirst({
+    where: {
+      roomUUID: roomUUID,
+    },
+    include: {
+      members: true,
+    },
+  });
+  console.log("user joined rooms ", roomMembers);
+  return roomMembers;
 };

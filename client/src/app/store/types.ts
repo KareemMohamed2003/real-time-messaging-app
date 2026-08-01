@@ -1,5 +1,4 @@
-import { TMessage, User } from "../shared/types/api.types";
-
+import { User ,TMessage,IRoom} from "@/shared/types/api.types";
 
 // export type TMessage = {
 //   id: number | null;
@@ -20,6 +19,7 @@ export type tCall = {
 };
 export type TRequestStatus = 'ACCEPTED' | 'PENDING' | 'REJECTED';
 export type TCallState = TRequestStatus | null | 'OUT-GOING';
+// THIS TYPE MAYE NEED TO BE REFACTORED LATER ON 
 export type TFriend = {
   username: string;
   friendId: number;
@@ -35,11 +35,13 @@ export type UserState = {
   localPeer: RTCPeerConnection;
   incomingCalls: Map<string, tCall>;
   rooms: any[];
-  friends: {
-    online?: TFriend[];
-    pending: TFriend[];
-    all: TFriend[];
-  };
+  // friends: {
+  //   online?: TFriend[];
+  //   pending: TFriend[];
+  //   all: TFriend[];
+  // };
+
+  onlineFriends: TFriend[];
   profile: User;
   notifications: any[];
   privateMessages: Map<number, any>;
@@ -52,8 +54,8 @@ export type TNotification = {
 export type userActions = {
   setRooms: (rooms: []) => void;
   setProfile: (userProfile: User) => void;
-  setFriends: (friends: any) => void;
-  updateFriends: (newFriends: any) => void;
+  setOnlineFriends: (friends: any) => void;
+  updateOnlineFriends: (newFriends: any) => void;
   setNotification: (notifications: TNotification) => void;
   loadMessages: (messages: Map<number, any>) => void;
   updateMessages: (newMessage: TMessage) => void;
@@ -77,27 +79,23 @@ export type userActions = {
   toggleMic: () => void;
   registerPeerListeners: () => void;
 };
-export type Room = {
-  name: string;
-  roomName: String;
-  roomUUID: String;
-  icon: String;
-  ownerId: String;
-  members: RoomMember[];
-};
-export type RoomMember = {
-  roomUUID: String;
-  userId: String;
-  role: userRole;
-};
-enum userRole {
-  ADMIN,
-  OWNER,
-  MEMBER,
-}
+// export type TRoom = {
+//   name: string;
+//   roomName: String;
+//   roomUUID: String;
+//   icon: String;
+//   ownerId: String;
+//   members: RoomMember[];
+// };
+// export type RoomMember = {
+//   roomUUID: String;
+//   userId: String;
+//   role: userRole;
+// };
+
 export type roomActions = {
-  addRoom: (newRoom: Room) => void;
+  addRoom: (newRoom: IRoom) => void;
   deleteRoom: () => void;
   updateRoom: () => void;
 };
-export type RoomStore = { rooms: Map<String, Room> } & roomActions;
+export type RoomStore = { rooms: Map<String, IRoom> } & roomActions;

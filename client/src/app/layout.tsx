@@ -5,7 +5,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from '../themes';
 import { Inter } from 'next/font/google';
 import UserStoreProvider from './store/StoreContextProvider';
-import ReactQueryClient from './shared/lib/api/QueryClient';
+import ReactQueryClient from '@/shared/lib/api/QueryClient';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -20,16 +20,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <meta name="viewport" content="initial-scale=1, width=device-width" />
-      <AppRouterCacheProvider>
-        <ThemeProvider theme={theme}>
-          <body className={inter.className}>
-            <div id="portal"></div>
-            <ReactQueryClient>
+      <body
+        className={inter.className}
+        style={{ height: '100%', minHeight: '100%' }}
+      >
+        <div id="portal"></div>
+        <ReactQueryClient>
+          <AppRouterCacheProvider>
+            <ThemeProvider theme={theme}>
               <UserStoreProvider>{children}</UserStoreProvider>
-            </ReactQueryClient>
-          </body>
-        </ThemeProvider>
-      </AppRouterCacheProvider>
+            </ThemeProvider>
+          </AppRouterCacheProvider>
+        </ReactQueryClient>
+      </body>
     </html>
   );
 }

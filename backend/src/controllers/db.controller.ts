@@ -23,12 +23,17 @@ import {
   handleFetchError,
   handlePrismaError,
 } from "../prisma/prismaHandlers/PrismaErrorHandlers.ts";
-import { createRoom, getUserJoinedRooms } from "../models/Rooms.ts";
+import {
+  createRoom,
+  getRoomMembers,
+  getUserJoinedRooms,
+} from "../models/Rooms.ts";
 import {
   createChannel,
   getChannelMessages,
   getRoomChannels,
 } from "../models/Channels.ts";
+import { addNewRoomMember } from "../models/RoomMember.ts";
 
 export interface AuthRequest extends Request {
   token?: {
@@ -41,18 +46,20 @@ export interface AuthRequest extends Request {
   };
 }
 
-export const addFriend = async (req: Request, res: Response) => {
+export const addFriendAction = async (req: Request, res: Response) => {
   try {
     console.log("request", req);
-    const { senderName, recieverName } = req.body;
-    console.log("senderName: ", senderName, "recieverName :", recieverName);
-    const friendRequest = await sendFriendRequest(senderName, recieverName);
-    if (!friendRequest?.success) {
-      return res.json({ success: false, msg: friendRequest?.msg });
-    }
+    const { senderId, receiverName } = req.body;
+    console.log("senderName: ", senderId, "recieverName :", receiverName);
+    const friendRequest = await sendFriendRequest(senderId, receiverName);
+    // if (!friendRequest?.success) {
+    //   return res.status(422).json({ success: false, msg: friendRequest?.msg });
+    // }
     return res.status(201).end();
   } catch (e) {
-    const { statusCode, message } = handlePrismaError(e, "friend");
+    const { statusCode, message,name, } = handlePrismaError(e, "friend");
+      console.error(`addFriendAction error handler : error type  ${name} , message ${message}`)
+     
     console.log(e);
     res.status(statusCode).json(message);
   }
@@ -95,16 +102,23 @@ export const acceptFriendRequestAction = async (
   req: AuthRequest,
   res: Response,
 ) => {
-  const { username } = req?.token!;
-  const { sender } = req.body;
-  console.log("friend request sender", sender);
-  const acceptFriendReq = await acceptFriendRequest(username);
-  console.log("acceptFriend", acceptFriendReq);
-  acceptFriendReq?.success
-    ? res.status(200).send()
-    : res
-        .status(500)
-        .json({ error: "something went wrong with accepting friend request" });
+  try {
+    // const { username } = req?.token!;
+    const { sender, receiverId, senderId } = req.body;
+    console.log("friend request sender", sender);
+    const acceptFriendReq = await acceptFriendRequest(receiverId, senderId);
+    console.log("acceptFriend", acceptFriendReq);
+    res.status(200).send();
+    // acceptFriendReq?.success
+    //   ? res.status(200).send()
+    //   : res.status(500).json({
+    //       error: "something went wrong with accepting friend request",
+    //     });
+  } catch (e) {
+    const { statusCode, message, name } = handlePrismaError(e, "friends");
+  
+    res.status(statusCode).json(message);
+  }
 };
 
 export const rejectFriendAction = async (req: Request, res: Response) => {
@@ -305,7 +319,10 @@ export const createChannelAction = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getRoomChannelsAction = async (req: AuthRequest, res: Response) => {
+export const getRoomChannelsAction = async (
+  req: AuthRequest,
+  res: Response,
+) => {
   try {
     const { roomUUID } = req.body;
     const channels = await getRoomChannels(roomUUID);
@@ -313,7 +330,7 @@ export const getRoomChannelsAction = async (req: AuthRequest, res: Response) => 
   } catch (e) {
     const { statusCode, message } = handlePrismaError(e, "channel");
     console.log(e);
-    res.status(statusCode).json(message); 
+    res.status(statusCode).json(message);
   }
 };
 
@@ -324,11 +341,35 @@ export const getChannelMessagesAction = async (
   try {
     const { channelId } = req.body;
     console.log(typeof channelId);
-    
+
     const channelMessages = await getChannelMessages(channelId);
     res.status(200).json(channelMessages);
   } catch (e) {
     const { statusCode, message } = handlePrismaError(e, "channel");
+    console.log(e);
+    res.status(statusCode).json(message);
+  }
+};
+
+export const addRoomMemberAction = async (req: AuthRequest, res: Response) => {
+  try {
+    const { userId, roomUUID, role } = req.body;
+    const newRoomMember = await addNewRoomMember(userId, roomUUID, role);
+    res.status(200).json(newRoomMember);
+  } catch (e) {
+    const { statusCode, message } = handlePrismaError(e, "roomMember");
+    console.log(e);
+    res.status(statusCode).json(message);
+  }
+};
+
+export const getRoomMembersAction = async (req: AuthRequest, res: Response) => {
+  try {
+    const { roomUUID } = req.body;
+    const roomMembers = await getRoomMembers(roomUUID);
+    res.status(200).json(roomMembers);
+  } catch (e) {
+    const { statusCode, message } = handlePrismaError(e, "roomMember");
     console.log(e);
     res.status(statusCode).json(message);
   }

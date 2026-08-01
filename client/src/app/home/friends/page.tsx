@@ -1,10 +1,9 @@
 'use client';
 import { Box, Typography } from '@mui/material';
-import Input from '@/app/shared/components/UI/Input';
-import Button from '@/app/shared/components/UI/Button';
-import useFriends from '@/app/shared/hooks/useFriends';
-import FriendsList from '@/app/features/friends/components/FriendsList';
-
+import Input from '@/shared/components/UI/Input';
+import Button from '@/shared/components/UI/Button';
+import useFriends from '@/shared/hooks/useFriends';
+import FriendsList from '@/entities/friends/ui/FriendsList';
 export default function page() {
   const { friends, selectedList, setList } = useFriends();
   console.log('friends', friends);

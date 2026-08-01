@@ -2,26 +2,28 @@
 import { Box } from '@mui/material';
 import { mainStyles } from '@/themes';
 import { Suspense } from 'react';
-import { getFriendSocketId } from '@/app/shared/lib/utils';
+import { getFriendSocketId } from '@/shared/lib/utils';
 import { useParams } from 'next/navigation';
 import { useUserStore } from '@/app/store/user-store';
-import { useMessageContext } from '@/app/features/messages/components/PrivateChatContext';
-import PrivateChatModal from '@/app/features/messages/components/PrivateChatModal';
-import Loading from '@/app/shared/components/UI/loading';
-import Portal from '@/app/shared/components/Portal';
-import PrivateChatComponent from '@/app/shared/components/PrivateChatComponent';
-import CallManager from '@/app/features/voice-call/components/CallManager';
+import Loading from '@/shared/components/UI/loading';
+import Portal from '@/shared/components/Portal';
+import PrivateChatComponent from '@/shared/components/PrivateChatComponent';
+import CallManager from '@/features/voice-call/ui/CallManager';
+import { useMessageContext } from '@/entities/messages/ui/PrivateChatContext';
+import PrivateChatModal from '@/entities/messages/ui/PrivateChatModal';
+import UseFriends from '@/entities/friends/api/useFriends';
 export default function PrivateChat() {
   const dynamicParam = useParams<{ friendId: string }>();
   const friendId = dynamicParam.friendId;
-  const { friends, profile } = useUserStore((state) => state);
+  const { profile } = useUserStore((state) => state);
+  const { friends } = UseFriends();
   const {
     uuid: friendUUID,
     username: friendName,
     profile_img,
-  } = getFriendSocketId(friendId, friends.all)!;
+  } = getFriendSocketId(friendId, friends)!;
   const { grey } = mainStyles;
-console.log(profile_img , friendName);
+  console.log(profile_img, friendName);
   const {
     clearActiveMessageMenuOptions,
     activeMenuOption,
@@ -47,7 +49,7 @@ console.log(profile_img , friendName);
         friendId={friendId}
         profile_img={profile_img}
       />
-    
+
       <Suspense fallback={<Loading />}>
         <PrivateChatComponent
           friendName={friendName}
