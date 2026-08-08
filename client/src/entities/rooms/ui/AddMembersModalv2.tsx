@@ -22,13 +22,12 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import CheckIcon from '@mui/icons-material/Check';
 import TagIcon from '@mui/icons-material/AlternateEmail';
 import SendIcon from '@mui/icons-material/Send';
-// import PersonAddIcon from '@mui/icons-material/PersonAddAlt1';
 import useAddRoomMember from '../api/useAddRoomMemberMutation';
 import { surfaceDialog, BORDER, ACCENT, ACCENT_HOVER } from '@/themes';
-import { useUserStore } from '@/app/store/user-store';
+import UseFriendsQuery from '@/entities/friends/api/useFriendsQuery';
+import RoomMember from './RoomMember';
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -71,33 +70,19 @@ export interface AddMembersModalProps {
 // Presentational helpers
 // ---------------------------------------------------------------------------
 
-const STATUS_COLOR: Record<MemberStatus, string> = {
+export const STATUS_COLOR: Record<MemberStatus, string> = {
   online: '#3fd68c',
   offline: '#6b7280',
   pending: '#f2b544',
 };
 
-const STATUS_LABEL: Record<MemberStatus, string> = {
+export  const STATUS_LABEL: Record<MemberStatus, string> = {
   online: 'Online',
   offline: 'Offline',
   pending: 'Pending',
 };
 
-function StatusDot({ status }: { status: MemberStatus }) {
-  return (
-    <Box
-      component="span"
-      sx={{
-        width: 9,
-        height: 9,
-        borderRadius: '50%',
-        bgcolor: STATUS_COLOR[status],
-        display: 'inline-block',
-        // boxShadow: (theme) => `0 0 0 2px ${theme.palette.background.paper}`,
-      }}
-    />
-  );
-}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -112,10 +97,10 @@ export default function AddMembersModal({
   roomUUID,
 }: AddMembersModalProps) {
   // add Room Member logic
-  const { friends } = useUserStore((state) => state);
+  const { friends } = UseFriendsQuery();
   console.log(friends);
   const { addMember } = useAddRoomMember();
-
+// filter friends not in the room . 
   // rest of  component
   const [query, setQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(
@@ -261,72 +246,7 @@ export default function AddMembersModal({
           {filteredMembers.map((member) => {
             const isSelected = selectedIds.has(member.id);
             return (
-              <ListItem
-                // onClick={()=>addMember({ roomUUID, role:'MEMBER', userId:'' })}
-                key={member.id}
-                sx={{
-                  px: 1,
-                  py: 0.75,
-                  borderRadius: 1.5,
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.03)' },
-                }}
-                secondaryAction={
-                  <Button
-                    size="small"
-                    variant={isSelected ? 'outlined' : 'contained'}
-                    disableElevation
-                    onClick={() => toggleMember(member.id)}
-                    startIcon={
-                      isSelected ? (
-                        <CheckIcon fontSize="small" />
-                      ) : (
-                        <PersonAddAlt1Icon fontSize="small" />
-                      )
-                    }
-                    sx={{
-                      textTransform: 'none',
-                      borderRadius: 5,
-                      minWidth: 92,
-                      fontWeight: 600,
-                      ...(isSelected
-                        ? {
-                            color: ACCENT,
-                            borderColor: ACCENT,
-                            bgcolor: 'transparent',
-                            '&:hover': {
-                              borderColor: ACCENT,
-                              bgcolor: 'rgba(59,124,246,0.08)',
-                            },
-                          }
-                        : {
-                            bgcolor: ACCENT,
-                            color: '#fff',
-                            '&:hover': { bgcolor: ACCENT_HOVER },
-                          }),
-                    }}
-                  >
-                    {isSelected ? 'Added' : 'Add'}
-                  </Button>
-                }
-              >
-                <ListItemAvatar>
-                  <Badge
-                    overlap="circular"
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                    badgeContent={<StatusDot status={member.status} />}
-                  >
-                    <Avatar src={member.avatarUrl} alt={member.name} />
-                  </Badge>
-                </ListItemAvatar>
-                <ListItemText
-                  primaryTypographyProps={{ color: 'white' }}
-                  primary={member.name}
-                  secondary={STATUS_LABEL[member.status]}
-                  secondaryTypographyProps={{
-                    sx: { color: STATUS_COLOR[member.status] },
-                  }}
-                />
-              </ListItem>
+          <RoomMember  member={member} />
             );
           })}
         </List>

@@ -4,7 +4,7 @@ import Modal from '@mui/material/Modal';
 import { useEffect, useState } from 'react';
 import { IMessageMenuOptionModalButton } from './MessageMenuOptionModalButton';
 import { useMessageContext } from './PrivateChatContext';
-import { togglePortalEffect } from '@/app/shared/lib/utils';
+import { togglePortalEffect } from '@/shared/lib/utils';
 const { grey } = mainStyles;
 const style = {
   position: 'absolute',

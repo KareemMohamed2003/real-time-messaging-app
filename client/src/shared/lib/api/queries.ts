@@ -1,4 +1,4 @@
-import { FriendRequest } from '@/features/accept-friend-request';
+import { AcceptedRequest } from '@/features/accept-friend-request';
 import {
   accept_friend_request_URL,
   add_Channel_URL,
@@ -8,6 +8,7 @@ import {
   delete_message_URL,
   get_channels_messages_URL,
   get_channels_URL,
+  get_roomMembers_URL,
   get_user_rooms_url,
   serverURL,
   update_message_URL,
@@ -31,18 +32,19 @@ export const getUserQuery = async () => {
   return userData;
 };
 
-export const getFriendsQuery = async () => {
+export const getFriendsQuery = async (cookieHeader?: string) => {
   const req = await fetch(user_friends_URL, {
     method: 'GET',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
     },
   });
   const userFriends = await req.json();
   console.log('userFriends', userFriends);
-  if (!userFriends.ok) {
-    throw new Error('Network response error for friendsQuery');
+  if (!req.ok) {
+    throw new Error('failed to fetch friends');
   }
   return userFriends;
 };
@@ -134,6 +136,7 @@ export const getRoomChannelsQuery = async (roomUUID: string) => {
     headers: jsonHeaders,
   });
   const res = await req.json();
+  console.log('room channels ', res);
   if (!req.ok) throw new Error(res);
   return res;
 };
@@ -159,25 +162,30 @@ export const getChannelMessagesQuery = async (channelId: number) => {
 
 export const sendFriendRequestQuery = async (
   userId: number,
-  friendVal: string
+  friendName: string
 ) => {
-  return await fetch(addFriendURL, {
+  const req = await fetch(addFriendURL, {
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify({
       senderId: userId,
-      recieverName: friendVal,
+      receiverName: friendName,
     }),
     headers: {
       'Content-Type': 'application/json',
     },
   });
+  const res = await req;
+  if (!req.ok) {
+    throw new Error('failed to send friendRequest');
+  }
+  return req;
 };
 
 export const acceptFriendRequestPostQuery = async ({
   senderId,
   receiverId,
-}: FriendRequest) => {
+}: AcceptedRequest) => {
   const acceptFriendRequest = await fetch(accept_friend_request_URL, {
     method: 'POST',
     credentials: 'include',
@@ -228,7 +236,7 @@ export const addNewRoomMemberQuery = async (
 };
 
 export const getRoomMembersQuery = async (roomUUID: string) => {
-  const req = await fetch(add_roomMember_URL, {
+  const req = await fetch(get_roomMembers_URL, {
     method: 'POST',
     body: JSON.stringify({ roomUUID }),
     credentials: 'include',

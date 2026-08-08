@@ -2,7 +2,7 @@ import { prisma } from "../prisma/prisma.ts";
 import {
   handleCreateRowError,
 } from "../prisma/prismaHandlers/PrismaErrorHandlers.ts";
-import { findOrCreateDirectChannel } from "./Channels.ts";
+import { findOrCreateDirectChannel } from "./model.channels.ts";
 export const createMessage = async (
   message: string,
   senderUUID: string,

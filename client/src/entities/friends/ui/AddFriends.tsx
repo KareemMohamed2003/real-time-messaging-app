@@ -26,20 +26,22 @@ export default function AddFriends() {
     mode: 'onSubmit',
   });
 
-  const { mutate, isPending } = useSendFriendRequest();
+  const { mutate, isPending, error: mutationError } = useSendFriendRequest();
 
   const onSubmit = (data: FriendRequestFormValues) => {
     mutate(
       {
-        username: profile!.username,
-        friendVal: data.friendInput,
-        uuid: profile!.uuid!,
+        userId: profile.id,
+        friendName: data.friendInput,
       },
       {
         onSuccess: () => {
           setSentTo(data.friendInput);
           reset();
         },
+        // onError:()=>{
+
+        // }
       }
     );
   };
@@ -72,7 +74,12 @@ export default function AddFriends() {
           {errors.friendInput.message}
         </Typography>
       )}
-
+      {/* this should be replaced with our error from the backend instead of this generic error */}
+      {mutationError && (
+        <Typography mt={2} fontWeight={'bold'} color={'red'}>
+          {`failed to send friend request `}
+        </Typography>
+      )}
       {sentTo && (
         <Typography mt={2} fontWeight={'bold'} color={'green'}>
           {`Success! your friend request to ${sentTo} was sent`}

@@ -3,7 +3,6 @@ import { serverURL } from '../constants';
 import { zustandStore } from '@/app/store/user-store';
 import { selectedFile } from '@/app/home/profile/page';
 import { User } from '@/shared/types/api.types';
-// import { friendForm } from '@/entities/friends/ui/AddFriends';
 interface FormElements extends HTMLFormControlsCollection {
   friendInput: HTMLInputElement;
 }

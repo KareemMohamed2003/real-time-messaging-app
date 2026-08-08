@@ -5,7 +5,7 @@ import { Box } from '@mui/material';
 import { useUserStore } from '@/app/store/user-store';
 import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { updateMessageQuery } from '@/app/shared/lib/api/queries';
+import { updateMessageQuery } from '@/shared/lib/api/queries';
 import { activeMenuOption, useMessageContext } from './PrivateChatContext';
 interface props {
   message: string;

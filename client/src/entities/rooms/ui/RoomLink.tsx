@@ -1,11 +1,13 @@
 import { Avatar, Box, Typography } from '@mui/material';
 import Link from 'next/link';
-import { Room } from '@/app/shared/types/api.types';
-
 //  the roomsLink or button takes the room name and the room image icon .
 // we maybe need to wrap the Custom link component around the RoomLink
 // if the room is gonna be rendered  via a link via getServerSide Props
-export default function RoomLink({ roomName, icon }: Room) {
+interface props {
+  roomName: string;
+  icon: string;
+}
+export default function RoomLink({ roomName, icon }: props) {
   return (
     <Link href={`/home/rooms/${roomName}`}>
       <Box

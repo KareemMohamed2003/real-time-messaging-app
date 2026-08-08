@@ -1,11 +1,10 @@
 'use client';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, {  useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useUserStore } from '@/app/store/user-store';
 import { Stack } from '@mui/material';
 import { socketClient } from '@/shared/lib/socket';
 import { useQueryClient } from '@tanstack/react-query';
-import Loading from '@/shared/components/UI/loading';
 import ChannelsSection from '@/entities/channels/ui/ChannelsSection';
 import UseRoom from '@/entities/rooms/api/useRoom';
 import AddMembersModalv2 from '@/entities/rooms/ui/AddMembersModalv2';
@@ -18,7 +17,6 @@ import UpdateChannelMessageCache from '@/shared/lib/UpdateChannelMessagesCache';
 export default function Room() {
   const [isOpen, setOpen] = useState<boolean>(false);
   const [displayAddMembers, setAddMembersDisplay] = useState<boolean>(false);
-
   const params = useParams<{ roomId: string }>();
   const roomId = params.roomId;
   const room = UseRoom(roomId)!;
@@ -179,16 +177,16 @@ export default function Room() {
       />
       {isOpen && <RoomMembers setOpen={setOpen} />}
 
-      <AddMembersModalv2
+      {/* <AddMembersModalv2
         roomLabel={room?.roomName}
         members={dummyMembers}
         open={displayAddMembers}
         onClose={onCloseAddMembersModal}
-      />
+      /> */}
 
-      <Suspense fallback={<Loading />}>
-        <ChannelsSection roomUUID={room?.roomUUID} uuid={profile?.uuid!} />
-      </Suspense>
+      
+          <ChannelsSection roomUUID={room?.roomUUID} uuid={profile?.uuid!} />
+    
     </Stack>
   );
 }

@@ -2,11 +2,12 @@
 import { Box, Typography } from '@mui/material';
 import Input from '@/shared/components/UI/Input';
 import Button from '@/shared/components/UI/Button';
-import useFriends from '@/shared/hooks/useFriends';
 import FriendsList from '@/entities/friends/ui/FriendsList';
-export default function page() {
-  const { friends, selectedList, setList } = useFriends();
-  console.log('friends', friends);
+import useFriendsQuery from '@/entities/friends/api/useFriendsQuery';
+import { socketClient } from '@/shared/lib/socket';
+import { useEffect, useState } from 'react';
+export default function FriendsContent() {
+  const [selectedList, setList] = useState<string>('all');
   console.log('selectedList', selectedList);
   const listBtns = [
     { text: 'all', color: '#535353', p: '3px 2px' },
@@ -14,7 +15,11 @@ export default function page() {
     { text: 'pending', color: '#B08310', p: '3px 10px' },
     { text: 'add Friend', color: '#239F6B', p: '3px 10px' },
   ];
-
+  const { friends, isLoading } = useFriendsQuery();
+  console.log(friends, isLoading);
+  useEffect(() => {
+    if (friends) socketClient.emit('friendsSessions', friends?.all);
+  }, [friends]);
   return (
     <Box
       height={'100%'}
@@ -60,7 +65,7 @@ export default function page() {
           </Button>
         ))}
       </Box>
-      <FriendsList selectedList={selectedList} />
+      <FriendsList friends={friends} selectedList={selectedList} />
     </Box>
   );
 }

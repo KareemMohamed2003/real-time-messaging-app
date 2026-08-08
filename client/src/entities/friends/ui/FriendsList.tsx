@@ -6,21 +6,18 @@ import AddFriends from './AddFriends';
 import { primaryBg } from '@/shared/lib/constants';
 import { IFriend } from '@/shared/types/api.types';
 import Friend from './Friend';
-import UseFriends from '../api/useFriends';
 interface FriendsListProps {
   selectedList: string;
+  friends:any;
 }
-export default function FriendsList({ selectedList }: FriendsListProps) {
-  // remeber to ask chat gpt what's the purpose of friends query Key
+export default function FriendsList({ selectedList,friends }: FriendsListProps) {
   const { onlineFriends } = useUserStore((state) => state);
-  const { friends } = UseFriends();
   const [list, setList] = useState<IFriend[] | undefined | null>(null);
   const router = useRouter();
   console.log(friends);
-  // in the friends List component we could 2 things either we fetch the online,offline friends etc.. /
-  // with something like getServerSideProps  or we could rely on our state when u load the app .
   useEffect(() => {
-    switch (selectedList) {
+  console.log(friends)
+      switch (selectedList) {
       case 'online':
         setList(onlineFriends!);
         break;
@@ -34,7 +31,7 @@ export default function FriendsList({ selectedList }: FriendsListProps) {
         setList(null);
         break;
     }
-  }, [selectedList, friends, list]);
+  }, [selectedList, friends]);
   console.log('selected friends list', list);
   // query the database for the selected users
   return (
@@ -67,7 +64,7 @@ export default function FriendsList({ selectedList }: FriendsListProps) {
                 component={'div'}
                 onClick={() => {
                   if (friend.request_status === 'ACCEPTED' || friend.connected)
-                    router.push(`/home/chats/${id}`);
+                    router.push(`friends/${id}`);
                 }}
               >
                 <Friend
@@ -77,8 +74,7 @@ export default function FriendsList({ selectedList }: FriendsListProps) {
                   status={friend.request_status}
                   isFriendRequestReceiver={friend.isRequestSender}
                   friendRequestSender={friend.senderName}
-                  receiverId={friend.receiverId}
-                  senderId={friend.senderId}
+                  friendId={friend.friendId}
                 />
               </Box>
             );

@@ -11,7 +11,7 @@ import { initSocketServer } from "./lib/sockets/socket.ts";
 import { checkDB } from "./lib/db.ts";
 import { checkSessionExpiry } from "./lib/helpers.ts";
 import { authorizeUser } from "./lib/middleware.ts";
-import { getUserJoinedRooms } from "./models/Rooms.ts";
+import { getUserJoinedRooms } from "./models/model.rooms.ts";
 const app = express();
 export const server = createServer(app);
 app.use(urlencoded({ extended: true })); // parsed  requests bodies .

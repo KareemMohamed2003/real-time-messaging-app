@@ -11,12 +11,11 @@ export class AppError {
 }
 /**
   Database-Specific NotFoundError .
-
    **/
 export class NotFoundError extends AppError {
   constructor(resource: string, customMessage?: string) {
     super(
-      customMessage ??  `${resource} not found`,
+      customMessage ?? `${resource} not found`,
       404,
       "RESOURCE_NOT_FOUND",
       "NotFoundError",

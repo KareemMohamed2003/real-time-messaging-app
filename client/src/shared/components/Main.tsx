@@ -1,5 +1,4 @@
 import React, { ReactNode, useEffect } from 'react';
-// import { initSocket } from '@/app/shared/lib/socket';
 import { initSocket } from '@/shared/lib/socket';
 import { Stack, Box } from '@mui/material';
 import { useUserStore } from '@/app/store/user-store';

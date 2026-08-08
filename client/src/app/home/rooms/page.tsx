@@ -76,7 +76,7 @@ export default function Rooms() {
         {/* render rooms */}
         {rooms?.map((el, index) => (
           <Grid item xs={6} key={index}>
-            <RoomLink roomName={el.room.roomName} image={el.icon} />
+            <RoomLink roomName={el.room.roomName} icon={el.icon} />
           </Grid>
         ))}
         {/* <RoomLink roomName={'slack'} image={slack.src} />

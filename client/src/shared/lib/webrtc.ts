@@ -1,8 +1,7 @@
 'use client';
+import { socketClient } from './socket';
 import { zustandStore } from '@/app/store/user-store';
 import { Socket } from 'socket.io-client';
-import { socketClient } from './socket';
-
 const signalingChannel = socketClient;
 export const RTCConfiguration = {
   iceServers: [

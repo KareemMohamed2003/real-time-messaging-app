@@ -1,9 +1,10 @@
 import { Box } from '@mui/material';
 import { mainStyles } from '@/themes';
-import { makeCall } from '@/app/shared/lib/webrtc';
+import { makeCall } from '@/shared/lib/webrtc';
 import { useUserStore } from '@/app/store/user-store';
 import CallIcon from '@mui/icons-material/Call';
-import User from '../../../shared/components/User';
+import User from '@/shared/components/User';
+
 interface props {
   friendName: string;
   profile_img: string;

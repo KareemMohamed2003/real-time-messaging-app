@@ -1,13 +1,13 @@
 import UserChats from './UserChats';
-import MessageForm from '../../features/messages/components/MessageForm';
-// import { TMessage } from '../app/store/types';
-import { TMessage } from '@/app/shared/types/api.types';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { getPrivateMessages } from '@/app/shared/lib/api/queries';
-import { convertToMap } from '@/app/shared/lib/utils';
 import { useEffect } from 'react';
 import { useUserStore } from '@/app/store/user-store';
-import { sendMessage } from '@/app/shared/lib/socket';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import MessageForm from '@/entities/messages/ui/MessageForm';
+import { getPrivateMessages } from '@/shared/lib/api/queries';
+import { sendMessage } from '@/shared/lib/socket';
+import { convertToMap } from '@/shared/lib/utils';
+import { TMessage } from '@/shared/types/api.types';
+
 export interface IPrivateChat {
   friendUUID: string;
   uuid: string;

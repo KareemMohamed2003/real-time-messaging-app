@@ -14,8 +14,9 @@ export const createSocketSession: createSocket = (expires_at, sessionId) => {
   );
 };
 
-export const getFriendSocketId = (friendId: string, friends: TFriend[]) => {
-  return friends.find((friend) => friend.uuid === friendId);
+export const getFriendSocketId = (friendId: string, friends: any[]) => {
+  console.log(friends)
+  return friends?.find((friend) => friend.uuid === friendId);
 };
 
 export const checkFileSize = (file: File) => {

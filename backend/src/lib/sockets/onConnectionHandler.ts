@@ -1,5 +1,5 @@
 import { DefaultEventsMap, Server } from "socket.io";
-import { createRoomMessage } from "../../models/Messages";
+import { createRoomMessage } from "../../models/model.messages";
 import { updatedConnectionStatus, findOnlineFriends } from "../db";
 import { ISocket } from "./socket";
 import {

@@ -23,6 +23,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/UserChats.tsx", "src/app/home/global-error.js", "src/components/messages/MessageContext.js", "src/app/lib/webrtc.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/shared/components/UserChats.tsx", "src/app/home/global-error.js", "src/app/shared/components/messages/MessageContext.js", "src/app/shared/lib/webrtc.ts"],
   "exclude": ["node_modules"]
 }

@@ -20,6 +20,7 @@ export const getRoomChannels = async (roomUUID: string) => {
       },
     },
   });
+  console.log('rooms_channels:',channels)
   return channels;
 };
 export const findOrCreateDirectChannel = async (

@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { IRoom } from '@/shared/types/api.types';
 import { useUserStore } from '@/app/store/user-store';
 import useRooms from './useRooms';
-
+// this need refactoring later 
 export default function UseRoom(roomId: string) {
   const { uuid } = useUserStore((state) => state.profile);
   const { rooms } = useRooms(uuid!);

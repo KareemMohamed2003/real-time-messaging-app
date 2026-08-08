@@ -1,3 +1,4 @@
+'use client'
 import { useContext } from 'react';
 import { createStore } from 'zustand/vanilla';
 import { useStore } from 'zustand';
@@ -21,7 +22,6 @@ export const defaultUserState = {
   },
   incomingCalls: new Map(),
   rooms: [],
-  // friends: { pending: [], all: [], online: [] },
   onlineFriends: [],
   profile: {
     username: '',

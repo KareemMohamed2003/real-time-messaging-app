@@ -41,7 +41,7 @@
     "@mui/icons-material": "^5.15.18",
     "@mui/material": "^5.15.18",
     "@mui/material-nextjs": "^5.15.11",
-    "@tanstack/react-query": "^5.66.0",
+    "@tanstack/react-query": "^5.101.4",
     "next": "14.2.2",
     "react": "^18",
     "react-dom": "^18",

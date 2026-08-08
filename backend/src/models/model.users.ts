@@ -17,7 +17,7 @@ type TFriend = {
   request_status: $Enums.friend_request_enum;
   uuid: string;
   isRequestSender: boolean;
-  profile_img:string
+  profile_img: string;
 };
 type TUserFriends = {
   all: any[];
@@ -38,7 +38,6 @@ type IFriendRequest = {
   createdAt: Date;
   senderName: string;
   receiverId: number;
-  email: string;
   receiverName: string;
   request_status: $Enums.friend_request_enum;
   senderId: number;
@@ -101,32 +100,32 @@ export const getLoggedUserData = async (username: string, email: string) => {
       email: email,
     },
   });
-  const friendsList = await getUserFriendsList(username, email);
-  return { ...user, friendsList };
+  // const friendsList = await getUserFriendsList(username, email);
+  return { ...user };
 };
 
-export const getUserFriendsList = async (username: string, email: string) => {
+export const getUserFriendsList = async (username: string) => {
   const friendRequests = await prisma.friends.findMany({
     include: {
       receiver: {
         select: { uuid: true, username: true, profile_img: true },
       },
-      sender: { select: { uuid: true, username: true, profile_img: true } },
+      sender: { select: { uuid: true, username: true, profile_img: true ,} },
     },
     where: {
-      OR: [{ request_status: "ACCEPTED" }, { request_status: "SENT" }],
+      AND: [
+        { OR: [{ request_status: "ACCEPTED" }, { request_status: "SENT" }] },
+        { OR: [{ senderName: username }, { receiverName: username }] },
+      ],
     },
   });
+
   // determine if user is sender or reciever
   const userFriends: TUserFriends = {
     all: [],
     pending: [],
   };
-  friendRequests.map((request) => {
-    const receiverName = request.receiverName;
-    const senderName = request.senderName;
-    const request_status = request.request_status;
-    const assignFriendRequests = (
+   const assignFriendRequests = (
       request: IFriendRequest,
       userFriends: TUserFriends,
       friendObj: TFriend,
@@ -135,6 +134,11 @@ export const getUserFriendsList = async (username: string, email: string) => {
         ? userFriends.all.push(friendObj)
         : userFriends.pending.push(friendObj);
     };
+  friendRequests.map((request) => {
+    const receiverName = request.receiverName;
+    const senderName = request.senderName;
+    const request_status = request.request_status;
+   
     if (senderName === username) {
       const receiver = {
         username: receiverName,
@@ -159,9 +163,6 @@ export const getUserFriendsList = async (username: string, email: string) => {
       assignFriendRequests(request, userFriends, sender);
     }
   });
-
-  // console.log("friendRquest grok : ", friendRequests);
-
   return userFriends;
 };
 
@@ -171,9 +172,9 @@ export const getUserData = async (userId: string) => {
       where: {
         uuid: userId,
       },
-      include:{
-        roomMemberships:true
-      }
+      include: {
+        roomMemberships: true,
+      },
     });
     return userData;
   } catch (error) {
@@ -198,7 +199,5 @@ export const updateUser = async (profileImg: string | null, uuid: string) => {
     console.log("error at updateUser() ", e);
     // return false;
     // create an update handler for Errors .
-  } 
+  }
 };
-
-

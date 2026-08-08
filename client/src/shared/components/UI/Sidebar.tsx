@@ -6,7 +6,6 @@ import FriendsIcon from '@/shared/components/icons/FriendsIcon';
 import SettingsIcon from '@/shared/components/icons/SettingsIcon';
 import NotificationsIcon from '@/shared/components/icons/NotificationsIcon';
 import RoomsIcon from '@/shared/components/icons/RoomsIcon';
-// import LogoutIcon from '@/components/icons/LogoutIcon';
 import { mainStyles } from '@/themes';
 import { useUserStore } from '@/app/store/user-store';
 import { useRouter } from 'next/navigation';
