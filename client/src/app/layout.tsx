@@ -1,11 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from '../themes';
 import { Inter } from 'next/font/google';
-import UserStoreProvider from './store/StoreContextProvider';
-import ReactQueryClient from './shared/lib/api/QueryClient';
+import Providers from './providers';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -20,16 +16,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <meta name="viewport" content="initial-scale=1, width=device-width" />
-      <AppRouterCacheProvider>
-        <ThemeProvider theme={theme}>
-          <body className={inter.className}>
-            <div id="portal"></div>
-            <ReactQueryClient>
-              <UserStoreProvider>{children}</UserStoreProvider>
-            </ReactQueryClient>
-          </body>
-        </ThemeProvider>
-      </AppRouterCacheProvider>
+      <body
+        className={inter.className}
+        style={{ height: '100%', minHeight: '100%' }}
+      >
+        <div id="portal"></div>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

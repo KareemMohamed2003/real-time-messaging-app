@@ -54,21 +54,30 @@ enum friend_request_enum {
   ACCEPTED
 }
 
+// 3. Denormalized senderName / receiverName.
+// You're storing both the ID and the username string. That's fine for read performance, but if a user renames themselves, these fields silently go stale unless you have a mechanism to keep them in sync (trigger, application-level update-on-rename, or accept they're a snapshot at request-time).
+//  Worth being intentional about which behavior you want — right now it looks like it'd just quietly drift.
+
 model Friends {
   id             Int                 @id @default(autoincrement())
   createdAt      DateTime            @default(now())
   senderName     String
-  receiverId     Int //  we may remove this field later since we are gonna add friend_name later 
-  email          String // we may not need this also 
+  receiverId     Int
   receiverName   String
   request_status friend_request_enum
-  receiver       Users?              @relation("userAsFriend", fields: [receiverId], references: [id]) // friendBy
-  sender         Users?              @relation("userAsSender", fields: [senderId], references: [id]) // friends
+  receiver       Users               @relation("userAsFriend", fields: [receiverId], references: [id]) // friendBy
+  sender         Users               @relation("userAsSender", fields: [senderId], references: [id]) // friends
   senderId       Int
+  // Ordered pair for uniqueness: userAId = min(senderId, receiverId), userBId = max(senderId, receiverId)
+  userAId        Int
+  userBId        Int
 
-  @@unique([senderId, receiverId])
+  @@unique([userAId, userBId])
+  @@index([senderId]) // backs  the  senderId FK independently
+  @@index([receiverId]) //  backs  the  receiverId FK independently
 }
 
+// select 
 model Messages {
   id           Int      @id @default(autoincrement())
   channelId    Int
@@ -100,7 +109,8 @@ model Channel {
   messages            Messages[]
   channelParticipants ChannelParticipant[]
 
-  @@index([type]) // helps when filtering DMs vs room channels
+  // in the future  only specific users will have access to certain channels  
+  @@index([type]) // helps when filtering DMs vs room channels(better performance)
 }
 
 model Rooms {
@@ -121,5 +131,7 @@ model RoomMember {
   room     Rooms    @relation(fields: [roomUUID], references: [roomUUID])
   user     Users    @relation(fields: [userId], references: [uuid])
 
+  // memberStatus : ` INVITIED , ACTIVE  
+  // add a pending invite here later as we will need it 
   @@id([roomUUID, userId])
 }

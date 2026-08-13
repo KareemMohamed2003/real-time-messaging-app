@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import {
-  addFriend,
+  addFriendAction,
   getLoggedUserAction,
   acceptFriendRequestAction,
   getFriendsAction,
@@ -16,12 +16,16 @@ import {
   createChannelAction,
   getRoomChannelsAction,
   getChannelMessagesAction,
+  addRoomMemberAction,
+  rejectFriendAction,
+  getRoomMembersAction,
 } from "../controllers/db.controller.ts";
 const userRouter = Router();
 const multerUpload = multer({ storage: multer.memoryStorage() });
-userRouter.post("/add_friend", addFriend);
+userRouter.post("/add_friend", addFriendAction);
 userRouter.get("/me", getLoggedUserAction);
 userRouter.post("/accept_friend_request", acceptFriendRequestAction);
+userRouter.post("/reject_friend_request", rejectFriendAction);
 userRouter.get("/friends", getFriendsAction);
 userRouter.get("/profile/:id", getUserAction);
 userRouter.get("/private-messages/:userId/:friendId", getPrivateMessagesAction);
@@ -38,4 +42,7 @@ userRouter.post("/get_rooms", getUserJoinedRoomsAction);
 userRouter.post("/add_channel", createChannelAction);
 userRouter.post("/get_channels", getRoomChannelsAction);
 userRouter.post("/get_channel_messages", getChannelMessagesAction);
+userRouter.post("/add_room_member", addRoomMemberAction);
+userRouter.post("/get_room_members", getRoomMembersAction);
+
 export default userRouter;

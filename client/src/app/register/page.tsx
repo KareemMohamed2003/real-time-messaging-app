@@ -1,8 +1,9 @@
 'use client';
-import Button from '@/app/shared/components/UI/Button';
 import { Stack, Typography, Box, CircularProgress } from '@mui/material';
-import Input from '@/app/shared/components/UI/Input';
-import useRegister from '../shared/lib/useRegister';
+import Button from '@/shared/components/UI/Button';
+import Input from '@/shared/components/UI/Input';
+import useRegister from '@/features/authentication/api/useRegister';
+
 export default function RegisterPage() {
   const [formState, dispatchForm] = useRegister();
   return (

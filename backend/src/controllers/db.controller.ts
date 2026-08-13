@@ -3,18 +3,18 @@ import {
   acceptFriendRequest,
   rejectFriendRequest,
   sendFriendRequest,
-} from "../models/Friends.ts";
+} from "../models/model.friends.ts";
 import {
   getLoggedUserData,
   getUserData,
   getUserFriendsList,
   updateUser,
-} from "../models/Users.ts";
+} from '../models/model.users.ts';
 import {
   deleteMessage,
   getPrivateMessages,
   updateMessage,
-} from "../models/Messages.ts";
+} from "../models/model.messages.ts";
 import { Readable } from "stream";
 import cloudinary from "../lib/cloudinary/cloudinary.ts";
 import { deleteCloudinaryImage } from "../lib/cloudinary/cloudinary.ts";
@@ -23,12 +23,16 @@ import {
   handleFetchError,
   handlePrismaError,
 } from "../prisma/prismaHandlers/PrismaErrorHandlers.ts";
-import { createRoom, getUserJoinedRooms } from "../models/Rooms.ts";
+import {
+  createRoom,
+  getUserJoinedRooms,
+} from "../models/model.rooms.ts";
 import {
   createChannel,
   getChannelMessages,
   getRoomChannels,
-} from "../models/Channels.ts";
+} from "../models/model.channels.ts";
+import { addNewRoomMember, getRoomMembers } from "../models/model.RoomMember.ts";
 
 export interface AuthRequest extends Request {
   token?: {
@@ -41,23 +45,6 @@ export interface AuthRequest extends Request {
   };
 }
 
-export const addFriend = async (req: Request, res: Response) => {
-  try {
-    console.log("request", req);
-    const { senderName, recieverName } = req.body;
-    console.log("senderName: ", senderName, "recieverName :", recieverName);
-    const friendRequest = await sendFriendRequest(senderName, recieverName);
-    if (!friendRequest?.success) {
-      return res.json({ success: false, msg: friendRequest?.msg });
-    }
-    return res.status(201).end();
-  } catch (e) {
-    const { statusCode, message } = handlePrismaError(e, "friend");
-    console.log(e);
-    res.status(statusCode).json(message);
-  }
-};
-
 export const getLoggedUserAction = async (req: AuthRequest, res: Response) => {
   try {
     const { username, email } = req?.token!;
@@ -68,7 +55,6 @@ export const getLoggedUserAction = async (req: AuthRequest, res: Response) => {
       username: userData?.username,
       email: userData?.email,
       profile_img: userData?.profile_img,
-      friends: userData.friendsList,
       uuid: userData.uuid,
       id: userData.id,
     };
@@ -90,41 +76,66 @@ export const getLoggedUserAction = async (req: AuthRequest, res: Response) => {
   //   "status": 1
   // }
 };
+export const addFriendAction = async (req: Request, res: Response) => {
+  try {
+    console.log("request", req);
+    const { senderId, receiverName } = req.body;
+    console.log("senderName: ", senderId, "recieverName :", receiverName);
+    if (!senderId) res.status(400).json("senderID missing");
+    if (!receiverName) res.status(400).json("receiverName missing");
+    const friendRequest = await sendFriendRequest(senderId, receiverName);
+    return res.status(201).end();
+  } catch (e) {
+    const { statusCode, message, name } = handlePrismaError(e, "friend");
+    console.error(
+      `addFriendAction error handler : error type  ${name} , message ${message}`,
+    );
+    // we can check here if the type of error is a conflict error from friends table
+    // maybe have a payload of what's being sent from the client side
+    //
+    console.log(e);
+    res.status(statusCode).json(message);
+  }
+};
 
 export const acceptFriendRequestAction = async (
   req: AuthRequest,
   res: Response,
 ) => {
-  const { username } = req?.token!;
-  const { sender } = req.body;
-  console.log("friend request sender", sender);
-  const acceptFriendReq = await acceptFriendRequest(username);
-  console.log("acceptFriend", acceptFriendReq);
-  acceptFriendReq?.success
-    ? res.status(200).send()
-    : res
-        .status(500)
-        .json({ error: "something went wrong with accepting friend request" });
+  try {
+    const { sender, receiverId, senderId } = req.body;
+    console.log("friend request sender", sender);
+    const acceptFriendReq = await acceptFriendRequest(senderId, receiverId);
+    console.log("acceptFriend", acceptFriendReq);
+    res.status(200).send();
+  } catch (e) {
+    const { statusCode, message, name } = handlePrismaError(e, "friends");
+    res.status(statusCode).json(message);
+  }
 };
 
 export const rejectFriendAction = async (req: Request, res: Response) => {
-  const { username } = req.body;
-  const rejectFriend = await rejectFriendRequest(username);
-  rejectFriend?.success
-    ? res.status(200).send()
-    : res.status(500).send({
-        msg: "failed to reject Friend request",
-      });
+  try {
+    const { senderId, receiverId } = req.body;
+    const rejectFriend = await rejectFriendRequest(senderId, receiverId);
+    res.status(200).send();
+  } catch (e) {
+    const { statusCode, message } = handlePrismaError(e, "friends");
+    res.status(statusCode).json(message);
+  }
 };
 
 export const getFriendsAction = async (req: AuthRequest, res: Response) => {
   try {
-    const { username, email } = req.token!;
-    const friendsList = await getUserFriendsList(username, email);
+    const { username } = req.token!;
+    console.log(username)
+    const friendsList = await getUserFriendsList(username);
+    console.log('friendsList', friendsList)
     return res.json({ ...friendsList });
-  } catch (e) {
-    console.log("error at getFriendsAction()", e);
-    res.status(500).end();
+  } catch (error) {
+    console.log("error at getFriendsAction()", error);
+    const { message, statusCode } = handlePrismaError(error, "friends");
+    res.status(statusCode).json(message);
   }
 };
 
@@ -137,8 +148,10 @@ export const getUserAction = async (req: AuthRequest, res: Response) => {
     return res.json(userData);
   } catch (error) {
     console.log("an Error occured at getUserData()", error);
-    console.log(error);
-    res.status(500).json(error);
+    // console.log(error);
+    // res.status(500).json(error);
+    const { message, statusCode } = handlePrismaError(error, "friends");
+    res.status(statusCode).json(message);
   }
 };
 
@@ -305,7 +318,10 @@ export const createChannelAction = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getRoomChannelsAction = async (req: AuthRequest, res: Response) => {
+export const getRoomChannelsAction = async (
+  req: AuthRequest,
+  res: Response,
+) => {
   try {
     const { roomUUID } = req.body;
     const channels = await getRoomChannels(roomUUID);
@@ -313,7 +329,7 @@ export const getRoomChannelsAction = async (req: AuthRequest, res: Response) => 
   } catch (e) {
     const { statusCode, message } = handlePrismaError(e, "channel");
     console.log(e);
-    res.status(statusCode).json(message); 
+    res.status(statusCode).json(message);
   }
 };
 
@@ -324,11 +340,35 @@ export const getChannelMessagesAction = async (
   try {
     const { channelId } = req.body;
     console.log(typeof channelId);
-    
+
     const channelMessages = await getChannelMessages(channelId);
     res.status(200).json(channelMessages);
   } catch (e) {
     const { statusCode, message } = handlePrismaError(e, "channel");
+    console.log(e);
+    res.status(statusCode).json(message);
+  }
+};
+
+export const addRoomMemberAction = async (req: AuthRequest, res: Response) => {
+  try {
+    const { userId, roomUUID, role } = req.body;
+    const newRoomMember = await addNewRoomMember(userId, roomUUID, role);
+    res.status(200).json(newRoomMember);
+  } catch (e) {
+    const { statusCode, message } = handlePrismaError(e, "roomMember");
+    console.log(e);
+    res.status(statusCode).json(message);
+  }
+};
+
+export const getRoomMembersAction = async (req: AuthRequest, res: Response) => {
+  try {
+    const { roomUUID } = req.body;
+    const roomMembers = await getRoomMembers(roomUUID);
+    res.status(200).json(roomMembers);
+  } catch (e) {
+    const { statusCode, message } = handlePrismaError(e, "roomMember");
     console.log(e);
     res.status(statusCode).json(message);
   }

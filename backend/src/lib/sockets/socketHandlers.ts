@@ -1,5 +1,5 @@
 import { DefaultEventsMap, Server } from "socket.io";
-import { createMessage } from "../../models/Messages";
+import { createMessage } from "../../models/model.messages";
 import { resendPendingCall } from "../helpers";
 import { ISocket } from "./socket";
 

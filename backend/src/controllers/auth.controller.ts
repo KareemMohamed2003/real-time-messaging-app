@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { signInUser, registerUser } from "../models/Users.ts";
+import { signInUser, registerUser } from "../models/model.users.ts";
 import { generateEncryptedJwt } from "../lib/auth/auth.js";
 import { randomId } from "../lib/helpers.ts";
 import { AuthRequest } from "./db.controller.ts";

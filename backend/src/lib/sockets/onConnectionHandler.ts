@@ -1,5 +1,5 @@
 import { DefaultEventsMap, Server } from "socket.io";
-import { createRoomMessage } from "../../models/Messages";
+import { createRoomMessage } from "../../models/model.messages";
 import { updatedConnectionStatus, findOnlineFriends } from "../db";
 import { ISocket } from "./socket";
 import {
@@ -69,9 +69,13 @@ export const onConnection = async (
         if (callback) callback({ sent: false, error: "Bad Request" });
         return;
       }
-      await createRoomMessage(message, senderUUID, channelId);
-      socket.to(channelId).emit("channel:message", channelId, message);
-      if (callback) callback({ sent: true, message });
+      const newMessage = await createRoomMessage(
+        message,
+        senderUUID,
+        channelId,
+      );
+      socket.to(channelId).emit("channel:message", channelId, newMessage);
+      if (callback) callback({ sent: true, message: newMessage });
     }),
   );
   /// events (channel:join , channel:leave)  channel:send ,channel:edit  we also need events for connection status for each user

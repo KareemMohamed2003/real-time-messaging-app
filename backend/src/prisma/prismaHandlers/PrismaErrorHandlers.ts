@@ -2,8 +2,15 @@ import {
   PrismaClientInitializationError,
   PrismaClientKnownRequestError,
   PrismaClientRustPanicError,
+  PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
-import { ConflictError, DatabaseError, NotFoundError } from "./AppError";
+import {
+  AppError,
+  BadRequestError,
+  ConflictError,
+  DatabaseError,
+  NotFoundError,
+} from "./AppError";
 export const handleRegisterationError = (error: unknown) => {
   const errorMsg = { username: "", email: "", other: "" };
   if (error instanceof PrismaClientKnownRequestError) {
@@ -78,6 +85,9 @@ export const handlePrismaError = (
   modelName: string,
   errorInfo?: Record<string, { status: number; message: string }>,
 ) => {
+  if (error instanceof AppError) {
+    return error;
+  }
   if (error instanceof PrismaClientKnownRequestError) {
     console.error(error);
     switch (error.code) {
@@ -96,7 +106,13 @@ export const handlePrismaError = (
     error instanceof PrismaClientRustPanicError
   ) {
     return new DatabaseError();
+  } else if (error instanceof PrismaClientValidationError) {
+    return new BadRequestError(modelName);
   }
-  return new DatabaseError();
+  return new AppError(
+    "an expected internal  error occured with our service",
+    500,
+    "INTERNAL_ERROR",
+    "App Error",
+  );
 };
-//

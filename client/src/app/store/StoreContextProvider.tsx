@@ -11,7 +11,7 @@ export const userStoreContext = createContext<userStoreApi | undefined>(
 export default function UserStoreProvider({ children }: props) {
   const storeRef = useRef<userStoreApi>();
   if (!storeRef.current) {
-    storeRef.current = createUserStore();
+    storeRef.current = createUserStore(); 
   }
 
   return (
