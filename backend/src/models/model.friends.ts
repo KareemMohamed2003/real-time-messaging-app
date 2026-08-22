@@ -95,6 +95,7 @@ export const acceptFriendRequest = async (
         userAId,
         userBId,
       },
+      request_status:"SENT"
     },
     data: {
       request_status: "ACCEPTED",
@@ -114,6 +115,7 @@ export const rejectFriendRequest = async (
         userAId,
         userBId,
       },
+        request_status:"SENT"
     },
     data: {
       request_status: "REJECTED",

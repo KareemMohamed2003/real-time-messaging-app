@@ -2,14 +2,13 @@
 'use client';
 import theme from '@/themes';
 import {
-  environmentManager,
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import UserStoreProvider from './store/StoreContextProvider';
-import { getQueryClient } from '@/shared/lib/api/getQueryClient';
+import { getQueryClient } from '@/shared/api/getQueryClient';
 export function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {

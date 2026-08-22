@@ -14,8 +14,20 @@ import {
   update_message_URL,
   user_friends_URL,
   userProfileURL,
-} from '../constants';
-import { requestAborter } from '../utils';
+} from '@/shared/lib/constants';
+import { requestAborter } from '@/shared/lib/utils';
+import { IRoomMember } from '@/shared/types/api.types';
+
+
+export const queryHandler =()=>{
+  //method ,
+  // default headers ,custom headers if required 
+  // url
+  /// should use custom error classes .
+  // cookie header if required for server side fetching 
+  // aborter property if required 
+
+} 
 const jsonHeaders = {
   'Content-Type': 'application/json',
 };
@@ -56,7 +68,9 @@ export const getPrivateMessages = async (
 ) => {
   const req = await fetch(
     `${serverURL}/user/private-messages/${uuid}/${friendId}?messageId=${messageId}`,
+    
     {
+      
       credentials: 'include',
       headers: jsonHeaders,
     }
@@ -218,14 +232,10 @@ export const deleteProfilePicDeleteQuery = async () => {
   });
 };
 
-export const addNewRoomMemberQuery = async (
-  roomUUID: string,
-  role: string,
-  userId: string
-) => {
+export const addNewRoomMemberQuery = async (newMembers: IRoomMember[]) => {
   const req = await fetch(add_roomMember_URL, {
     method: 'POST',
-    body: JSON.stringify({ roomUUID, role, userId }),
+    body: JSON.stringify({ newMembers }),
     credentials: 'include',
     headers: jsonHeaders,
   });

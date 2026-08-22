@@ -78,21 +78,3 @@ export const createChannelParticipant = async (
   });
   return channelParticipant;
 };
-// channel particpants should be the user
-// enum ChannelType {
-//   TEXT // normal channel in a Room/server
-//   VOICE
-//   DIRECT_MESSAGE
-// }
-
-// model Channel {
-//   channelId           Int                  @id @default(autoincrement())
-//   roomUUID            String?
-//   channelName         String?
-//   type                ChannelType          @default(DIRECT_MESSAGE)
-//   room                Rooms?               @relation(fields: [roomUUID], references: [roomUUID])
-//   message             Messages[]
-//   channelParticipants ChannelParticipant[]
-
-//   @@index([type]) // helps when filtering DMs vs room channels
-// }

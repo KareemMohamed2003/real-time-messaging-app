@@ -1,4 +1,4 @@
-import { User ,TMessage,IRoom} from "@/shared/types/api.types";
+import { User ,TMessage} from "@/shared/types/api.types";
 
 // export type TMessage = {
 //   id: number | null;
@@ -20,14 +20,14 @@ export type tCall = {
 export type TRequestStatus = 'ACCEPTED' | 'PENDING' | 'REJECTED';
 export type TCallState = TRequestStatus | null | 'OUT-GOING';
 // THIS TYPE MAYE NEED TO BE REFACTORED LATER ON 
-export type TFriend = {
-  username: string;
+export interface TOnlineFriend  {
+  username: string
   friendId: number;
   request_status: TRequestStatus;
   uuid: string;
   is_online?: boolean;
-  iSender: boolean;
   profile_img: string;
+  // iSender: boolean;
 };
 
 export type UserState = {
@@ -35,13 +35,7 @@ export type UserState = {
   localPeer: RTCPeerConnection;
   incomingCalls: Map<string, tCall>;
   rooms: any[];
-  // friends: {
-  //   online?: TFriend[];
-  //   pending: TFriend[];
-  //   all: TFriend[];
-  // };
-
-  onlineFriends: TFriend[];
+  onlineFriends: TOnlineFriend[];
   profile: User;
   notifications: any[];
   privateMessages: Map<number, any>;
@@ -54,7 +48,7 @@ export type TNotification = {
 export type userActions = {
   setRooms: (rooms: []) => void;
   setProfile: (userProfile: User) => void;
-  setOnlineFriends: (friends: any) => void;
+  setOnlineFriends: (friends: TOnlineFriend[]) => void;
   updateOnlineFriends: (newFriends: any) => void;
   setNotification: (notifications: TNotification) => void;
   loadMessages: (messages: Map<number, any>) => void;
@@ -79,23 +73,5 @@ export type userActions = {
   toggleMic: () => void;
   registerPeerListeners: () => void;
 };
-// export type TRoom = {
-//   name: string;
-//   roomName: String;
-//   roomUUID: String;
-//   icon: String;
-//   ownerId: String;
-//   members: RoomMember[];
-// };
-// export type RoomMember = {
-//   roomUUID: String;
-//   userId: String;
-//   role: userRole;
-// };
 
-export type roomActions = {
-  addRoom: (newRoom: IRoom) => void;
-  deleteRoom: () => void;
-  updateRoom: () => void;
-};
-export type RoomStore = { rooms: Map<String, IRoom> } & roomActions;
+

@@ -1,8 +1,6 @@
 'use client';
 import { Box } from '@mui/material';
-import { mainStyles } from '@/themes';
 import { Suspense } from 'react';
-// import { getFriendSocketId } from '@/shared/lib/utils';
 import { useParams } from 'next/navigation';
 import { useUserStore } from '@/app/store/user-store';
 import Loading from '@/shared/components/UI/loading';
@@ -17,7 +15,7 @@ export default function PrivateChat() {
   const dynamicParam = useParams<{ friendId: string }>();
   const friendId = dynamicParam.friendId;
   const { profile } = useUserStore((state) => state);
-  const { friends, isLoading } = UseFriendsQuery();
+  const { friends } = UseFriendsQuery();
   const {
     clearActiveMessageMenuOptions,
     activeMenuOption,
@@ -30,7 +28,6 @@ export default function PrivateChat() {
     friendId,
     friends?.all
   );
-
 
   return (
     <Box

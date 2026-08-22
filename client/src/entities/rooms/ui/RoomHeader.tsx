@@ -1,24 +1,24 @@
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import GroupIcon from '@mui/icons-material/Group';
-import { Box, Typography } from '@mui/material';
 import Input from '@/shared/components/UI/Input';
+import { Box, Typography } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 
 interface props {
   roomName: string;
   setAddMembersDisplay: Dispatch<SetStateAction<boolean>>;
-  iconsStyle: Record<string, string>;
   setOpen: Dispatch<SetStateAction<boolean>>;
   displayAddMembers: boolean;
   isOpen: boolean;
 }
+const iconsStyle = { color: '#545454', fontSize: '2.5rem' };
+
 export default function RoomHeader({
   roomName,
   setAddMembersDisplay,
-  iconsStyle,
   isOpen,
   displayAddMembers,
-  setOpen
+  setOpen,
 }: props) {
   return (
     <Box
@@ -49,8 +49,6 @@ export default function RoomHeader({
         />
         <GroupIcon onClick={() => setOpen(!isOpen)} sx={iconsStyle} />
       </Box>
-       
     </Box>
-    
   );
 }

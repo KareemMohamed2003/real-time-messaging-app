@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
-import { createChannelQuery } from '@/shared/lib/api/queries';
+import { createChannelQuery } from '@/shared/api/queries';
+import { channelKeys } from '@/shared/api/QueryKeys';
 import { z } from 'zod';
 interface props {
   roomUUID: string;
@@ -21,13 +22,12 @@ export default function useAddChannels({ roomUUID, closeChannelForm }: props) {
   const query = async ({ type, channelName, roomUUID }: any) => {
     return await createChannelQuery(roomUUID, type, channelName);
   };
-
   const { mutate } = useMutation({
     mutationFn: query,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['channel'] });
+      queryClient.invalidateQueries({ queryKey: channelKeys.all(roomUUID) });
       reset();
-      closeChannelForm();
+      // closeChannelForm();
     },
     onError: (error) => {
       console.log(error);
@@ -38,7 +38,7 @@ export default function useAddChannels({ roomUUID, closeChannelForm }: props) {
     reset,
     register,
     setError,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors },
   } = useForm<channelForm>({
     resolver: zodResolver(createChannelSchema),
     mode: 'onSubmit',

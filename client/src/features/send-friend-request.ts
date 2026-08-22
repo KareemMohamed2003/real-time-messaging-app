@@ -1,4 +1,4 @@
-import { sendFriendRequestQuery } from '@/shared/lib/api/queries';
+import { sendFriendRequestQuery } from '@/shared/api/queries';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 type FriendRequest = {
   userId: number;

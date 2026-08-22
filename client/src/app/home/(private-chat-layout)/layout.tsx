@@ -1,6 +1,6 @@
-import { getQueryClient } from '@/shared/lib/api/getQueryClient';
-import { getFriendsQuery } from '@/shared/lib/api/queries';
-import { friendsKeys } from '@/shared/lib/api/QueryKeys';
+import { getQueryClient } from '@/shared/api/getQueryClient';
+import { getFriendsQuery } from '@/shared/api/queries';
+import { friendsKeys } from '@/shared/api/QueryKeys';
 import { cookies } from 'next/headers';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 export default async function PrivateChatLayout({
@@ -13,10 +13,10 @@ export default async function PrivateChatLayout({
   const cookieHeader = cookieStore.toString();
   const queryClient = getQueryClient();
 
- await queryClient.fetchQuery({
-      queryKey: [friendsKeys.defaultKey],
-      queryFn: () => getFriendsQuery(cookieHeader),
-    });  
+  await queryClient.fetchQuery({
+    queryKey: friendsKeys.defaultKey,
+    queryFn: () => getFriendsQuery(cookieHeader),
+  });
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       {children}

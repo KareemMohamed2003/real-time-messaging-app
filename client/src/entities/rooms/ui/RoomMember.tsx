@@ -1,44 +1,28 @@
 import { ACCENT, ACCENT_HOVER } from '@/themes';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  InputAdornment,
-  List,
-  IconButton,
-  Typography,
-  Box,
-  Divider,
-  Stack,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Avatar,
-  Badge,
-  Button,
+  Checkbox,
 } from '@mui/material';
-import { STATUS_LABEL } from './AddMembersModalv2';
+import { IAddableRoomMember, STATUS_LABEL } from '../../../features/add-room-member/ui/AddMembersModalv2';
 import CheckIcon from '@mui/icons-material/Check';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import StatusDot from './StatusDot';
-import {  User } from '@/shared/types/api.types';
+
 interface props {
-  member: User;
+  member: IAddableRoomMember;
   isSelected: boolean;
-  toggleMember: (id: any) => any;
+  toggleMember: (id: string, roomMember: IAddableRoomMember) => any;
 }
-export default function RoomMember({
+export default function AddableRoomMember({
   member,
   isSelected,
   toggleMember,
 }: props) {
- 
   return (
     <ListItem
-      // onClick={()=>addMember({ roomUUID, role:'MEMBER', userId:'' })}
-      key={member.userId}
+      key={member.uuid}
       sx={{
         px: 1,
         py: 0.75,
@@ -46,60 +30,29 @@ export default function RoomMember({
         '&:hover': { bgcolor: 'rgba(255,255,255,0.03)' },
       }}
       secondaryAction={
-        <Button
-          size="small"
-          variant={isSelected ? 'outlined' : 'contained'}
-          disableElevation
-          onClick={() => toggleMember(member.id)}
-          startIcon={
-            isSelected ? (
-              <CheckIcon fontSize="small" />
-            ) : (
-              <PersonAddAlt1Icon fontSize="small" />
-            )
-          }
+        <Checkbox
+          checked={isSelected}
+          onChange={() => toggleMember(member.uuid, member)}
+          icon={<PersonAddAlt1Icon fontSize="small" />}
+          checkedIcon={<CheckIcon fontSize="small" />}
           sx={{
-            textTransform: 'none',
-            borderRadius: 5,
-            minWidth: 92,
-            fontWeight: 600,
-            ...(isSelected
-              ? {
-                  color: ACCENT,
-                  borderColor: ACCENT,
-                  bgcolor: 'transparent',
-                  '&:hover': {
-                    borderColor: ACCENT,
-                    bgcolor: 'rgba(59,124,246,0.08)',
-                  },
-                }
-              : {
-                  bgcolor: ACCENT,
-                  color: '#fff',
-                  '&:hover': { bgcolor: ACCENT_HOVER },
-                }),
+            color: ACCENT,
+            '&.Mui-checked': {
+              color: ACCENT,
+            },
+            '&:hover': {
+              bgcolor: 'rgba(59,124,246,0.08)',
+            },
           }}
-        >
-          {isSelected ? 'Added' : 'Add'}
-        </Button>
+        />
       }
     >
       <ListItemAvatar>
-        <Badge
-          overlap="circular"
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          badgeContent={<StatusDot status={member.status} />}
-        >
-          <Avatar src={member.avatarUrl} alt={member.name} />
-        </Badge>
+        <Avatar src={member.profile_img} alt={member.username} />
       </ListItemAvatar>
       <ListItemText
         primaryTypographyProps={{ color: 'white' }}
-        primary={member.name}
-        secondary={STATUS_LABEL[member.status]}
-        secondaryTypographyProps={{
-          sx: { color: STATUS_COLOR[member.status] },
-        }}
+        primary={member.username}
       />
     </ListItem>
   );

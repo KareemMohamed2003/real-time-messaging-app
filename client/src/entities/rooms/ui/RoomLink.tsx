@@ -1,15 +1,12 @@
+import { AppRoutes } from '@/shared/lib/utils';
+import { IRoom } from '@/shared/types/api.types';
 import { Avatar, Box, Typography } from '@mui/material';
 import Link from 'next/link';
-//  the roomsLink or button takes the room name and the room image icon .
-// we maybe need to wrap the Custom link component around the RoomLink
-// if the room is gonna be rendered  via a link via getServerSide Props
-interface props {
-  roomName: string;
-  icon: string;
-}
-export default function RoomLink({ roomName, icon }: props) {
+
+export default function RoomLink({ roomName, icon, roomUUID }: IRoom) {
+  const { ROOM_ROUTE } = AppRoutes;
   return (
-    <Link href={`/home/rooms/${roomName}`}>
+    <Link href={ROOM_ROUTE(roomUUID)}>
       <Box
         py={1}
         display={'flex'}

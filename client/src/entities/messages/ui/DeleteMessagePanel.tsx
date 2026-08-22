@@ -1,7 +1,7 @@
 import Button from '../../../shared/components/UI/Button';
 import { Box, Typography } from '@mui/material';
 import { mainStyles } from '@/themes';
-import { deleteMessageQuery } from '@/shared/lib/api/queries';
+import { deleteMessageQuery } from '@/shared/api/queries';
 import { useMutation } from '@tanstack/react-query';
 import { useUserStore } from '@/app/store/user-store';
 import { useState } from 'react';

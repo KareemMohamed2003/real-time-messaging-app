@@ -4,13 +4,13 @@ import { Box, Stack } from '@mui/material';
 import ChannelChat from './ChannelChat';
 import CreateChannelForm from './CreateChannelForm';
 import ChannelsNav from './ChannelsNav';
-import { getRoomChannelsQuery } from '@/shared/lib/api/queries';
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { getRoomChannelsQuery } from '@/shared/api/queries';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import MessageForm from '../../messages/ui/MessageForm';
 import UseSendChannelMessage from '../api/UseSendChannelMessage';
 import Loading from '@/shared/components/UI/loading';
-import { channelKeys } from '@/shared/lib/api/QueryKeys';
+import { channelKeys } from '@/shared/api/QueryKeys';
 
 interface props {
   roomUUID: string;
@@ -20,18 +20,19 @@ interface props {
 export default function ChannelsSection({ roomUUID, uuid }: props) {
   console.log('roomUUID', roomUUID);
   const { data, isSuccess, isLoading } = useQuery({
-    queryKey: [channelKeys.all, roomUUID],
+    queryKey: channelKeys.all(roomUUID),
     queryFn: () => getRoomChannelsQuery(roomUUID),
     staleTime: Infinity,
     enabled: !!roomUUID, // only fetch when roomUUID is truthy
   });
-  const { sendChannelMessage } = UseSendChannelMessage();
+  const { sendChannelMessage } = UseSendChannelMessage(roomUUID);
   const [isChannelFormOpen, toggleChannelForm] = useState(false);
   const [selectedChannel, setChannel] = useState<number | undefined>();
   const activeChannel = isSuccess && data[0]?.channelId;
   const channelId = selectedChannel ? selectedChannel : activeChannel;
   const closeChannelForm = () => toggleChannelForm(false);
   const openChannelForm = () => toggleChannelForm(true);
+  // console.log('isCha')
   console.log(uuid);
   console.log(channelId);
   if (isLoading) return <Loading />;
@@ -47,16 +48,21 @@ export default function ChannelsSection({ roomUUID, uuid }: props) {
         setChannel={setChannel}
         channels={data}
       />
-      <Modal open={isChannelFormOpen} onClose={closeChannelForm}>
+
+      <Modal open={isChannelFormOpen} onClose={closeChannelForm}       aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description">
         <CreateChannelForm
           roomUUID={roomUUID}
           closeChannelForm={closeChannelForm}
         />
       </Modal>
+      {/* // <Modal open={isChannelFormOpen} onClose={closeChannelForm}>
+        
+      // </Modal> */}
       {/* Messages container */}
 
       <Stack maxHeight={'100%'} width={'100%'}>
-        <ChannelChat channelId={channelId} />
+        <ChannelChat channelId={channelId} roomUUID={roomUUID} />
         <MessageForm
           onSubmit={({ message }) =>
             sendChannelMessage(message, channelId, uuid)

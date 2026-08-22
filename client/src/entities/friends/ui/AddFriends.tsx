@@ -77,7 +77,9 @@ export default function AddFriends() {
       {/* this should be replaced with our error from the backend instead of this generic error */}
       {mutationError && (
         <Typography mt={2} fontWeight={'bold'} color={'red'}>
-          {`failed to send friend request `}
+          {`failed to send friend request `} {
+          
+          } 
         </Typography>
       )}
       {sentTo && (

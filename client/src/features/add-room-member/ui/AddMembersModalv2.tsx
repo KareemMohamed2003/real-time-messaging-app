@@ -1,4 +1,5 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React from 'react';
+import { surfaceDialog, BORDER, ACCENT, ACCENT_HOVER } from '@/themes';
 import {
   Dialog,
   DialogTitle,
@@ -7,81 +8,31 @@ import {
   TextField,
   InputAdornment,
   List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Avatar,
-  Badge,
   Button,
   IconButton,
   Typography,
   Box,
   Divider,
   Stack,
+  CircularProgress,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import TagIcon from '@mui/icons-material/AlternateEmail';
 import SendIcon from '@mui/icons-material/Send';
-import useAddRoomMember from '../api/useAddRoomMemberMutation';
-import { surfaceDialog, BORDER, ACCENT, ACCENT_HOVER } from '@/themes';
-import UseFriendsQuery from '@/entities/friends/api/useFriendsQuery';
-import RoomMember from './RoomMember';
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-export type MemberStatus = 'online' | 'offline' | 'pending';
-
-export interface Member {
-  id: string;
-  name: string;
-  status: MemberStatus;
-  avatarUrl?: string;
-}
+import RoomMember from '@/entities/rooms/ui/RoomMember';
+import useAddRoomMemberMember from '../model/useAddRoomMembers';
 
 export interface AddMembersModalProps {
   roomUUID: string;
   open: boolean;
   onClose: () => void;
-  /** Contextual breadcrumb, e.g. "room1 · channel1" */
+  /** Contextual breadcrumb, e.g. "room1*/
   roomLabel?: string;
-  /** Full candidate list; filtering by search happens internally */
-  members: Member[];
-  /** Called once with the final set of member ids when the user confirms */
-  onConfirm: (memberIds: string[]) => void;
   /** Called when the user invites someone by tag/handle */
   onInviteByTag?: (tag: string) => void;
-  /** Ids already added before the modal opened (e.g. existing channel members) */
-  initialSelectedIds?: string[];
 }
-
-// ---------------------------------------------------------------------------
-// Design tokens
-// ---------------------------------------------------------------------------
-// The host app's MUI theme doesn't expose the blue used across its chips/tags
-// (see "channels", "dsd", etc. in the sidebar), so rather than gamble on
-// `theme.palette.primary` resolving to the right color, we pin it here.
-// Change ACCENT to match your brand color exactly — everything else derives
-// from it.
-
-// ---------------------------------------------------------------------------
-// Presentational helpers
-// ---------------------------------------------------------------------------
-
-export const STATUS_COLOR: Record<MemberStatus, string> = {
-  online: '#3fd68c',
-  offline: '#6b7280',
-  pending: '#f2b544',
-};
-
-export  const STATUS_LABEL: Record<MemberStatus, string> = {
-  online: 'Online',
-  offline: 'Offline',
-  pending: 'Pending',
-};
-
 
 // ---------------------------------------------------------------------------
 // Component
@@ -90,54 +41,25 @@ export default function AddMembersModal({
   open,
   onClose,
   roomLabel,
-  members,
-  onConfirm,
   onInviteByTag,
-  initialSelectedIds = [],
   roomUUID,
 }: AddMembersModalProps) {
-  // add Room Member logic
-  const { friends } = UseFriendsQuery();
-  console.log(friends);
-  const { addMember } = useAddRoomMember();
-// filter friends not in the room . 
-  // rest of  component
-  const [query, setQuery] = useState('');
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(
-    () => new Set(initialSelectedIds)
-  );
-  const [tagValue, setTagValue] = useState('');
+  // if (isLoading) return <h1>loading data..</h1>; // crete a modalLoader
 
-  const filteredMembers = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return members;
-    return members.filter((m) => m.name.toLowerCase().includes(q));
-  }, [members, query]);
-
-  const toggleMember = useCallback((id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  }, []);
-
-  const handleDone = useCallback(() => {
-    onConfirm(Array.from(selectedIds));
-    onClose();
-  }, [onConfirm, onClose, selectedIds]);
-
-  const handleInvite = useCallback(() => {
-    const tag = tagValue.trim();
-    if (!tag) return;
-    onInviteByTag?.(tag);
-    setTagValue('');
-  }, [tagValue, onInviteByTag]);
-
+  const {
+    handleInvite,
+    handleDone,
+    toggleMember,
+    filteredMembers,
+    isSuccess,
+    isPending,
+    isError,
+    query,
+    setQuery,
+    selectedIds,
+    tagValue,
+    setTagValue,
+  } = useAddRoomMemberMember({ roomUUID, onClose, onInviteByTag });
   return (
     <Dialog
       open={open}
@@ -158,6 +80,7 @@ export default function AddMembersModal({
       {/* Header ------------------------------------------------------- */}
       <DialogTitle
         id="add-members-title"
+        component={'div'}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -175,7 +98,7 @@ export default function AddMembersModal({
               fontSize="medium"
               sx={{ color: ACCENT, display: 'block' }}
             />
-            <Typography variant="h6" fontWeight={550} sx={{ color: 'white' }}>
+            <Typography fontWeight={550} sx={{ color: 'white' }}>
               add members
             </Typography>
           </Box>
@@ -225,7 +148,6 @@ export default function AddMembersModal({
           sx={{
             maxHeight: 320,
             overflowY: 'auto',
-            // subtle scrollbar to match a dark chat UI
             '&::-webkit-scrollbar': { width: 6 },
             '&::-webkit-scrollbar-thumb': {
               backgroundColor: 'rgba(255,255,255,0.15)',
@@ -243,10 +165,15 @@ export default function AddMembersModal({
             </Typography>
           )}
 
-          {filteredMembers.map((member) => {
-            const isSelected = selectedIds.has(member.id);
+          {filteredMembers.map((member, index) => {
+            const isSelected = selectedIds.has(member.uuid);
             return (
-          <RoomMember  member={member} />
+              <RoomMember
+                key={index}
+                toggleMember={toggleMember}
+                member={member}
+                isSelected={isSelected}
+              />
             );
           })}
         </List>
@@ -309,24 +236,39 @@ export default function AddMembersModal({
           borderTop: `1px solid ${BORDER}`,
         }}
       >
+        {isError && (
+          <Typography variant="body2" sx={{ color: 'red' }}>
+            failed to add member(s)
+          </Typography>
+        )}
+        {isSuccess && (
+          <Typography variant="body2" sx={{ color: 'red' }}>
+            added members
+          </Typography>
+        )}
         <Typography variant="body2" sx={{ color: ACCENT, fontWeight: 600 }}>
-          {selectedIds.size} added
+          {selectedIds.size} selected
         </Typography>
-        <Button
-          variant="contained"
-          disableElevation
-          onClick={handleDone}
-          sx={{
-            textTransform: 'none',
-            borderRadius: 1.5,
-            px: 3,
-            fontWeight: 600,
-            bgcolor: ACCENT,
-            '&:hover': { bgcolor: ACCENT_HOVER },
-          }}
-        >
-          Done
-        </Button>
+        {isPending ? (
+          <CircularProgress size="25px" aria-label="Loading…" />
+        ) : (
+          <Button
+            variant="contained"
+            disableElevation
+            disabled={selectedIds.size==0}
+            onClick={handleDone}
+            sx={{
+              textTransform: 'none',
+              borderRadius: 1.5,
+              px: 3,
+              fontWeight: 600,
+              bgcolor: ACCENT,
+              '&:hover': { bgcolor: ACCENT_HOVER },
+            }}
+          >
+            Done
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

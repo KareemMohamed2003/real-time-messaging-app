@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useUserStore } from '@/app/store/user-store';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import MessageForm from '@/entities/messages/ui/MessageForm';
-import { getPrivateMessages } from '@/shared/lib/api/queries';
+import { getPrivateMessages } from '@/shared/api/queries';
 import { sendMessage } from '@/shared/lib/socket';
 import { convertToMap } from '@/shared/lib/utils';
 import { TMessage } from '@/shared/types/api.types';

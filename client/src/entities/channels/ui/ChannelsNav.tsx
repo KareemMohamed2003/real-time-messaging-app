@@ -5,7 +5,6 @@ import { TChannel } from '@/shared/types/api.types';
 import Channel from './Channel';
 import AddIcon from '@mui/icons-material/Add';
 
-
 interface props {
   openChannelForm: () => void;
   setChannel: Dispatch<SetStateAction<number | undefined>>;
@@ -38,7 +37,9 @@ export default function ChannelsNav({
         display={'flex'}
         justifyContent={'space-between'}
         component={'div'}
-        onClick={() => openChannelForm()}
+        onClick={() =>{
+          console.log('openform')
+          openChannelForm()}}
       >
         <Typography fontWeight={'bold'}>channels</Typography>
         <AddIcon />

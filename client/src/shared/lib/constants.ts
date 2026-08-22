@@ -17,5 +17,6 @@ export const get_user_rooms_url = `${serverURL}/user/get_rooms`;
 export const add_Channel_URL = `${serverURL}/user/add_channel`;
 export const get_channels_URL = `${serverURL}/user/get_channels`;
 export const get_channels_messages_URL = `${serverURL}/user/get_channel_messages`;
-export const add_roomMember_URL= `${serverURL}/user/add_room_member`
-export const get_roomMembers_URL= `${serverURL}/user/get_room_members`
+export const add_roomMember_URL = `${serverURL}/user/add_room_members`;
+export const get_roomMembers_URL = `${serverURL}/user/get_room_members`;
+

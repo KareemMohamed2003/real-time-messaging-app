@@ -1,6 +1,6 @@
 'use client';
-// this erro bundray is not used most of the time
 import Button from '@/shared/components/UI/Button';
+import { AppRoutes } from '@/shared/lib/utils';
 import { Box, Typography } from '@mui/material';
 import Link from 'next/link';
 export default function Error({
@@ -15,8 +15,7 @@ export default function Error({
     <Box justifyContent={'center'} gap={1} display={'flex'}>
       <Typography variant="h2">Failed to load data</Typography>
       <Button onClick={() => reset()}>Try again</Button>
-
-      <Link href={'/home'}>
+      <Link href={AppRoutes.HOME_ROUTE}>
         <Button>Return Home</Button>
       </Link>
     </Box>

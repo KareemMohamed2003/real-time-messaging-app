@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { MemberStatus, STATUS_COLOR } from "./AddMembersModalv2";
+import { MemberStatus, STATUS_COLOR } from "../../../features/add-room-member/ui/AddMembersModalv2";
 
 export default function StatusDot({ status }: { status: MemberStatus }) {
   return (

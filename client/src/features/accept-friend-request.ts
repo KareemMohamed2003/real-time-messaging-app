@@ -1,5 +1,5 @@
-import { acceptFriendRequestPostQuery } from '@/shared/lib/api/queries';
-import { friendsKeys } from '@/shared/lib/api/QueryKeys';
+import { acceptFriendRequestPostQuery } from '@/shared/api/queries';
+import { friendsKeys } from '@/shared/api/QueryKeys';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 export type AcceptedRequest = {
   senderId: number;

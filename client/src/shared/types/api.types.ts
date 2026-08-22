@@ -1,6 +1,20 @@
-export type UserRole = 'ADMIN' | 'OWNER' | 'MEMBER';
-export type ChannelType = 'TEXT' | 'VOICE' | 'DIRECT_MESSAGE';
-export type FriendRequestEnum = 'SENT' | 'REJECTED' | 'ACCEPTED';
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  OWNER = 'OWNER',
+  MEMBER = 'MEMBER',
+}
+
+export enum ChannelType {
+  TEXT = 'TEXT',
+  VOICE = 'VOICE',
+  DIRECT_MESSAGE = 'DIRECT_MESSAGE',
+}
+
+export enum FriendRequestEnum {
+  SENT = 'SENT',
+  REJECTED = 'REJECTED',
+  ACCEPTED = 'ACCEPTED',
+}
 
 export interface User {
   id: number;
@@ -20,14 +34,13 @@ export interface ChannelParticipant {
 }
 
 export interface IFriend {
-  id: number;
-  createdAt: Date;
+  friendId: number;
+  profile_img: string;
   senderName: string;
-  receiverId: number;
-  email: string;
-  receiverName: string;
   request_status: FriendRequestEnum;
-  senderId: number;
+  isRequestSender: boolean;
+  username: string;
+  uuid: string;
 }
 
 export interface TMessage {
@@ -62,7 +75,10 @@ export interface IRoom {
   roomName: string;
   roomUUID: string;
   ownerId?: string;
-  icon?: string; // Prisma Maps Bytes to Node.js Buffer replace with a string later if suitable
+  icon?: string; 
+}
+export interface IJoinedRoom extends IRoom {
+  role: UserRole;
 }
 
 export interface IRoomMember {

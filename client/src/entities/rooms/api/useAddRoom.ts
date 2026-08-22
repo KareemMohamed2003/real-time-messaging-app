@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { createRoomQuery } from '@/shared/lib/api/queries';
+import { createRoomQuery } from '@/shared/api/queries';
 type roomData = { name: string; uuid: string };
 export default function UseAddRoom(
   successCallback?: (data: any) => void,

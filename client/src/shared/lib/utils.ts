@@ -1,4 +1,3 @@
-import { TFriend } from "@/app/store/types";
 type createSocket = (expires_at: string, sessionId: string) => void;
 export const togglePortalEffect = () => {
   const portalEl = document.querySelector('#portal');
@@ -40,4 +39,18 @@ export const requestAborter = () => {
     controller.abort();
   }, timeout);
   return controller.signal;
+};
+
+
+export const AppRoutes = {
+  HOME_ROUTE: '/home/chats',
+  ROOM_ROUTE: (roomUUID: string) => `/home/rooms/${roomUUID}`,
+  FRIENDS_ROUTE: `/home/friends`,
+  PRIVATECHAT_ROUTE: (friendUUID: string) => `home/friends/${friendUUID}`,
+  ROOMS_ROUTE: `/home/rooms`,
+  LOGIN_ROUTE:`/login`,
+  REGISTER_ROUTE:'/register',
+  SETTINGS_ROUTE:`/home/settings`,
+  NOTIFICATIONS_ROUTE:`/home/notifications`,
+  PROFILE_ROUTE:'/home/profile'
 };

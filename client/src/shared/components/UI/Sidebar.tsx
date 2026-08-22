@@ -1,31 +1,39 @@
+import PrivateVoiceCall from '@/features/voice-call/ui/PrivateVoiceCall';
+import { useRouter } from 'next/navigation';
 import { Avatar, Stack, Typography, Box } from '@mui/material';
 import { deepOrange } from '@mui/material/colors';
 import { NavLink } from '@/shared/components/UI/NavLink';
-import ChatsIcon from '@/shared/components/icons/ChatsIcon';
-import FriendsIcon from '@/shared/components/icons/FriendsIcon';
-import SettingsIcon from '@/shared/components/icons/SettingsIcon';
-import NotificationsIcon from '@/shared/components/icons/NotificationsIcon';
-import RoomsIcon from '@/shared/components/icons/RoomsIcon';
 import { mainStyles } from '@/themes';
 import { useUserStore } from '@/app/store/user-store';
-import { useRouter } from 'next/navigation';
-import PrivateVoiceCall from '@/features/voice-call/ui/PrivateVoiceCall';
+import { AppRoutes } from '@/shared/lib/utils';
+import FriendsIcon from '@/shared/components/icons/FriendsIcon';
 import LogoutIcon from '@mui/icons-material/Logout';
+import RoomsIcon from '@/shared/components/icons/RoomsIcon';
+import ChatsIcon from '@/shared/components/icons/ChatsIcon';
+import NotificationsIcon from '@/shared/components/icons/NotificationsIcon';
+import SettingsIcon from '@/shared/components/icons/SettingsIcon';
 
 export default function Sidebar() {
+  const {
+    HOME_ROUTE,
+    FRIENDS_ROUTE,
+    ROOMS_ROUTE,
+    PROFILE_ROUTE,
+    SETTINGS_ROUTE,
+    NOTIFICATIONS_ROUTE,
+  } = AppRoutes;
   const icons = [
-    { name: 'chats', icon: ChatsIcon, href: '/home/chats' },
-    { name: 'friends', icon: FriendsIcon, href: '/home/friends' },
-    { name: 'settings', icon: SettingsIcon, href: '/home/settings' },
-    {
-      name: 'notifications',
-      icon: NotificationsIcon,
-      href: '/home/notifications',
-    },
-    { name: 'rooms', icon: RoomsIcon, href: '/home/rooms' },
+    { name: 'chats', icon: ChatsIcon, href: HOME_ROUTE },
+    { name: 'friends', icon: FriendsIcon, href: FRIENDS_ROUTE },
+    // { name: 'settings', icon: SettingsIcon, href: SETTINGS_ROUTE },
+    // {
+    //   name: 'notifications',
+    //   icon: NotificationsIcon,
+    //   href: NOTIFICATIONS_ROUTE,
+    // },
+    { name: 'rooms', icon: RoomsIcon, href: ROOMS_ROUTE },
     {
       name: 'logout',
-      // icon: LogoutIcon,
       icon: LogoutIcon,
       href: process.env.NEXT_PUBLIC_LOGOUT_URL!,
     },
@@ -35,7 +43,6 @@ export default function Sidebar() {
   const { profile, audioCall } = useUserStore((state) => state);
   return (
     <Stack
-
       alignItems={'center'}
       justifyContent={'space-evenly'}
       alignSelf={'flex-start'}
@@ -48,7 +55,7 @@ export default function Sidebar() {
     >
       {icons.map((el, index) => (
         <Box display={'flex'} justifyContent={'flex-end'} key={index}>
-        <NavLink key={index} Icon={el.icon} href={el.href} name={el.name} />
+          <NavLink key={index} Icon={el.icon} href={el.href} name={el.name} />
         </Box>
       ))}
       <Box
@@ -64,7 +71,7 @@ export default function Sidebar() {
           ml: '8px',
         }}
         component={'div'}
-        onClick={() => router.push('/home/profile')}
+        onClick={() => router.push(PROFILE_ROUTE)}
       >
         <Avatar
           src={profile.profile_img ? profile.profile_img : ''}

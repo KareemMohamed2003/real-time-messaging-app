@@ -28,7 +28,7 @@ model ChannelParticipant {
   channelId Int
   userId    String
   joinedAt  DateTime @default(now())
-  channel   Channel  @relation(fields: [channelId], references: [channelId])
+  channel   Channel  @relation(fields: [channelId], references: [channelId], onDelete: Cascade)
 
   @@unique([channelId, userId])
 }
@@ -86,7 +86,7 @@ model Messages {
   createdAt    DateTime @default(now())
   message      String
   user         Users    @relation(fields: [senderUUID], references: [uuid])
-  channel      Channel  @relation(fields: [channelId], references: [channelId])
+  channel      Channel  @relation(fields: [channelId], references: [channelId], onDelete: Cascade)
 }
 
 model Notifications {
@@ -105,7 +105,7 @@ model Channel {
   roomUUID            String?
   channelName         String
   type                ChannelType          @default(DIRECT_MESSAGE)
-  room                Rooms?               @relation(fields: [roomUUID], references: [roomUUID])
+  room                Rooms?               @relation(fields: [roomUUID], references: [roomUUID], onDelete: Cascade)
   messages            Messages[]
   channelParticipants ChannelParticipant[]
 
@@ -128,7 +128,7 @@ model RoomMember {
   roomUUID String
   userId   String
   role     userRole
-  room     Rooms    @relation(fields: [roomUUID], references: [roomUUID])
+  room     Rooms    @relation(fields: [roomUUID], references: [roomUUID], onDelete: Cascade)
   user     Users    @relation(fields: [userId], references: [uuid])
 
   // memberStatus : ` INVITIED , ACTIVE  

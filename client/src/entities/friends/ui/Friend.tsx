@@ -3,21 +3,15 @@ import CheckIcon from '@mui/icons-material/Check';
 import { Avatar, Box, Typography } from '@mui/material';
 import { useAcceptFriendRequest } from '@/features/accept-friend-request';
 import { useUserStore } from '@/app/store/user-store';
-interface friendProps {
-  name: string;
-  profilePic: string;
-  isFriendRequestReceiver?: boolean | null;
-  friendRequestSender?: string;
-  friendId: number;
-  status?: string;
-}
+import { IFriend } from '@/shared/types/api.types';
+
 export default function Friend({
-  name,
-  status,
-  profilePic,
-  isFriendRequestReceiver,
+  username,
+  request_status,
+  profile_img,
+  isRequestSender,
   friendId,
-}: friendProps) {
+}: IFriend) {
   const { acceptFriendRequest } = useAcceptFriendRequest();
   const { profile } = useUserStore((state) => state);
   return (
@@ -34,8 +28,8 @@ export default function Friend({
       {/*friend Component */}
       <Box display={'flex'} alignItems={'center'} gap={1.5}>
         <Box sx={{ position: 'relative' }}>
-          <Avatar src={profilePic} sx={{ width: 50, height: 50 }} />
-          {/*presence indictor */} 
+          <Avatar src={profile_img} sx={{ width: 50, height: 50 }} />
+          {/*presence indictor */}
           {/* consider replacing this later with a standard statusDot later*/}
           <Box
             height={'1rem'}
@@ -55,10 +49,10 @@ export default function Friend({
             fontSize: '1.2rem',
           }}
         >
-          {name}
+          {username}
         </Typography>
       </Box>
-      {status && status === 'SENT' && isFriendRequestReceiver && (
+      {request_status && request_status === 'SENT' && isRequestSender && (
         <Box display={'flex'} gap={2}>
           <Box
             component={'div'}

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { verifyToken } from "./auth/auth.js";
+import { verifyToken } from "../lib/auth/auth.js";
 
 interface IRequest extends Request {
   token?: {};

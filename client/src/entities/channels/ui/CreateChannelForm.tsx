@@ -14,12 +14,23 @@ import useAddChannels from '../api/useAddChannels';
 interface CreateChannelFormProps {
   closeChannelForm: () => void;
   roomUUID: string;
+  // ref:REF
 }
+
+const channelFormsModalStyle = {
+   position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    p: 4,
+};
+
 const CreateChannelForm = forwardRef<HTMLFormElement, CreateChannelFormProps>(
-  function CreateChannelForm({
-    closeChannelForm,
-    roomUUID,
-  }: CreateChannelFormProps) {
+  function CreateChannelForm(
+    { closeChannelForm, roomUUID }: CreateChannelFormProps,
+    ref
+  ) {
     const { handleSubmit, reset, register, onSubmit, errors } = useAddChannels({
       roomUUID,
       closeChannelForm,
@@ -27,6 +38,7 @@ const CreateChannelForm = forwardRef<HTMLFormElement, CreateChannelFormProps>(
     console.log(errors);
     return (
       <Stack
+      sx={channelFormsModalStyle}
         gap={2}
         height={'100%'}
         alignItems={'center'}
@@ -37,6 +49,7 @@ const CreateChannelForm = forwardRef<HTMLFormElement, CreateChannelFormProps>(
           p={2}
           sx={{ background: mainStyles.primaryBg }}
           component={'form'}
+          ref={ref}
           onSubmit={handleSubmit(onSubmit)}
           display={'flex'}
           gap={2}

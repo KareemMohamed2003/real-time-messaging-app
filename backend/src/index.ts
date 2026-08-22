@@ -10,8 +10,8 @@ import { corsOptions } from "./lib/constants.ts";
 import { initSocketServer } from "./lib/sockets/socket.ts";
 import { checkDB } from "./lib/db.ts";
 import { checkSessionExpiry } from "./lib/helpers.ts";
-import { authorizeUser } from "./lib/middleware.ts";
-import { getUserJoinedRooms } from "./models/model.rooms.ts";
+import { authorizeUser } from "./Middleware/auth-middleware.ts";
+
 const app = express();
 export const server = createServer(app);
 app.use(urlencoded({ extended: true })); // parsed  requests bodies .

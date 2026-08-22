@@ -1,13 +1,16 @@
 /**
  *Optimized  Database base Error
  */
-export class AppError {
+export class AppError extends Error {
   constructor(
-    public message: string,
-    public statusCode: number,
-    public errorCode: string,
-    public name: string,
-  ) {}
+    public readonly message: string,
+    public readonly statusCode: number,
+    public readonly errorCode: string,
+    public readonly name: string,
+  ) {
+    super(message);
+    Object.setPrototypeOf(this, new.target.prototype); //  important : Restores prototype chain  !!
+  }
 }
 /**
   Database-Specific NotFoundError .
@@ -45,6 +48,18 @@ export class BadRequestError extends AppError {
       400,
       "BAD_REQUEST",
       "BadRequestError",
+    );
+  }
+}
+
+export class AuthorizationError extends AppError {
+  constructor(resource: string, action: string, customMessage?: string) {
+    super(
+      customMessage ??
+        `You do not have permission to ${action ?? "access"} ${resource}`,
+      403,
+      "FORBIDDEN",
+      "AuthorizationError",
     );
   }
 }

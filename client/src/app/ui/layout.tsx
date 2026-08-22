@@ -1,8 +1,5 @@
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from '@/themes';
 import React from 'react';
-import { Container, Stack } from '@mui/material';
+import {  Stack } from '@mui/material';
 
 export default function Layout({
   children,

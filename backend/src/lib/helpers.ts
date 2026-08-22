@@ -2,6 +2,9 @@ import crypto from "crypto";
 import { deleteExpiredUsersSessions } from "./db";
 import { Server } from "socket.io";
 import { ISocket } from "./sockets/socket";
+import { AppError } from "../prisma/prismaHandlers/AppError";
+import { handlePrismaError } from "../prisma/prismaHandlers/PrismaErrorHandlers";
+import { Response } from "express";
 export const randomId = () => crypto.randomBytes(8).toString("hex");
 export const checkSessionExpiry = () => {
   const interval = setInterval(() => {
@@ -63,3 +66,20 @@ export const safeAckHandler = (handler: SocketHandler<any>) => {
     }
   };
 };
+
+export function sendApiError(res: Response, appError: AppError) {
+  res.status(appError.statusCode).json({
+    message: appError.message,
+    errorCode: appError.errorCode,
+    name: appError.name,
+  });
+}
+
+export function handleDbError(
+  res: Response,
+  error: unknown,
+  modelName: string,
+) {
+  const appError = handlePrismaError(error, modelName);
+  sendApiError(res, appError);
+}

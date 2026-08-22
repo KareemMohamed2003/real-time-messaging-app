@@ -6,18 +6,22 @@ import AddFriends from './AddFriends';
 import { primaryBg } from '@/shared/lib/constants';
 import { IFriend } from '@/shared/types/api.types';
 import Friend from './Friend';
+import { TOnlineFriend } from '@/app/store/types';
 interface FriendsListProps {
   selectedList: string;
-  friends:any;
+  friends: any;
 }
-export default function FriendsList({ selectedList,friends }: FriendsListProps) {
+export default function FriendsList({
+  selectedList,
+  friends,
+}: FriendsListProps) {
   const { onlineFriends } = useUserStore((state) => state);
-  const [list, setList] = useState<IFriend[] | undefined | null>(null);
+  const [list, setList] = useState<any>(null);
   const router = useRouter();
   console.log(friends);
   useEffect(() => {
-  console.log(friends)
-      switch (selectedList) {
+    console.log(friends);
+    switch (selectedList) {
       case 'online':
         setList(onlineFriends!);
         break;
@@ -56,25 +60,26 @@ export default function FriendsList({ selectedList,friends }: FriendsListProps) 
       ) : (
         <Box gap={3} display={'flex'} flexDirection={'column'}>
           {list?.map((friend: any, index: number) => {
-            const id = friend.uuid ? friend.uuid : friend.userId;
+            const id = friend.uuid ? friend.uuid : friend.friendId;
             return (
               <Box
                 sx={{ cursor: 'pointer' }}
                 key={index}
                 component={'div'}
                 onClick={() => {
-                  if (friend.request_status === 'ACCEPTED' || friend.connected)
+                  if (friend.request_status === 'ACCEPTED' || friend?.is_online)
                     router.push(`friends/${id}`);
                 }}
               >
                 <Friend
-                  profilePic={friend.profile_img}
+                  profile_img={friend.profile_img}
                   key={index}
-                  name={friend?.username}
-                  status={friend.request_status}
-                  isFriendRequestReceiver={friend.isRequestSender}
-                  friendRequestSender={friend.senderName}
+                  username={friend?.username}
+                  request_status={friend.request_status}
+                  isRequestSender={friend.isRequestSender}
+                  senderName={friend.senderName}
                   friendId={friend.friendId}
+                  uuid={friend.uuid}
                 />
               </Box>
             );

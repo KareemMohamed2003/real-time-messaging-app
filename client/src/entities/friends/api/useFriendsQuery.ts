@@ -1,12 +1,12 @@
 'use client';
-import { getFriendsQuery } from '@/shared/lib/api/queries';
-import { friendsKeys } from '@/shared/lib/api/QueryKeys';
-import { useQuery } from '@tanstack/react-query';
+import { getFriendsQuery } from '@/shared/api/queries';
+import { friendsKeys } from '@/shared/api/QueryKeys';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 export default function UseFriendsQuery() {
-  const { data, isError, isLoading } = useQuery({
+  const { data, isError, isLoading } = useSuspenseQuery({
     queryFn: () => getFriendsQuery(),
-    queryKey: [friendsKeys.defaultKey],
+    queryKey: friendsKeys.defaultKey,
   });
   return { friends: data, isError, isLoading };
 }

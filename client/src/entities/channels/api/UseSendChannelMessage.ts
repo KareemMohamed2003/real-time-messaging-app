@@ -1,6 +1,6 @@
 import { socketClient } from '@/shared/lib/socket';
 import { useQueryClient } from '@tanstack/react-query';
-import UpdateChannelMessageCache from '@/shared/lib/UpdateChannelMessagesCache'
+import UpdateChannelMessageCache from '@/shared/lib/UpdateChannelMessagesCache';
 
 type messageResponse = { sent: boolean; message: string; error?: string };
 type TSendChannelMessage = (
@@ -8,7 +8,7 @@ type TSendChannelMessage = (
   channelId: number,
   from: string
 ) => void;
-export default function UseSendChannelMessage() {
+export default function UseSendChannelMessage(roomUUID:string) {
   const queryClient = useQueryClient();
   const sendChannelMessage: TSendChannelMessage = (
     content,
@@ -36,11 +36,7 @@ export default function UseSendChannelMessage() {
 
           if (response?.sent) {
             console.log('Message delivered! ');
-            UpdateChannelMessageCache(
-              queryClient,
-              channelId,
-              response.message
-            );
+            UpdateChannelMessageCache(queryClient, channelId, response.message,roomUUID);
           } else {
             console.error('Server rejected message:', response.error);
           }

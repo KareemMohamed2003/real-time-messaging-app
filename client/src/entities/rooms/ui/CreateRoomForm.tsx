@@ -9,25 +9,36 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUserStore } from '@/app/store/user-store';
-import theme, { mainStyles } from '@/themes';
-import { ThemeProvider } from '@mui/material/styles';
+import  { mainStyles } from '@/themes';
 import UseAddRoom from '../api/useAddRoom';
 import Button from '@/shared/components/UI/Button';
 import Input from '@/shared/components/UI/Input';
+import { roomKeys } from '@/shared/api/QueryKeys';
+import { AppRoutes } from '@/shared/lib/utils';
 
 interface props {
   closeRoomForm: () => void;
 }
 export default function CreateRoomForm({ closeRoomForm }: props) {
+  const roomFormModalstyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    background: primaryBg,
+    boxShadow: 24,
+    p: 4,
+  };
   const queryClient = useQueryClient();
   const router = useRouter();
   const { primaryGreen } = mainStyles;
   const { profile } = useUserStore((state) => state);
   const successCallback = async (result: any) => {
     reset();
-    await queryClient.invalidateQueries({ queryKey: ['rooms'] });
+    await queryClient.invalidateQueries({ queryKey: roomKeys.all });
     closeRoomForm();
-    router.replace('/home/rooms');
+    router.replace(AppRoutes.ROOMS_ROUTE);
     clearErrors();
   };
   const errorCb = (error: any) => {
@@ -68,83 +79,77 @@ export default function CreateRoomForm({ closeRoomForm }: props) {
     });
   };
   return (
-    <ThemeProvider theme={theme}>
-      <Stack
-        zIndex={10}
-        width={'17%'}
-        borderRadius={'17px'}
-        position={'absolute'}
-        alignItems={'center'}
-        px={1}
-        py={2}
-        gap={1}
-        sx={{
-          background: primaryBg,
+    <Stack
+      sx={roomFormModalstyle}
+      width={'17%'}
+      borderRadius={'17px'}
+      alignItems={'center'}
+      px={1}
+      py={2}
+      gap={1}
+    >
+      <CloseIcon
+        onClick={() => {
+          closeRoomForm();
         }}
+        sx={{ color: 'white', alignSelf: 'end' }}
+      />
+      <Box
+        flex={1}
+        display={'flex'}
+        component={'div'}
+        width={'80%'}
+        flexDirection={'column'}
+        gap={2}
       >
-        <CloseIcon
-          onClick={() => {
-            closeRoomForm();
-          }}
-          sx={{ color: 'white', alignSelf: 'end' }}
-        />
         <Box
-          flex={1}
           display={'flex'}
-          component={'div'}
-          width={'80%'}
+          component="div"
           flexDirection={'column'}
-          gap={2}
+          alignSelf={'center'}
+          alignItems={'center'}
+          width={'100%'}
+          py={1}
+          borderRadius={'14px'}
+          sx={{ background: 'rgba(255,255,255,0.07)' }}
         >
-          <Box
-            display={'flex'}
-            component="div"
-            flexDirection={'column'}
-            alignSelf={'center'}
-            alignItems={'center'}
-            width={'100%'}
-            py={1}
-            borderRadius={'14px'}
-            sx={{ background: 'rgba(255,255,255,0.07)' }}
-          >
-            <UploadIcon width={25} height={25} />
-            <Typography fontWeight={'bold'}>upload image</Typography>
-          </Box>
-          <Box
-            component={'form'}
-            display={'flex'}
-            flex={1}
-            flexDirection={'column'}
-            justifyContent={'center'}
-            alignItems={'center'}
-            gap={2}
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            {errors.name?.message && (
-              <Typography textAlign={'center'} color={'red'}>
-                {errors.name.message}
-              </Typography>
-            )}
-            <Input type="text" placeholder="room name" {...register('name')} />
-            {isPending ? (
-              <CircularProgress sx={{ color: primaryGreen, margin: 'auto' }} />
-            ) : (
-              <Button
-                disabled={isPending}
-                type="submit"
-                variant="contained"
-                fullWidth={true}
-                sx={{
-                  bgColor: '#13CB7E',
-                  borderRadius: '18px',
-                }}
-              >
-                create
-              </Button>
-            )}
-          </Box>
+          <UploadIcon width={25} height={25} />
+          <Typography fontWeight={'bold'}>upload image</Typography>
         </Box>
-      </Stack>
-    </ThemeProvider>
+        <Box
+          component={'form'}
+          display={'flex'}
+          flex={1}
+          flexDirection={'column'}
+          justifyContent={'center'}
+          alignItems={'center'}
+          gap={2}
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          {errors.name?.message && (
+            <Typography textAlign={'center'} color={'red'}>
+              {errors.name.message}
+            </Typography>
+          )}
+          <Input type="text" placeholder="room name" {...register('name')} />
+          {isPending ? (
+            <CircularProgress sx={{ color: primaryGreen, margin: 'auto' }} />
+          ) : (
+            <Button
+              disabled={isPending}
+              type="submit"
+              variant="contained"
+              fullWidth={true}
+              sx={{
+                bgColor: '#13CB7E',
+                borderRadius: '18px',
+              }}
+            >
+              create
+            </Button>
+          )}
+        </Box>
+      </Box>
+    </Stack>
   );
 }

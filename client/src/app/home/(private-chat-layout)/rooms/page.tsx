@@ -1,26 +1,21 @@
 'use client';
 import React, { useState } from 'react';
-import { Box, Typography, Button, Grid, Portal } from '@mui/material';
-import slack from '../../../components/icons/svg/slack.png';
-import ts from '../../../components/icons/svg/ts.png';
-import nextjs from '../../../components/icons/svg/nextJs.png';
+import { Box, Typography, Button, Grid, Modal } from '@mui/material';
 import { useUserStore } from '@/app/store/user-store';
 import useRooms from '@/entities/rooms/api/useRooms';
 import CreateRoomForm from '@/entities/rooms/ui/CreateRoomForm';
 import RoomLink from '@/entities/rooms/ui/RoomLink';
 import AddRoomIcon from '@/shared/components/icons/AddRoom';
 import RoomsIcon from '@/shared/components/icons/RoomsIcon';
-import { togglePortalEffect } from '@/shared/lib/utils';
 import { mainStyles } from '@/themes';
+
 export default function Rooms() {
   const { uuid } = useUserStore((state) => state.profile!);
   const { rooms } = useRooms(uuid!);
   const [displayForm, setDisplayForm] = useState(false);
-  const closeRoomForm = () => {
-    setDisplayForm(!displayForm);
-    togglePortalEffect();
-  };
-  console.log('rooms', rooms);
+  const closeRoomForm = () => setDisplayForm(false);
+  const openRoomForm = () => setDisplayForm(true);
+
   return (
     <Box
       height={'100%'}
@@ -44,7 +39,7 @@ export default function Rooms() {
         </Typography>
       </Box>
       <Button
-        onClick={() => setDisplayForm(!displayForm)}
+        onClick={openRoomForm}
         sx={{
           borderRadius: '16px',
           textTransform: 'lowercase',
@@ -61,11 +56,16 @@ export default function Rooms() {
         create room
         <AddRoomIcon height={30} width={30} />
       </Button>
-      {displayForm && (
-        <Portal>
-          <CreateRoomForm closeRoomForm={closeRoomForm} />
-        </Portal>
-      )}
+
+      <Modal
+        open={displayForm}
+        onClose={closeRoomForm}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <CreateRoomForm closeRoomForm={closeRoomForm} />
+      </Modal>
+
       <Grid
         container
         px={4}
@@ -74,16 +74,15 @@ export default function Rooms() {
         sx={{ alignItems: 'center' }}
       >
         {/* render rooms */}
-        {rooms?.map((el, index) => (
+        {rooms?.map((el: any, index: number) => (
           <Grid item xs={6} key={index}>
-            <RoomLink roomName={el.room.roomName} icon={el.icon} />
+            <RoomLink
+              roomName={el.roomName}
+              roomUUID={el.roomUUID}
+              icon={el.icon}
+            />
           </Grid>
         ))}
-        {/* <RoomLink roomName={'slack'} image={slack.src} />
-        <RoomLink roomName={'typescript'} image={ts.src} />
-        <RoomLink roomName={'nextJs'} image={nextjs.src} /> */}
-        {/*<RoomLink roomName={"slack"} image={slack.src}/>*/}
-        {/* </Stack> */}
       </Grid>
     </Box>
   );
