@@ -5,12 +5,14 @@ import { useUserStore } from '@/app/store/user-store';
 import { Stack } from '@mui/material';
 import { socketClient } from '@/shared/lib/socket';
 import { useQueryClient } from '@tanstack/react-query';
-import ChannelsSection from '@/entities/channels/ui/ChannelsSection';
+import ChannelsSection from '@/entities/channels/ui/legacy/ChannelsSection(legacy)';
 import UseRoom from '@/entities/rooms/api/useRoom';
 import AddMembersModalv2 from '@/features/add-room-member/ui/AddMembersModalv2';
+// import RoomHeader from '@/entities/rooms/ui/legacy/RoomHeader(legacy)';
+// import RoomMembers from '@/entities/rooms/ui/legacy/RoomMembers(legacy)';
+import UpdateChannelMessagesCache from '@/shared/lib/UpdateChannelMessagesCache';
 import RoomHeader from '@/entities/rooms/ui/RoomHeader';
 import RoomMembers from '@/entities/rooms/ui/RoomMembers';
-import UpdateChannelMessagesCache from '@/shared/lib/UpdateChannelMessagesCache';
 // prefetch the friends data  data on the server
 export default function Room() {
   const params = useParams<{ roomUUID: string }>();
@@ -22,7 +24,7 @@ export default function Room() {
   const queryClient = useQueryClient();
   const onCloseAddMembersModal = () => setAddMembersDisplay(false);
   const handleChannelMessages = (channelId: number, message: string) => {
-    UpdateChannelMessagesCache(queryClient, channelId, message,roomUUID);
+    UpdateChannelMessagesCache(queryClient, channelId, message, roomUUID);
   };
   useEffect(() => {
     socketClient.on('channel:message', handleChannelMessages);
@@ -51,8 +53,8 @@ export default function Room() {
         displayAddMembers={displayAddMembers}
         setAddMembersDisplay={setAddMembersDisplay}
       />
-      {isOpen && <RoomMembers setOpen={setOpen} />}
       <Suspense fallback={<h2>AddMembersModal </h2>}>
+      <RoomMembers isOpen={isOpen} setOpen={setOpen} roomUUID={roomUUID}/>
         <AddMembersModalv2
           roomUUID={roomUUID}
           roomLabel={room?.roomName}

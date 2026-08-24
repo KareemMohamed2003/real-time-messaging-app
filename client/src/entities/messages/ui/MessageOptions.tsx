@@ -4,7 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Box } from '@mui/material';
 import { useMessageContext } from './PrivateChatContext';
 import { Dispatch, SetStateAction } from 'react';
-import { mainStyles } from '@/themes';
+import { mainStyles } from '@/themes(legacy)';
 export interface MessageOptionsProps {
   messageIndex: number;
   messageId?: number;

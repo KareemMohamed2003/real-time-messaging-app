@@ -46,7 +46,7 @@ export const AppRoutes = {
   HOME_ROUTE: '/home/chats',
   ROOM_ROUTE: (roomUUID: string) => `/home/rooms/${roomUUID}`,
   FRIENDS_ROUTE: `/home/friends`,
-  PRIVATECHAT_ROUTE: (friendUUID: string) => `home/friends/${friendUUID}`,
+  PRIVATE_CHAT_ROUTE: (friendUUID: string) => `friends/${friendUUID}`,
   ROOMS_ROUTE: `/home/rooms`,
   LOGIN_ROUTE:`/login`,
   REGISTER_ROUTE:'/register',

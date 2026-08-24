@@ -1,5 +1,5 @@
 'use client';
-import Button from '@/shared/components/UI/Button';
+import Button from '@/shared/components/UI/(legacy)/Button(legacy)';
 import { Stack } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { startTransition } from 'react';

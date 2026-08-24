@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { mainStyles } from '@/themes';
+import { mainStyles } from '@/themes(legacy)';
 import { Box } from '@mui/material';
 import User from '@/shared/components/User';
 import CallEndIcon from '@mui/icons-material/CallEnd';

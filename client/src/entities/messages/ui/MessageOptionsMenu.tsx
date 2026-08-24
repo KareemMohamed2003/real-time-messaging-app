@@ -1,5 +1,5 @@
 import { Stack, Box } from '@mui/material';
-import { mainStyles } from '@/themes';
+import { mainStyles } from '@/themes(legacy)';
 import MessageMenuOptionModalButton from './MessageMenuOptionModalButton';
 import DeleteMessagePanel from './DeleteMessagePanel';
 import EditMessageButton from './messageOptionsButtons/EditMessageButton';

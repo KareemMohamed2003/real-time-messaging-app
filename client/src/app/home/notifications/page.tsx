@@ -1,5 +1,5 @@
-import Input from '@/shared/components/UI/Input';
-import { primaryBg } from '@/shared/lib/constants';
+import Input from '@/shared/components/UI/(legacy)/Input(legacy)';
+import { primaryBg } from '@/themes(legacy)';
 import { Box, Stack } from '@mui/material';
 interface NotificationsProps {
   Notifications: any[];

@@ -1,5 +1,5 @@
 import { Stack, Typography } from '@mui/material';
-import { mainStyles } from '@/themes';
+import { mainStyles } from '@/themes(legacy)';
 import User from './User';
 export default function Chats() {
   //  remember to add a ref to the input component

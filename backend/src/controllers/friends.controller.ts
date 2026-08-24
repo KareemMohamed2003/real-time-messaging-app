@@ -1,8 +1,13 @@
-import { sendApiError } from "../lib/helpers";
-import { sendFriendRequest, acceptFriendRequest, rejectFriendRequest } from "../models/model.friends";
+import { handleDbError, sendApiError } from "../lib/helpers";
+import {
+  sendFriendRequest,
+  acceptFriendRequest,
+  rejectFriendRequest,
+} from "../models/model.friends";
 import { getUserFriendsList } from "../models/model.users";
-import { AuthRequest } from "./db.controller";
+
 import { Request, Response } from "express";
+import { AuthRequest } from "./types";
 export const addFriendAction = async (req: Request, res: Response) => {
   try {
     console.log("request", req);
@@ -14,15 +19,12 @@ export const addFriendAction = async (req: Request, res: Response) => {
     return res.status(201).end();
   } catch (e) {
     // const { statusCode, message, name } = handlePrismaError(e, "friend");
-    // console.error(
-    //   `addFriendAction error handler : error type  ${name} , message ${message}`,
-    // );
     // // we can check here if the type of error is a conflict error from friends table
     // // maybe have a payload of what's being sent from the client side
     // //
     // console.log(e);
     // res.status(statusCode).json(message);
-    sendApiError(res, e, "Friend");
+    handleDbError(res, e, "Friend");
   }
 };
 export const acceptFriendRequestAction = async (
@@ -37,7 +39,7 @@ export const acceptFriendRequestAction = async (
   } catch (e) {
     // const { statusCode, message, name } = handlePrismaError(e, "friends");
     // res.status(statusCode).json(message);
-    sendApiError(res, e, "Friends");
+    handleDbError(res, e, "Friend");
   }
 };
 
@@ -49,7 +51,7 @@ export const rejectFriendAction = async (req: AuthRequest, res: Response) => {
   } catch (e) {
     // const { statusCode, message } = handlePrismaError(e, "friends");
     // res.status(statusCode).json(message);
-    sendApiError(res, e, "Friend");
+    handleDbError(res, e, "Friend");
   }
 };
 
@@ -60,10 +62,8 @@ export const getFriendsAction = async (req: AuthRequest, res: Response) => {
     const friendsList = await getUserFriendsList(username);
     console.log("friendsList", friendsList);
     return res.json({ ...friendsList });
-  } catch (error) {
-    // console.log("error at getFriendsAction()", error);
-    // const { message, statusCode } = handlePrismaError(error, "friends");
+  } catch (e) {
     // res.status(statusCode).json(message);
-    sendApiError(res, error, "Friends");
+    handleDbError(res, e, "Friend");
   }
 };

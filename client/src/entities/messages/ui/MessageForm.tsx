@@ -1,4 +1,4 @@
-import Input from '@/shared/components/UI/Input';
+import Input from '@/shared/components/UI/(legacy)/Input(legacy)';
 import { zodResolver } from '@hookform/resolvers/zod';
 import SendIcon from '@mui/icons-material/Send';
 import { Box } from '@mui/material';

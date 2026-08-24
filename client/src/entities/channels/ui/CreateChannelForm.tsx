@@ -1,141 +1,90 @@
-import {
-  Box,
-  Button,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  Stack,
-  Typography,
-} from '@mui/material';
-import { mainStyles } from '@/themes';
+'use client';
+
 import { forwardRef } from 'react';
+import { Controller } from 'react-hook-form';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import ModalShell from '@/shared/components/UI/ModalShell';
 import Input from '@/shared/components/UI/Input';
+import Button, { GhostButton } from '@/shared/components/UI/Button';
+import SegmentedControl from '@/shared/components/UI/SegmentedControl';
 import useAddChannels from '../api/useAddChannels';
+
 interface CreateChannelFormProps {
   closeChannelForm: () => void;
   roomUUID: string;
-  // ref:REF
 }
 
-const channelFormsModalStyle = {
-   position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    p: 4,
-};
+const CHANNEL_TYPE_OPTIONS = [
+  { value: 'text', label: '# Text' },
+  { value: 'voice', label: '🔊 Voice' },
+];
 
 const CreateChannelForm = forwardRef<HTMLFormElement, CreateChannelFormProps>(
-  function CreateChannelForm(
-    { closeChannelForm, roomUUID }: CreateChannelFormProps,
-    ref
-  ) {
-    const { handleSubmit, reset, register, onSubmit, errors } = useAddChannels({
-      roomUUID,
-      closeChannelForm,
-    });
-    console.log(errors);
+  function CreateChannelForm({ closeChannelForm, roomUUID }, ref) {
+
+    const { handleSubmit, reset, register, onSubmit, errors, control } =
+      useAddChannels({
+        roomUUID,
+        closeChannelForm,
+      });
+
     return (
-      <Stack
-      sx={channelFormsModalStyle}
-        gap={2}
-        height={'100%'}
-        alignItems={'center'}
-        justifyContent={'center'}
-      >
-        <Box
-          borderRadius={'15px'}
-          p={2}
-          sx={{ background: mainStyles.primaryBg }}
-          component={'form'}
-          ref={ref}
-          onSubmit={handleSubmit(onSubmit)}
-          display={'flex'}
-          gap={2}
-          flexDirection={'column'}
-        >
-          <Typography mb={1} fontWeight={'bold'}>
-            create channel
-          </Typography>
-          {errors.name?.message && (
-            <Typography textAlign={'center'} color={'red'}>
-              {errors.name.message.replace('String', 'name')}
-            </Typography>
-          )}
-          <Input
-            type="text"
-            color="white"
-            placeholder={'name'}
-            {...register('name')}
-          />
-          {/* <Input
-            type="text"
-            placeholder={'description'}
-            {...register('description')}
-          /> */}
-          {errors?.type?.message && (
-            <Typography textAlign={'center'} color={'red'}>
-              {'channel type required'}
-            </Typography>
-          )}
-          <RadioGroup {...register('type')}>
-            <FormControlLabel
-              {...register('type')}
-              value="text"
-              control={
-                <Radio
-                  sx={{
-                    '&.Mui-checked': {
-                      color: 'green',
-                    },
-                  }}
-                />
-              }
-              label="text"
-            />
-            <FormControlLabel
-              value="voice"
-              control={
-                <Radio
-                  {...register('type')}
-                  sx={{
-                    '&.Mui-checked': {
-                      color: 'green',
-                    },
-                  }}
-                />
-              }
-              label="voice"
-            />
-          </RadioGroup>
-          <Box display={'flex'} gap={2}>
-            <Button
-              type="submit"
-              sx={{
-                background: mainStyles.mainBlue,
-                borderRadius: '15px',
-                fontWeight: 'bold',
-              }}
-            >
-              create channel
-            </Button>
-            <Button
+      <ModalShell
+        open
+        onClose={closeChannelForm}
+        title="Create a channel"
+        onSubmit={handleSubmit(onSubmit)}
+        formRef={ref}
+        actions={
+          <>
+            <GhostButton
               onClick={() => {
                 closeChannelForm();
                 reset();
               }}
-              sx={{
-                background: mainStyles.primaryRed,
-                borderRadius: '15px',
-                fontWeight: 'bold',
-              }}
             >
-              cancel
-            </Button>
-          </Box>
+              Cancel
+            </GhostButton>
+            <Button type="submit">Create channel</Button>
+          </>
+        }
+      >
+        <Input
+          label="Channel name"
+          placeholder="e.g. announcements"
+          error={!!errors.name}
+          helperText={errors.name?.message?.replace('String', 'name')}
+          {...register('name')}
+        />
+
+        <Box mt={2}>
+          <Typography
+            fontSize={12.5}
+            fontWeight={600}
+            color="text.secondary"
+            mb={0.75}
+          >
+            Channel type
+          </Typography>
+          <Controller
+            name="type"
+            control={control}
+            render={({ field }) => (
+              <SegmentedControl
+                value={field.value}
+                onChange={field.onChange}
+                options={CHANNEL_TYPE_OPTIONS}
+              />
+            )}
+          />
+          {errors.type && (
+            <Typography fontSize={12} color="error.main" mt={0.75}>
+              Channel type required
+            </Typography>
+          )}
         </Box>
-      </Stack>
+      </ModalShell>
     );
   }
 );

@@ -1,4 +1,4 @@
-import { mainStyles } from '@/themes';
+import { mainStyles } from '@/themes(legacy)';
 import { Box } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { useEffect, useState } from 'react';

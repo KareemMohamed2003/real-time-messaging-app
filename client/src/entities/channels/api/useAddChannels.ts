@@ -8,7 +8,7 @@ interface props {
   roomUUID: string;
   closeChannelForm: () => void;
 }
-export default function useAddChannels({ roomUUID, closeChannelForm }: props) {
+export default function useAddChannels({ roomUUID }: props) {
   const queryClient = useQueryClient();
   const createChannelSchema = z.object({
     name: z.string().min(2).max(16),
@@ -27,7 +27,6 @@ export default function useAddChannels({ roomUUID, closeChannelForm }: props) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: channelKeys.all(roomUUID) });
       reset();
-      // closeChannelForm();
     },
     onError: (error) => {
       console.log(error);
@@ -39,9 +38,10 @@ export default function useAddChannels({ roomUUID, closeChannelForm }: props) {
     register,
     setError,
     formState: { errors },
+    control,
   } = useForm<channelForm>({
     resolver: zodResolver(createChannelSchema),
     mode: 'onSubmit',
   });
-  return { handleSubmit, reset, register, setError, onSubmit, errors };
+  return { handleSubmit, reset, register, setError, onSubmit, errors, control };
 }

@@ -1,11 +1,12 @@
-import { sendApiError } from "../lib/helpers";
+import { handleDbError } from "../lib/helpers";
 import {
   createChannel,
   getChannelMessages,
   getRoomChannels,
 } from "../models/model.channels";
-import { AuthRequest } from "./db.controller";
+
 import { Request, Response } from "express";
+import { AuthRequest } from "./types";
 // channels
 export const getRoomChannelsAction = async (
   req: AuthRequest,
@@ -19,7 +20,7 @@ export const getRoomChannelsAction = async (
     // const { statusCode, message } = handlePrismaError(e, "channel");
     // console.log(e);
     // res.status(statusCode).json(message);
-    sendApiError(res, e, "Channel");
+    handleDbError(res, e, "channel");
   }
 };
 
@@ -28,16 +29,16 @@ export const createChannelAction = async (req: AuthRequest, res: Response) => {
     const { type, channelName, roomUUID } = req.body;
     console.log(type, channelName, roomUUID);
     const newChannel = await createChannel(
-      roomUUID,
       type.toUpperCase(),
       channelName,
+      roomUUID,
     );
     res.status(200).json(newChannel);
   } catch (e) {
     // console.log(e);
     // const { statusCode, message } = handlePrismaError(e, "channel");
     // res.status(statusCode).json(message);
-    sendApiError(res, e, "Channel");
+    handleDbError(res, e, "channel");
   }
 };
 
@@ -56,6 +57,6 @@ export const getChannelMessagesAction = async (
     // const { statusCode, message } = handlePrismaError(e, "channel");
     // console.log(e);
     // res.status(statusCode).json(message);
-    sendApiError(res, e, "channel");
+    handleDbError(res, e, "channel");
   }
 };

@@ -4,26 +4,21 @@ export enum UserRole {
   MEMBER = 'MEMBER',
 }
 
-export enum ChannelType {
-  TEXT = 'TEXT',
-  VOICE = 'VOICE',
-  DIRECT_MESSAGE = 'DIRECT_MESSAGE',
-}
-
+export type ChannelType = 'TEXT' | 'VOICE' | 'DIRECT_MESSAGE';
 export enum FriendRequestEnum {
   SENT = 'SENT',
   REJECTED = 'REJECTED',
   ACCEPTED = 'ACCEPTED',
 }
 
-export interface User {
+export interface IUser {
   id: number;
   username: string;
   email: string;
   uuid: string;
   profile_img: string | null;
-  // createdAt: Date;
-  // status: number;
+   createdAt?: Date;
+   status?: number;
 }
 
 export interface ChannelParticipant {
@@ -85,4 +80,5 @@ export interface IRoomMember {
   roomUUID: string;
   userId: string;
   role: UserRole;
+  user?:IUser
 }

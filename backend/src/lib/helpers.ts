@@ -68,6 +68,7 @@ export const safeAckHandler = (handler: SocketHandler<any>) => {
 };
 
 export function sendApiError(res: Response, appError: AppError) {
+  console.log(appError)
   res.status(appError.statusCode).json({
     message: appError.message,
     errorCode: appError.errorCode,

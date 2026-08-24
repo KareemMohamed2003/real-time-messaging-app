@@ -1,4 +1,4 @@
-import { mainStyles } from '@/themes';
+import { mainStyles } from '@/themes(legacy)';
 import { Box, Stack, Typography } from '@mui/material';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import User from '../../../shared/components/User';

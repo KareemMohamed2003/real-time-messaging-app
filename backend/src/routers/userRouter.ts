@@ -50,11 +50,13 @@ userRouter.post(
 userRouter.post("/update_message", updateMessageAction);
 userRouter.delete("/profile_pic", deleteProfileImgAction);
 userRouter.delete("/delete_message/:messageId", deleteMessageAction);
+
+//////////////////////////////////////////// channel routes ///////////////////////////////////////////////////////////////////
 userRouter.post("/add_channel", createChannelAction);
 userRouter.post("/get_channels", getRoomChannelsAction);
 userRouter.post("/get_channel_messages", getChannelMessagesAction);
 
-// rooms routes
+//////////////////////////////////////////// rooms routes ////////////////////////////////////////////////////////////////////
 userRouter.post("/createRoom", createRoomAction);
 userRouter.post("/get_rooms", getUserJoinedRoomsAction);
 userRouter.post("/add_room_members", addRoomMembersAction);

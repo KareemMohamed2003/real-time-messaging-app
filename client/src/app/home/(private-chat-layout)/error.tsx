@@ -1,5 +1,5 @@
 'use client';
-import Button from '@/shared/components/UI/Button';
+import Button from '@/shared/components/UI/(legacy)/Button(legacy)';
 import { AppRoutes } from '@/shared/lib/utils';
 import { Box, Typography } from '@mui/material';
 import Link from 'next/link';

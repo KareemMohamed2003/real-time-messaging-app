@@ -1,89 +1,117 @@
 'use client';
-import React, { useState } from 'react';
-import { Box, Typography, Button, Grid, Modal } from '@mui/material';
+import { useState } from 'react';
+import { Box, Modal, Typography } from '@mui/material';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { useUserStore } from '@/app/store/user-store';
 import useRooms from '@/entities/rooms/api/useRooms';
 import CreateRoomForm from '@/entities/rooms/ui/CreateRoomForm';
-import RoomLink from '@/entities/rooms/ui/RoomLink';
-import AddRoomIcon from '@/shared/components/icons/AddRoom';
-import RoomsIcon from '@/shared/components/icons/RoomsIcon';
-import { mainStyles } from '@/themes';
+import RoomCard from '@/entities/rooms/ui/RoomCard';
+import Button from '@/shared/components/UI/Button';
+import { RoomCardSkeleton } from '@/shared/components/UI/Skeletons';
 
 export default function Rooms() {
   const { uuid } = useUserStore((state) => state.profile!);
-  const { rooms } = useRooms(uuid!);
+  const { rooms, isLoading } = useRooms(uuid!);
   const [displayForm, setDisplayForm] = useState(false);
   const closeRoomForm = () => setDisplayForm(false);
   const openRoomForm = () => setDisplayForm(true);
 
   return (
-    <Box
-      height={'100%'}
-      width={'100%'}
-      display={'flex'}
-      flexDirection={'column'}
-      gap={4}
-      sx={{ overflowY: 'auto', flexGrow: 1 }}
-    >
-      <Box
-        display={'flex'}
-        alignItems={'center'}
-        p={1}
-        px={4}
-        width={'100%'}
-        gap={3}
-      >
-        <RoomsIcon height={60} width={60} />
-        <Typography variant={'h6'} fontWeight={500}>
-          rooms
-        </Typography>
+    <Box height="100%" width="100%" sx={{ overflowY: 'auto' }}>
+      <Box px={4} py={3.25}>
+        {/* .page-head */}
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          gap={2}
+          flexWrap="wrap"
+          mb={2.5}
+        >
+          <Typography variant="h5" fontWeight={700}>
+            Rooms
+          </Typography>
+          <Button
+            variant="solid"
+            onClick={openRoomForm}
+            startIcon={<AddRoundedIcon sx={{ fontSize: 15 }} />}
+          >
+            Create room
+          </Button>
+        </Box>
+
+        {/* .toolbar-row */}
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          gap={1.75}
+          flexWrap="wrap"
+          mb={2.25}
+        >
+          <Box
+            display="flex"
+            alignItems="center"
+            gap={1}
+            sx={(theme) => ({
+              width: 280,
+              backgroundColor: theme.palette.surface.elevated,
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: `${theme.radius.sm}px`,
+              px: 1.5,
+              py: 0.5,
+              color: theme.palette.text.secondary,
+            })}
+          >
+            <SearchOutlinedIcon sx={{ fontSize: 15 }} />
+            <Box
+              component="input"
+              placeholder="Search rooms"
+              sx={{
+                border: 0,
+                outline: 'none',
+                background: 'transparent',
+                font: 'inherit',
+                fontSize: 13,
+                color: 'inherit',
+                width: '100%',
+              
+              }}
+            />
+          </Box>
+        </Box>
+
+      
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+            gap: '14px',
+          }}
+        >
+          {isLoading ? (
+            <RoomCardSkeleton count={4} />
+          ) : (
+            rooms?.map((room: any) => (
+              <RoomCard
+                key={room.roomUUID}
+                roomName={room.roomName}
+                roomUUID={room.roomUUID}
+                icon={room.icon}
+              />
+            ))
+          )}
+        </Box>
       </Box>
-      <Button
-        onClick={openRoomForm}
-        sx={{
-          borderRadius: '16px',
-          textTransform: 'lowercase',
-          alignSelf: 'start',
-          background: mainStyles.mainBlue,
-          marginLeft: 4,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 2,
-          fontSize: '1.2rem',
-        }}
-        variant={'contained'}
-      >
-        create room
-        <AddRoomIcon height={30} width={30} />
-      </Button>
 
       <Modal
         open={displayForm}
         onClose={closeRoomForm}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        aria-labelledby="create-room-title"
       >
         <CreateRoomForm closeRoomForm={closeRoomForm} />
       </Modal>
-
-      <Grid
-        container
-        px={4}
-        spacing={2}
-        rowSpacing={5}
-        sx={{ alignItems: 'center' }}
-      >
-        {/* render rooms */}
-        {rooms?.map((el: any, index: number) => (
-          <Grid item xs={6} key={index}>
-            <RoomLink
-              roomName={el.roomName}
-              roomUUID={el.roomUUID}
-              icon={el.icon}
-            />
-          </Grid>
-        ))}
-      </Grid>
     </Box>
   );
 }

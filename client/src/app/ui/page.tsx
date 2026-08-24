@@ -9,7 +9,7 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { styled } from '@mui/system';
 import { sizing } from '@mui/system';
-import theme from '@/themes';
+import theme from '@/themes(legacy)';
 import { primaryBg } from '../shared/lib/constants';
 // import Input from '@/components/input';
 //  main-background color

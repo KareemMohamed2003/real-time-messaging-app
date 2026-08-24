@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import { useUserStore } from '@/app/store/user-store';
-import Loading from '@/shared/components/UI/loading';
+import Loading from '@/shared/components/UI/(legacy)/loading(legacy)';
 import Portal from '@/shared/components/Portal';
 import PrivateChatComponent from '@/shared/components/PrivateChatComponent';
 import CallManager from '@/features/voice-call/ui/CallManager';

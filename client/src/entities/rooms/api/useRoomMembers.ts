@@ -28,7 +28,7 @@ export default function useRoomMembers(
   }, [friends, data]);
 
   return {
-    roomMembers: data,
+    roomMembers: data as IRoomMember[],
     addableFriends,
   };
 }

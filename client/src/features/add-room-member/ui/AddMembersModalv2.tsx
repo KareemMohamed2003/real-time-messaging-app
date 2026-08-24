@@ -1,5 +1,5 @@
 import React from 'react';
-import { surfaceDialog, BORDER, ACCENT, ACCENT_HOVER } from '@/themes';
+import { surfaceDialog, BORDER, ACCENT, ACCENT_HOVER } from '@/themes(legacy)';
 import {
   Dialog,
   DialogTitle,
@@ -21,7 +21,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import TagIcon from '@mui/icons-material/AlternateEmail';
 import SendIcon from '@mui/icons-material/Send';
-import RoomMember from '@/entities/rooms/ui/RoomMember';
+import RoomMember from '@/entities/rooms/ui/legacy/RoomMember(legacy)';
 import useAddRoomMemberMember from '../model/useAddRoomMembers';
 
 export interface AddMembersModalProps {
@@ -44,7 +44,6 @@ export default function AddMembersModal({
   onInviteByTag,
   roomUUID,
 }: AddMembersModalProps) {
-  // if (isLoading) return <h1>loading data..</h1>; // crete a modalLoader
 
   const {
     handleInvite,
@@ -60,6 +59,7 @@ export default function AddMembersModal({
     tagValue,
     setTagValue,
   } = useAddRoomMemberMember({ roomUUID, onClose, onInviteByTag });
+
   return (
     <Dialog
       open={open}

@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { answerCall, rejectCall } from '@/shared/lib/webrtc';
-import { mainStyles } from '@/themes';
+import { mainStyles } from '@/themes(legacy)';
 import User from '@/shared/components/User';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import CallIcon from '@mui/icons-material/Call';

@@ -1,94 +1,162 @@
 'use client';
-import { Stack, Typography, Box, CircularProgress } from '@mui/material';
+
+import { Typography, Stack, Box, Paper, CircularProgress } from '@mui/material';
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
+import { useRouter } from 'next/navigation';
 import Button from '@/shared/components/UI/Button';
 import Input from '@/shared/components/UI/Input';
 import useRegister from '@/features/authentication/api/useRegister';
+import { AppRoutes } from '@/shared/lib/utils';
 
 export default function RegisterPage() {
   const [formState, dispatchForm] = useRegister();
+  const router = useRouter();
+
   return (
     <Stack
-      flexDirection="column"
-      alignItems={'center'}
-      justifyContent={'center'}
-      height={'100%'}
+      alignItems="center"
+      justifyContent="center"
+      height="100%"
+      sx={(theme) => ({ backgroundImage: theme.gradients.auth })}
     >
-      <Stack width="30%" height="100%" justifyContent="center" gap={5}>
-        <Typography
-          variant={'h2'}
-          textAlign="center"
-          sx={{
-            backgroundImage:
-              'linear-gradient(90deg, rgba(129,130,130,1) 0%, rgba(45,45,45,1) 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-          fontWeight="bold"
-        >
-          register
-        </Typography>
+      <Paper
+        sx={(theme) => ({
+          width: 400,
+          maxWidth: '92vw',
+          borderRadius: `${theme.radius.lg}px`,
+          p: { xs: 3, sm: 4.25 },
+        })}
+      >
+        <Box display="flex" alignItems="center" gap={1.25} mb={3.25}>
+          <Typography variant="h6" fontWeight={700}>
+            ChatApp
+          </Typography>
+        </Box>
+
         <Box
-          gap={3}
+          display="flex"
+          sx={(theme) => ({
+            background: theme.palette.surface.elevated,
+            borderRadius: 999,
+            p: 0.5,
+            mb: 3,
+          })}
+        >
+          <Box
+            component="button"
+            type="button"
+            onClick={() => router.push(AppRoutes.LOGIN_ROUTE)}
+            sx={(theme) => ({
+              all: 'unset',
+              flex: 1,
+              textAlign: 'center',
+              cursor: 'pointer',
+              py: 1,
+              borderRadius: 999,
+              fontWeight: 600,
+              fontSize: 13,
+              color: theme.palette.text.secondary,
+            })}
+          >
+            Sign in
+          </Box>
+          <Box
+            component="button"
+            type="button"
+            sx={(theme) => ({
+              all: 'unset',
+              flex: 1,
+              textAlign: 'center',
+              cursor: 'pointer',
+              py: 1,
+              borderRadius: 999,
+              fontWeight: 600,
+              fontSize: 13,
+              color: theme.palette.primary.contrastText,
+              backgroundColor: theme.palette.primary.main,
+            })}
+          >
+            Create account
+          </Box>
+        </Box>
+
+        <Box
           component="form"
-          display={'flex'}
-          flexDirection={'column'}
+          display="flex"
+          flexDirection="column"
+          gap={2}
           onSubmit={dispatchForm}
         >
           <Input
-            placeholder={'username'}
-            type="text"
+            label="Username"
             name="username"
+            type="text"
             required
+            error={!!formState?.errors?.username?._errors[0]}
+            helperText={formState?.errors?.username?._errors[0]}
           />
-          {formState?.errors?.username!._errors[0] && (
-            <Typography color={'red'}>
-              {formState?.errors?.username!?._errors[0]}
-            </Typography>
-          )}
-          <Input placeholder={'email'} type="email" name="email" required />
-          {formState?.errors?.email!?._errors[0] && (
-            <Typography color={'red'}>
-              {formState?.errors?.email!._errors[0]}
-            </Typography>
-          )}
+
           <Input
-            placeholder={'password'}
-            type="password"
-            name="password"
+            label="Email"
+            name="email"
+            type="email"
             required
+            error={!!formState?.errors?.email?._errors[0]}
+            helperText={formState?.errors?.email?._errors[0]}
           />
-          {formState?.errors?.password!?._errors[0] && (
-            <Typography color={'red'}>
-              {formState?.errors?.password!?._errors[0]}
-            </Typography>
-          )}
+
+          <Input
+            label="Password"
+            name="password"
+            type="password"
+            required
+            error={!!formState?.errors?.password?._errors[0]}
+            helperText={formState?.errors?.password?._errors[0]}
+          />
+
           <Button
-            disabled={formState.disableForm}
-            variant="contained"
             type="submit"
-            sx={{
-              fontSize: '1.3rem',
-              bgColor: '#13CB7E',
-              borderRadius: 16,
-              color: 'white',
-              p: '6px 35px',
-            }}
+            variant="solid"
+            fullWidth
+            disabled={formState.disableForm}
+            sx={{ mt: 0.5, justifyContent: 'center', py: 1.25 }}
           >
             {formState.disableForm ? (
-              <CircularProgress color="inherit" />
+              <CircularProgress size={20} color="inherit" />
             ) : (
-              'sign up'
+              'Sign up'
             )}
           </Button>
 
           {formState?.internalError && (
-            <Typography textAlign="center" color={'red'}>
-              {formState?.internalError}
-            </Typography>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              gap={0.75}
+              sx={{ color: 'error.main', fontSize: 12.5 }}
+            >
+              <ErrorOutlineRoundedIcon sx={{ fontSize: 15 }} />
+              {formState.internalError}
+            </Box>
           )}
         </Box>
-      </Stack>
+
+        <Box
+          mt={2.5}
+          textAlign="center"
+          sx={{ fontSize: 12.5, color: 'text.secondary' }}
+        >
+          Already have an account?{' '}
+          <Box
+            component="span"
+            onClick={() => router.push(AppRoutes.LOGIN_ROUTE)}
+            sx={{ color: 'primary.main', fontWeight: 600, cursor: 'pointer' }}
+          >
+            Sign in
+          </Box>
+        </Box>
+      </Paper>
     </Stack>
   );
 }

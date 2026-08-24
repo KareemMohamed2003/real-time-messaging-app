@@ -1,6 +1,6 @@
-import Button from '../../../shared/components/UI/Button';
+import Button from '../../../shared/components/UI/(legacy)/Button(legacy)';
 import { Box, Typography } from '@mui/material';
-import { mainStyles } from '@/themes';
+import { mainStyles } from '@/themes(legacy)';
 import { deleteMessageQuery } from '@/shared/api/queries';
 import { useMutation } from '@tanstack/react-query';
 import { useUserStore } from '@/app/store/user-store';

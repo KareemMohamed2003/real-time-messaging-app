@@ -17,8 +17,8 @@ export default function useAddRoomMembers({
   onInviteByTag,
 }: UseAddRoomMemberOptions) {
   const { friends, isLoading } = UseFriendsQuery();
+  // refactor this code if possible
   const userFriends: IAddableRoomMember[] = friends?.all;
-  // receives friends of user 
   const { addableFriends } = useRoomMembers(roomUUID, userFriends);
   const { isPending, isError, mutate, isSuccess } = useAddRoomMemberMutation(roomUUID);
   const [query, setQuery] = useState('');
@@ -26,7 +26,6 @@ export default function useAddRoomMembers({
     Map<string, IAddableRoomMember>
   >(() => new Map());
   const [tagValue, setTagValue] = useState('');
-
   const filteredMembers = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return addableFriends;
@@ -68,6 +67,7 @@ export default function useAddRoomMembers({
     onInviteByTag?.(tag);
     setTagValue('');
   }, [tagValue, onInviteByTag]);
+
   return {
     handleInvite,
     handleDone,

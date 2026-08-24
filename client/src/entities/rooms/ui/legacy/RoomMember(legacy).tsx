@@ -1,4 +1,4 @@
-import { ACCENT, ACCENT_HOVER } from '@/themes';
+import { ACCENT, ACCENT_HOVER } from '@/themes(legacy)';
 import {
   ListItem,
   ListItemAvatar,
@@ -6,9 +6,9 @@ import {
   Avatar,
   Checkbox,
 } from '@mui/material';
-import { IAddableRoomMember, STATUS_LABEL } from '../../../features/add-room-member/ui/AddMembersModalv2';
 import CheckIcon from '@mui/icons-material/Check';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import { IAddableRoomMember } from '@/features/add-room-member/model/types';
 
 interface props {
   member: IAddableRoomMember;

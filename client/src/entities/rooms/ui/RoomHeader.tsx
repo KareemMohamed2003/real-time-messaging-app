@@ -1,7 +1,7 @@
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import GroupIcon from '@mui/icons-material/Group';
-import Input from '@/shared/components/UI/Input';
-import { Box, Typography } from '@mui/material';
+import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import { Box, IconButton, InputBase, Tooltip, Typography } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 
 interface props {
@@ -11,7 +11,6 @@ interface props {
   displayAddMembers: boolean;
   isOpen: boolean;
 }
-const iconsStyle = { color: '#545454', fontSize: '2.5rem' };
 
 export default function RoomHeader({
   roomName,
@@ -22,32 +21,55 @@ export default function RoomHeader({
 }: props) {
   return (
     <Box
-      px={2}
-      py={1}
-      display={'flex'}
-      gap={3}
-      width={'100%'}
+      px={2.5}
+      height={60}
+      flexShrink={0}
+      display="flex"
       alignItems="center"
-      justifyContent={'space-between'}
-      sx={{ background: 'rgba(255,255,255,0.07)' }}
+      justifyContent="space-between"
+      gap={3}
+      sx={(theme) => ({ borderBottom: `1px solid ${theme.palette.divider}` })}
     >
-      {/*<RoomsIcon height={60} width={60}/>*/}
-      <Box>
-        <Typography variant={'h6'} fontWeight={500}>
-          {roomName}
-        </Typography>
-      </Box>
-      <Box display={'flex'} gap={3} mr={2}>
-        {/* <Input  type="text" placeholder="search"/> */}
-        <Box position={'relative'}>
-          <Input type="text" placeholder="search" />
-          {/* <SearchResult/> */}
+      <Typography fontWeight={700} fontSize={14.5} noWrap>
+        {roomName}
+      </Typography>
+
+      <Box display="flex" alignItems="center" gap={1.5}>
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={1}
+          sx={(theme) => ({
+            width: 220,
+            backgroundColor: theme.palette.surface.elevated,
+            border: `1px solid ${theme.palette.divider}`,
+            borderRadius: `${theme.radius.sm}px`,
+            px: 1.5,
+            py: 0.75,
+            color: theme.palette.text.secondary,
+            '&:focus-within': {
+              borderColor: theme.palette.primary.main,
+              boxShadow: `0 0 0 3px ${theme.palette.primary.main}26`,
+            },
+          })}
+        >
+          <SearchOutlinedIcon sx={{ fontSize: 16 }} />
+          <InputBase
+            placeholder="Search"
+            sx={{ fontSize: 13, flex: 1, color: 'text.primary' }}
+          />
         </Box>
-        <GroupAddIcon
-          onClick={() => setAddMembersDisplay(!displayAddMembers)}
-          sx={iconsStyle}
-        />
-        <GroupIcon onClick={() => setOpen(!isOpen)} sx={iconsStyle} />
+
+        <Tooltip title="Add members">
+          <IconButton onClick={() => setAddMembersDisplay(!displayAddMembers)}>
+            <GroupAddOutlinedIcon sx={{ fontSize: 20 }} />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="View members">
+          <IconButton onClick={() => setOpen(!isOpen)}>
+            <GroupOutlinedIcon sx={{ fontSize: 20 }} />
+          </IconButton>
+        </Tooltip>
       </Box>
     </Box>
   );

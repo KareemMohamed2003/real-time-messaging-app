@@ -4,7 +4,7 @@ import { createStore } from 'zustand/vanilla';
 import { useStore } from 'zustand';
 import { userStoreContext } from './StoreContextProvider';
 import { UserState, userActions } from './types';
-import { TMessage, User } from '@/shared/types/api.types';
+import { TMessage, IUser } from '@/shared/types/api.types';
 import { socketClient } from '@/shared/lib/socket';
 import { RTCConfiguration, cancelCall } from '@/shared/lib/webrtc';
 
@@ -43,7 +43,7 @@ export const zustandStore = createStore<userStore>()((set, get) => ({
   // when it comes to setting rooms , friends we need to decided whether we're gonna udate the state directly or refetch
   //  the data from the database after we let's say add a friend first , or join a new room for example
   setRooms: (rooms: []) => set(() => ({ rooms })), //  these functions may change later
-  setProfile: (profile: User) => {
+  setProfile: (profile: IUser) => {
     set(() => ({
       profile: {
         username: profile.username!,

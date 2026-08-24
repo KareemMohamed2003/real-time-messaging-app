@@ -1,4 +1,4 @@
-import { User ,TMessage} from "@/shared/types/api.types";
+import { IUser ,TMessage} from "@/shared/types/api.types";
 
 // export type TMessage = {
 //   id: number | null;
@@ -36,7 +36,7 @@ export type UserState = {
   incomingCalls: Map<string, tCall>;
   rooms: any[];
   onlineFriends: TOnlineFriend[];
-  profile: User;
+  profile: IUser;
   notifications: any[];
   privateMessages: Map<number, any>;
 };
@@ -47,7 +47,7 @@ export type TNotification = {
 };
 export type userActions = {
   setRooms: (rooms: []) => void;
-  setProfile: (userProfile: User) => void;
+  setProfile: (userProfile: IUser) => void;
   setOnlineFriends: (friends: TOnlineFriend[]) => void;
   updateOnlineFriends: (newFriends: any) => void;
   setNotification: (notifications: TNotification) => void;
