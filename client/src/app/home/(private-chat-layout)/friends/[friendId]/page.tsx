@@ -7,8 +7,8 @@ import Loading from '@/shared/components/UI/(legacy)/loading(legacy)';
 import Portal from '@/shared/components/Portal';
 import PrivateChatComponent from '@/shared/components/PrivateChatComponent';
 import CallManager from '@/features/voice-call/ui/CallManager';
-import { useMessageContext } from '@/entities/messages/ui/PrivateChatContext';
-import PrivateChatModal from '@/entities/messages/ui/PrivateChatModal';
+import { useMessageContext } from '@/entities/messages/ui/legacy/PrivateChatContext(legacy)';
+import PrivateChatModal from '@/entities/messages/ui/legacy/PrivateChatModal(legacy)';
 import UseFriendsQuery from '@/entities/friends/api/useFriendsQuery';
 import { getFriendSocketId } from '@/shared/lib/utils';
 export default function PrivateChat() {

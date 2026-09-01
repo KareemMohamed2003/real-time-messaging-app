@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import {  handleDbError } from "../lib/helpers";
+import { handleDbError } from "../lib/helpers";
 import {
   getPrivateMessages,
   deleteMessage,
-  updateMessage,
+  updateMessageContent,
 } from "../models/model.messages";
 import { AuthRequest } from "./types";
-
+import { DEFAULT_MESSAGE_INCLUDE } from "../models/model.messages";
 export const getPrivateMessagesAction = async (
   req: AuthRequest,
   res: Response,
@@ -20,6 +20,7 @@ export const getPrivateMessagesAction = async (
     const userMessages = await getPrivateMessages(
       userId,
       friendId,
+      DEFAULT_MESSAGE_INCLUDE,
       Number(messageId),
     );
     res.json({ privateMessages: userMessages });
@@ -48,8 +49,8 @@ export const deleteMessageAction = async (req: AuthRequest, res: Response) => {
     const uuid = req.token?.uuid!;
     const messageId = Number(req.params.messageId);
     console.log("messageId", messageId);
-    await deleteMessage(uuid, messageId);
-    res.status(200).end();
+    const deletedMessageId = await deleteMessage(uuid, messageId);
+    res.json(deletedMessageId);
   } catch (e) {
     // const deleteError = handleDeleteError(e, "message");
     // console.log("error at deleteMessageAction() : ", e);
@@ -63,8 +64,8 @@ export const updateMessageAction = async (req: AuthRequest, res: Response) => {
     const { messageId, newContent } = req.body;
     console.log(messageId, newContent);
     console.log(req.body.messageId);
-    await updateMessage(newContent, messageId);
-    res.status(200).send();
+    const updatedMessage = await updateMessageContent(newContent, messageId,DEFAULT_MESSAGE_INCLUDE);
+    res.json(updatedMessage);
   } catch (e) {
     // console.log("error at updateMessageAction() :", e);
     // res.status(500).send();

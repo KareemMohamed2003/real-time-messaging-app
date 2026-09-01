@@ -1,5 +1,5 @@
 import { DefaultEventsMap, Server } from "socket.io";
-import { createMessage } from "../../models/model.messages";
+import { createMessage, DEFAULT_MESSAGE_INCLUDE } from "../../models/model.messages";
 import { resendPendingCall } from "../helpers";
 import { ISocket } from "./socket";
 
@@ -48,11 +48,11 @@ export const onPrivateMessage = async (
   const to = message.to;
   const content = message.content;
   const from = message.from;
-  const newMessage = await createMessage(content, from, to);
+  const newMessage = await createMessage(content, from, to,DEFAULT_MESSAGE_INCLUDE);
   socket
     .to(from)
     .to(to)
-    .emit("private message", newMessage, async (err: any, ack: any) => {
+    .emit("private-message", newMessage, async (err: any, ack: any) => {
       console.log("ack", ack);
       console.log("err", err);
     });

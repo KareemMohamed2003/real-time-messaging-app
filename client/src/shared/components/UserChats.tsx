@@ -1,10 +1,11 @@
 import { useUserStore } from '@/app/store/user-store';
-import MessageForm from '@/entities/messages/ui/MessageForm';
-import PrivateMessageItem from '@/entities/messages/ui/PrivateMessageItem';
+import MessageForm from '@/entities/messages/ui//MessageForm';
+// import PrivateMessageItem from '@/entities/messages/ui/PrivateMessageItem';
 import { Stack } from '@mui/material';
 import { sendMessage } from '@/shared/lib/socket';
 import { TMessage } from '@/shared/types/api.types';
 import { IPrivateChat } from './PrivateChatComponent';
+import PrivateMessageItem from '@/entities/messages/ui/legacy/PrivateMessageItem(legacy)';
 
 export interface UserChats extends IPrivateChat {
   messages: TMessage[];

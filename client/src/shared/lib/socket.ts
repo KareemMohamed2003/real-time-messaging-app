@@ -13,7 +13,7 @@ export const sendMessage = (
   to?: string,
   channelId?: number
 ) => {
-  socketClient.emit('private message', {
+  socketClient.emit('private-message', {
     to,
     content,
     from,
@@ -50,7 +50,7 @@ export const initSocket = (
     uuid,
   };
   socketClient.connect();
-  socketClient.on('private message', (message, ack) => {
+  socketClient.on('private-message', (message, ack) => {
     console.log('on private message handler message', message);
     ack({ status: 'delieverd' });
     zustandStore.getState().updateMessages(message);

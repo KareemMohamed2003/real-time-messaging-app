@@ -31,7 +31,7 @@ import {
   updateRoomNameAction,
   deleteRoomMemberAction,
 } from "../controllers/rooms.controller";
-import { requireRoomOwner } from "../Middleware/rooms-middleware";
+import { requireRoomOwner } from "../middleware/rooms-middleware";
 
 const userRouter = Router();
 const multerUpload = multer({ storage: multer.memoryStorage() });

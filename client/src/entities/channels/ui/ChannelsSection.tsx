@@ -9,10 +9,7 @@ import { useState } from 'react';
 import MessageForm from '../../messages/ui/MessageForm';
 import UseSendChannelMessage from '../api/UseSendChannelMessage';
 import { channelKeys } from '@/shared/api/QueryKeys';
-import {
-  ChannelRowSkeleton,
-  RoomConversationSkeleton,
-} from '@/shared/components/UI/Skeletons';
+import { ChannelRowSkeleton, RoomConversationSkeleton } from '@/shared/components/UI/Skeletons';
 
 interface props {
   roomUUID: string;
@@ -33,27 +30,23 @@ export default function ChannelsSection({ roomUUID, uuid }: props) {
   const channelId = selectedChannel ? selectedChannel : activeChannel;
   const closeChannelForm = () => toggleChannelForm(false);
   const openChannelForm = () => toggleChannelForm(true);
-
+  console.log('active channel at channelSection.tsx', activeChannel);
+  console.log('channelId at channelSection.tsx', channelId);
   if (isLoading) {
     return (
-      <Box
-        display="flex"
-        height="100%"
-        width="100%"
-        sx={{ overflowY: 'hidden' }}
-      >
+      <Box display="flex" height="100%" width="100%" sx={{ overflowY: 'hidden' }}>
         <Stack
           flexShrink={0}
           width={220}
           height="100%"
-          sx={(theme) => ({
+          sx={theme => ({
             borderRight: `1px solid ${theme.palette.divider}`,
           })}
         >
           <Box
             height={60}
             flexShrink={0}
-            sx={(theme) => ({
+            sx={theme => ({
               borderBottom: `1px solid ${theme.palette.divider}`,
             })}
           />
@@ -76,17 +69,12 @@ export default function ChannelsSection({ roomUUID, uuid }: props) {
         channels={data}
         selectedChannelId={channelId}
       />
-      <CreateChannelForm
-        roomUUID={roomUUID}
-        closeChannelForm={closeChannelForm}
-      />
+      {isChannelFormOpen && (
+        <CreateChannelForm roomUUID={roomUUID} closeChannelForm={closeChannelForm} />
+      )}
       <Stack maxHeight="100%" width="100%">
         <ChannelChat channelId={channelId} roomUUID={roomUUID} />
-        <MessageForm
-          onSubmit={({ message }) =>
-            sendChannelMessage(message, channelId, uuid)
-          }
-        />
+        <MessageForm onSubmit={({ message }) => sendChannelMessage(message, channelId, uuid)} />
       </Stack>
     </Box>
   );

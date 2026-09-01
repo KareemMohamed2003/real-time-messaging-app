@@ -3,14 +3,15 @@ import { Modal } from '@mui/base';
 import { Box, Stack } from '@mui/material';
 import ChannelChat from '../ChannelChat';
 import CreateChannelForm from '../CreateChannelForm';
-import ChannelsNav from './ChannelsNav(legacy)';
+
 import { getRoomChannelsQuery } from '@/shared/api/queries';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import MessageForm from '../../../messages/ui/MessageForm';
+import MessageForm from '../../../messages/ui/legacy/MessageForm(legacy)';
 import UseSendChannelMessage from '../../api/UseSendChannelMessage';
 import Loading from '@/shared/components/UI/(legacy)/loading(legacy)';
 import { channelKeys } from '@/shared/api/QueryKeys';
+import ChannelsNav from './ChannelsNav(legacy)';
 
 interface props {
   roomUUID: string;

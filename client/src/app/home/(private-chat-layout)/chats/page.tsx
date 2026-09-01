@@ -1,6 +1,4 @@
 'use client';
-import Chats from '@/shared/components/Chats';
-import Input from '@/shared/components/UI/(legacy)/Input(legacy)';
 import { Box } from '@mui/material';
 export default function Home() {
   return (
@@ -13,10 +11,7 @@ export default function Home() {
       gap={5}
       alignItems={'center'}
     >
-      <Box width={'100%'}>
-        <Input placeholder={'search'} type={'text'} style={{ width: '100%' }} />
-      </Box>
-      <Chats />
+    <h1>chats page</h1>
     </Box>
   );
 }

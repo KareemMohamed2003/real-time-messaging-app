@@ -76,13 +76,11 @@ export default function Rooms() {
                 fontSize: 13,
                 color: 'inherit',
                 width: '100%',
-              
               }}
             />
           </Box>
         </Box>
 
-      
         <Box
           sx={{
             display: 'grid',
@@ -104,14 +102,10 @@ export default function Rooms() {
           )}
         </Box>
       </Box>
-
-      <Modal
-        open={displayForm}
-        onClose={closeRoomForm}
-        aria-labelledby="create-room-title"
-      >
-        <CreateRoomForm closeRoomForm={closeRoomForm} />
-      </Modal>
+    
+      {displayForm && (
+        <CreateRoomForm open={displayForm} closeRoomForm={closeRoomForm} />
+      )}
     </Box>
   );
 }

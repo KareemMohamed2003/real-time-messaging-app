@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useMessageContext } from '../PrivateChatContext';
+import { useMessageContext } from '../legacy/PrivateChatContext(legacy)';
 export default function DeleteMessageButton() {
   const { closeMessageMenuOptions } = useMessageContext();
   return (

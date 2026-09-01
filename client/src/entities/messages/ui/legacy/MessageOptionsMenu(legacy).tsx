@@ -1,9 +1,9 @@
 import { Stack, Box } from '@mui/material';
-import { mainStyles } from '@/themes(legacy)';
-import MessageMenuOptionModalButton from './MessageMenuOptionModalButton';
-import DeleteMessagePanel from './DeleteMessagePanel';
-import EditMessageButton from './messageOptionsButtons/EditMessageButton';
-import DeleteMessageButton from './messageOptionsButtons/DeleteMessageButton';
+
+import MessageMenuOptionModalButton from './MessageMenuOptionModalButton(legacy)';
+import DeleteMessagePanel from './DeleteMessagePanel(legacy)';
+import EditMessageButton from '../messageOptionsButtons(legacy)/EditMessageButton(legacy)';
+import DeleteMessageButton from '../messageOptionsButtons(legacy)/DeleteMessageButton(legacy)';
 import { MessageOptionsProps } from './MessageOptions';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import ReplyIcon from '@mui/icons-material/Reply';
@@ -18,7 +18,6 @@ export default function MessageOptionsMenu({
   senderUUID,
   uuid,
 }: props) {
-  const { grey } = mainStyles;
   const menuOptions = [
     // {
     //   option: 'Add reaction',
@@ -76,7 +75,7 @@ export default function MessageOptionsMenu({
   return (
     <Stack
       component={'div'}
-      onClick={
+      onClick={ 
         (e) => e.stopPropagation() //stops propagtion to prevent the MessageOptionsMenu from being disabled
       }
       position={'absolute'}
@@ -91,18 +90,28 @@ export default function MessageOptionsMenu({
         backdropFilter: 'blur(50px)',
       }}
     >
+      {/*       
+       sx={(theme) => ({
+          width: 400,
+          maxWidth: '92vw',
+          borderRadius: `${theme.radius.lg}px`,
+          p: { xs: 3, sm: 4.25 },
+        })} */}
       {menuOptions.map((el, index) => (
         <Box
           key={index}
           width={'15em'}
           display={'flex'}
           justifyContent={'space-between'}
-          sx={{
-            ':hover': {
-              background: grey,
-              borderRadius: '25px',
-            },
-          }}
+          sx={(theme) => ({
+            ':hover':{
+              background:theme.palette.surface.high
+            }
+            // ':hover': {
+            //   background: theme.palette.grey,
+            //   borderRadius: '25px',
+            // },
+          })}
           component={'div'}
         >
           <MessageMenuOptionModalButton

@@ -2,8 +2,8 @@ import { mainStyles } from '@/themes(legacy)';
 import { Box } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { useEffect, useState } from 'react';
-import { IMessageMenuOptionModalButton } from './MessageMenuOptionModalButton';
-import { useMessageContext } from './PrivateChatContext';
+import { IMessageMenuOptionModalButton } from './MessageMenuOptionModalButton(legacy)';
+import { useMessageContext } from './PrivateChatContext(legacy)';
 import { togglePortalEffect } from '@/shared/lib/utils';
 const { grey } = mainStyles;
 const style = {

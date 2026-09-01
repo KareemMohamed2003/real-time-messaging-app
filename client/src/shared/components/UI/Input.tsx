@@ -37,7 +37,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   const inputId = id ?? generatedId;
 
   return (
-    <Box>
+    <>
       {label && (
         <Typography
           component="label"
@@ -73,6 +73,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
                 disableRipple
                 onClick={() => setVisible((v) => !v)}
                 sx={{
+                 
                   fontSize: 12,
                   fontWeight: 600,
                   color: 'text.secondary',
@@ -86,7 +87,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           ) : undefined,
         }}
       />
-    </Box>
+    </>
   );
 });
 

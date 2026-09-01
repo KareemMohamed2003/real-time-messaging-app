@@ -36,7 +36,7 @@ export default function ChannelsNav({
 }: ChannelsNavProps) {
   const { textChannels, voiceChannels } = useMemo(
     () => ({
-      textChannels: channels?.filter((c) => c.type !== 'TEXT') ?? [],
+      textChannels: channels?.filter((c) => c.type === 'TEXT') ?? [],
       voiceChannels: channels?.filter((c) => c.type === 'VOICE') ?? [],
     }),
     [channels]
@@ -86,16 +86,24 @@ export default function ChannelsNav({
           <ChannelRowSkeleton />
         ) : (
           <>
-            {textChannels.map((channel) => (
-              <Channel
-                key={channel.channelId}
-                channelId={channel.channelId}
-                type={channel.type}
-                name={channel.channelName}
-                active={channel.channelId === selectedChannelId}
-                onClick={() => setChannel(channel.channelId)}
-              />
-            ))}
+            {textChannels.length > 0 && (
+              <>
+                <Typography sx={{ ...sectionLabelSx, pl: 1.25, mt: 0.75 }}>
+                  Text
+                </Typography>
+
+                {textChannels.map((channel) => (
+                  <Channel
+                    key={channel.channelId}
+                    channelId={channel.channelId}
+                    type={channel.type}
+                    name={channel.channelName}
+                    active={channel.channelId === selectedChannelId}
+                    onClick={() => setChannel(channel.channelId)}
+                  />
+                ))}
+              </>
+            )}
 
             {voiceChannels.length > 0 && (
               <>

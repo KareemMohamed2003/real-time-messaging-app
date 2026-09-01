@@ -1,8 +1,8 @@
-import Message from './Message';
-import MessageOptions from './MessageOptions';
-import MessageEditor from './MessageEditor';
-import MessageOptionsMenu from './MessageOptionsMenu';
-import { useMessageContext } from './PrivateChatContext';
+import Message from './Message(legacy)';
+import MessageOptions from './MessageOptions(legacy)';
+import MessageEditor from './MessageEditor(legacy)';
+import MessageOptionsMenu from './MessageOptionsMenu(legacy)';
+import { useMessageContext } from './PrivateChatContext(legacy)';
 import { Box } from '@mui/material';
 import { useUserStore } from '@/app/store/user-store';
 import { useState } from 'react';

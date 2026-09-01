@@ -10,7 +10,8 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import CloseIcon from '@mui/icons-material/Close';
 
-export interface ModalShellProps extends Omit<DialogProps, 'title' | 'onSubmit'> {
+export interface ModalShellProps
+  extends Omit<DialogProps, 'title' | 'onSubmit'> {
   open: boolean;
   onClose: () => void;
   /** modal-head h3 */
@@ -19,7 +20,7 @@ export interface ModalShellProps extends Omit<DialogProps, 'title' | 'onSubmit'>
   subtitle?: ReactNode;
   /** modal-foot — usually a GhostButton + a primary Button */
   actions?: ReactNode;
-  children: ReactNode;
+  children?: ReactNode;
   hideCloseButton?: boolean;
   /**
    * When set, the Dialog's Paper renders as a real <form> — Paper is
@@ -29,6 +30,8 @@ export interface ModalShellProps extends Omit<DialogProps, 'title' | 'onSubmit'>
    */
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void;
   formRef?: Ref<HTMLFormElement>;
+  /** mutation pending state */
+  isPending?: boolean;
 }
 
 export default function ModalShell({
@@ -39,15 +42,20 @@ export default function ModalShell({
   actions,
   children,
   hideCloseButton,
-  maxWidth = 'xs', // MUI's 'xs' Dialog width is ~444px — closest match to the reference's 440px default .modal
+  maxWidth = 'xs',
   onSubmit,
   formRef,
+  isPending,
   ...dialogProps
 }: ModalShellProps) {
+  // in our mutation we need to disable the form
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={(event, reason) => {
+        if (reason === 'backdropClick' && isPending) return;
+        onClose();
+      }}
       maxWidth={maxWidth}
       fullWidth
       // PaperProps, not slotProps.paper: slotProps.paper only landed in the
@@ -78,22 +86,35 @@ export default function ModalShell({
             {title}
           </Typography>
           {subtitle && (
-            <Typography variant="caption" color="text.secondary" component="p" mt={0.375}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              component="p"
+              mt={0.375}
+            >
               {subtitle}
             </Typography>
           )}
         </Box>
         {!hideCloseButton && (
-          <IconButton onClick={onClose} size="small" aria-label="Close" sx={{ mt: -0.5, mr: -0.5 }}>
+          <IconButton
+            onClick={onClose}
+            size="small"
+            aria-label="Close"
+            sx={{ mt: -0.5, mr: -0.5 }}
+          >
             <CloseIcon fontSize="small" />
           </IconButton>
         )}
       </DialogTitle>
 
-      <DialogContent sx={{ px: 2.5, py: 2 }}>{children}</DialogContent>
-
+      {children && (
+        <DialogContent sx={{ px: 2.5, py: 2 }}>{children}</DialogContent>
+      )}
       {actions && (
-        <DialogActions sx={{ px: 2.5, py: 1.75, justifyContent: 'space-between' }}>
+        <DialogActions
+          sx={{ px: 2.5, py: 1.75, justifyContent: 'space-between' }}
+        >
           {actions}
         </DialogActions>
       )}

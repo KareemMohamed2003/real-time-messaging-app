@@ -22,7 +22,7 @@ export default function useAddChannels({ roomUUID }: props) {
   const query = async ({ type, channelName, roomUUID }: any) => {
     return await createChannelQuery(roomUUID, type, channelName);
   };
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: query,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: channelKeys.all(roomUUID) });
@@ -43,5 +43,14 @@ export default function useAddChannels({ roomUUID }: props) {
     resolver: zodResolver(createChannelSchema),
     mode: 'onSubmit',
   });
-  return { handleSubmit, reset, register, setError, onSubmit, errors, control };
+  return {
+    handleSubmit,
+    reset,
+    register,
+    setError,
+    onSubmit,
+    errors,
+    control,
+    isPending,
+  };
 }

@@ -1,4 +1,4 @@
-import Button from '../../../shared/components/UI/(legacy)/Button(legacy)';
+import Button from '../../../../shared/components/UI/Button';
 import { Box, Typography } from '@mui/material';
 import { mainStyles } from '@/themes(legacy)';
 import { deleteMessageQuery } from '@/shared/api/queries';
@@ -67,7 +67,6 @@ export default function DeleteMessagePanel({
       ) : (
         <Box justifyContent={'space-between'} display={'flex'}>
           <Button
-            color="error"
             disabled={isPending}
             sx={{ background: primaryRed }}
             onClick={() => handleMessageDelete()}

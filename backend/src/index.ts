@@ -6,11 +6,11 @@ import authRouter from "./routers/authRouter.ts";
 import userRouter from "./routers/userRouter.ts";
 import { urlencoded } from "express";
 import { createServer } from "http";
-import { corsOptions } from "./lib/constants.ts";
 import { initSocketServer } from "./lib/sockets/socket.ts";
 import { checkDB } from "./lib/db.ts";
 import { checkSessionExpiry } from "./lib/helpers.ts";
-import { authorizeUser } from "./Middleware/auth-middleware.ts";
+import { authorizeUser } from "./middleware/auth-middleware.ts";
+import { corsOptions } from "./lib/constants.ts";
 
 const app = express();
 export const server = createServer(app);
@@ -31,6 +31,8 @@ server.listen(3333, () => {
   initSocketServer(server);
   console.log("server is listening on  http://localhost:3333");
 });
+
+// http://localhost:3333/user/get_channel_messages
 // app.get("/auth/refresh_token", (req: Request, res: Response) => {
 //   //client app will request a refresh token
 // });

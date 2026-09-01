@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import { useMessageContext } from './PrivateChatContext';
+import { useMessageContext } from './PrivateChatContext(legacy)';
 
 export interface IMessageMenuOptionModalButton {
   title: string;

@@ -1,4 +1,3 @@
-
 export const serverURL = 'http://localhost:3333';
 export const addFriendURL = `${serverURL}/user/add_friend`;
 export const userProfileURL = `${serverURL}/user/me`;
@@ -18,3 +17,16 @@ export const get_channels_messages_URL = `${serverURL}/user/get_channel_messages
 export const add_roomMember_URL = `${serverURL}/user/add_room_members`;
 export const get_roomMembers_URL = `${serverURL}/user/get_room_members`;
 
+export const SOCKET_EVENTS = {
+  CONNECT: 'connect',
+  DISCONNECT: 'disconnect',
+  CONNECTION_ERR: 'connect_error',
+  PRIVATE_MESSAGE: 'private:message',
+  CHANNEL_MESSAGE: 'channel:message',
+  CHANNEL_LEAVE: 'channel:leave',
+  CHANNEL_JOIN: 'channel:join',
+  NEW_ICE_CANDIDATE: 'new:icecandidate',
+  PRIVATE_VOICE_CALL: 'voiceCall',
+  PRIVATE_VOICE_CALL_ANSWER: 'VoiceCall:answer',
+  ONLINE_FRIENDS: 'friends:online',
+} as const;

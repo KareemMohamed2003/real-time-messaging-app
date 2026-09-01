@@ -2,7 +2,7 @@ import AddReactionIcon from '@mui/icons-material/AddReaction';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditIcon from '@mui/icons-material/Edit';
 import { Box } from '@mui/material';
-import { useMessageContext } from './PrivateChatContext';
+import { useMessageContext } from './PrivateChatContext(legacy)';
 import { Dispatch, SetStateAction } from 'react';
 import { mainStyles } from '@/themes(legacy)';
 export interface MessageOptionsProps {

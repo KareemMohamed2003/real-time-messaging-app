@@ -24,7 +24,7 @@ export default function RoomMembers({ isOpen, setOpen, roomUUID }: props) {
   return (
     <Drawer anchor="right" open={isOpen} onClose={() => setOpen(false)}>
       <Box
-        sx={(theme) => ({
+        sx={theme => ({
           width: 320,
           height: '100%',
           display: 'flex',
@@ -38,7 +38,7 @@ export default function RoomMembers({ isOpen, setOpen, roomUUID }: props) {
           display="flex"
           alignItems="center"
           justifyContent="space-between"
-          sx={(theme) => ({
+          sx={theme => ({
             borderBottom: `1px solid ${theme.palette.divider}`,
           })}
         >
@@ -53,6 +53,7 @@ export default function RoomMembers({ isOpen, setOpen, roomUUID }: props) {
         <Stack px={1.75} py={1.25} gap={3} sx={{ overflowY: 'auto' }} mt={1}>
           {roomMembers?.map((member: IRoomMember) => (
             <User
+              key={member.user?.uuid}
               name={member.user?.username!}
               profilePic={member.user?.profile_img!}
               status="away"

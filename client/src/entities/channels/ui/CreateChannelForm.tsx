@@ -22,23 +22,32 @@ const CHANNEL_TYPE_OPTIONS = [
 
 const CreateChannelForm = forwardRef<HTMLFormElement, CreateChannelFormProps>(
   function CreateChannelForm({ closeChannelForm, roomUUID }, ref) {
-
-    const { handleSubmit, reset, register, onSubmit, errors, control } =
-      useAddChannels({
-        roomUUID,
-        closeChannelForm,
-      });
+    const {
+      handleSubmit,
+      reset,
+      register,
+      onSubmit,
+      errors,
+      control,
+      isPending,
+    } = useAddChannels({
+      roomUUID,
+      closeChannelForm,
+    });
 
     return (
       <ModalShell
+      
+        disableEscapeKeyDown={true}
         open
         onClose={closeChannelForm}
         title="Create a channel"
         onSubmit={handleSubmit(onSubmit)}
-        formRef={ref}
+        // formRef={ref}
         actions={
           <>
             <GhostButton
+              disabled={isPending}
               onClick={() => {
                 closeChannelForm();
                 reset();
@@ -46,7 +55,9 @@ const CreateChannelForm = forwardRef<HTMLFormElement, CreateChannelFormProps>(
             >
               Cancel
             </GhostButton>
-            <Button type="submit">Create channel</Button>
+            <Button disabled={isPending} type="submit">
+              Create channel
+            </Button>
           </>
         }
       >

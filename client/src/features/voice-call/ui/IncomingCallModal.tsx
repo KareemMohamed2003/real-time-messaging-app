@@ -15,6 +15,7 @@ export default function IncomingCallModal() {
   useEffect(() => {
     handleOpen();
   }, [incomingCalls]);
+
   if (incomingCalls.size)
     return (
       <Modal

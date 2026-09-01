@@ -1,8 +1,4 @@
-export enum UserRole {
-  ADMIN = 'ADMIN',
-  OWNER = 'OWNER',
-  MEMBER = 'MEMBER',
-}
+export type UserRole = 'ADMIN' | 'OWNER' | 'MEMBER' ;
 
 export type ChannelType = 'TEXT' | 'VOICE' | 'DIRECT_MESSAGE';
 export enum FriendRequestEnum {
@@ -17,8 +13,8 @@ export interface IUser {
   email: string;
   uuid: string;
   profile_img: string | null;
-   createdAt?: Date;
-   status?: number;
+  createdAt?: Date;
+  status?: number;
 }
 
 export interface ChannelParticipant {
@@ -38,14 +34,16 @@ export interface IFriend {
   uuid: string;
 }
 
-export interface TMessage {
+export type IMessage = {
   id: number | null;
   channelId: number;
   senderUUID: string;
   message: string;
+  senderName: string;
+  senderProfileImg: string;
   createdAt?: Date;
   receiverUUID?: string;
-}
+};
 
 export interface Notification {
   notificationId: number;
@@ -70,7 +68,7 @@ export interface IRoom {
   roomName: string;
   roomUUID: string;
   ownerId?: string;
-  icon?: string; 
+  icon?: string;
 }
 export interface IJoinedRoom extends IRoom {
   role: UserRole;
@@ -79,6 +77,6 @@ export interface IJoinedRoom extends IRoom {
 export interface IRoomMember {
   roomUUID: string;
   userId: string;
-  role: UserRole;
-  user?:IUser
+  role:UserRole;
+  user?: IUser;
 }

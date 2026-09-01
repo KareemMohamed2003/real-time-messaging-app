@@ -4,7 +4,7 @@ import { Stack, Box } from '@mui/material';
 import { useUserStore } from '@/app/store/user-store';
 import Sidebar from '@/shared/components/UI/Sidebar';
 import SessionMonitorWrapper from '@/features/authentication/ui/SessionMonitorWrapper';
-import PrivateChatContext from '@/entities/messages/ui/PrivateChatContext';
+import PrivateChatContext from '@/entities/messages/ui/legacy/PrivateChatContext(legacy)';
 import IncomingCallModal from '../../features/voice-call/ui/IncomingCallModal';
 import NotificationManager from './notifications/NotificationsManager';
 import { initWebRtc } from '../lib/webrtc';

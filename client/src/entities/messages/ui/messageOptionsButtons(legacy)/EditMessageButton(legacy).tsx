@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { useMessageContext } from '../PrivateChatContext';
+import { useMessageContext } from '../legacy/PrivateChatContext(legacy)';
 
 export default function EditMessageButton() {
   const { closeMessageMenuOptions, toggleMessageEditing } =

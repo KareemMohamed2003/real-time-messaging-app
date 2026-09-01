@@ -1,5 +1,8 @@
 import { DefaultEventsMap, Server } from "socket.io";
-import { createRoomMessage } from "../../models/model.messages";
+import {
+  createRoomMessage,
+  DEFAULT_MESSAGE_INCLUDE,
+} from "../../models/model.messages";
 import { updatedConnectionStatus, findOnlineFriends } from "../db";
 import { ISocket } from "./socket";
 import {
@@ -23,14 +26,19 @@ export const onConnection = async (
     // console.log("disconnect event ,  matchingSockets", matchingSockets);
   });
   updatedConnectionStatus(socket.sessionId!, true);
-  socket.on("private message", async (message, acknowledged) => {
+  socket.on("private-message", async (message, acknowledged) => {
     onPrivateMessage(socket, message, acknowledged);
   });
   socket.on("room_message", async (message, acknowledged) => {
     const to = message.to;
     const content = message.content;
     const from = message.from;
-    const newMessage = await createRoomMessage(content, from, to);
+    const newMessage = await createRoomMessage(
+      content,
+      from,
+      to,
+      DEFAULT_MESSAGE_INCLUDE,
+    );
     socket
       .to(from)
       .to(to)
@@ -73,7 +81,9 @@ export const onConnection = async (
         message,
         senderUUID,
         channelId,
+        DEFAULT_MESSAGE_INCLUDE
       );
+      console.log(newMessage)
       socket.to(channelId).emit("channel:message", channelId, newMessage);
       if (callback) callback({ sent: true, message: newMessage });
     }),

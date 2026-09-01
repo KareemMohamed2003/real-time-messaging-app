@@ -137,7 +137,7 @@ export default function FriendsContent() {
         selectedList={selectedList}
         isLoading={isLoading}
       />
-
+{/* replace with modal Shell */}
       <Modal
         open={isAddFriendOpen}
         onClose={() => setAddFriendOpen(false)}

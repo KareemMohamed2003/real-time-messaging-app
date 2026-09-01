@@ -1,12 +1,12 @@
-import Input from '../../../shared/components/UI/(legacy)/Input(legacy)';
-import Button from '../../../shared/components/UI/(legacy)/Button(legacy)';
+import Input from '../../../../shared/components/UI/(legacy)/Input(legacy)';
+import Button from '../../../../shared/components/UI/(legacy)/Button(legacy)';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Box } from '@mui/material';
 import { useUserStore } from '@/app/store/user-store';
 import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { updateMessageQuery } from '@/shared/api/queries';
-import { activeMenuOption, useMessageContext } from './PrivateChatContext';
+import { activeMenuOption, useMessageContext } from './PrivateChatContext(legacy)';
 interface props {
   message: string;
   messageId: number;

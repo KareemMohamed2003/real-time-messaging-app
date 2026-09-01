@@ -1,4 +1,4 @@
-import { UserRole } from '@/shared/types/api.types';
+import { IRoomMember, UserRole } from '@/shared/types/api.types';
 import { useMemo, useCallback, useState } from 'react';
 import useRoomMembers from '@/entities/rooms/api/useRoomMembers';
 import UseFriendsQuery from '@/entities/friends/api/useFriendsQuery';
@@ -22,37 +22,32 @@ export default function useAddRoomMembers({
   const { addableFriends } = useRoomMembers(roomUUID, userFriends);
   const { isPending, isError, mutate, isSuccess } = useAddRoomMemberMutation(roomUUID);
   const [query, setQuery] = useState('');
-  const [selectedIds, setSelectedIds] = useState<
-    Map<string, IAddableRoomMember>
-  >(() => new Map());
+  const [selectedIds, setSelectedIds] = useState<Map<string, IAddableRoomMember>>(() => new Map());
   const [tagValue, setTagValue] = useState('');
   const filteredMembers = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return addableFriends;
-    return addableFriends.filter((m) => m.username.toLowerCase().includes(q));
+    return addableFriends.filter(m => m.username.toLowerCase().includes(q));
   }, [query, addableFriends]);
 
-  const toggleMember = useCallback(
-    (id: string, addableRoomMember: IAddableRoomMember) => {
-      setSelectedIds((prev) => {
-        const next = new Map(prev);
-        if (next.has(id)) {
-          next.delete(id);
-        } else {
-          next.set(id, addableRoomMember);
-        }
-        return next;
-      });
-    },
-    []
-  );
+  const toggleMember = useCallback((id: string, addableRoomMember: IAddableRoomMember) => {
+    setSelectedIds(prev => {
+      const next = new Map(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.set(id, addableRoomMember);
+      }
+      return next;
+    });
+  }, []);
 
   const handleDone = useCallback(() => {
     const selectedList = Array.from(selectedIds.values());
-    const normalizedMembers = selectedList.map((newMember) => ({
+    const normalizedMembers: IRoomMember[] = selectedList.map(newMember => ({
       roomUUID,
       userId: newMember.uuid,
-      role: UserRole.MEMBER,
+      role: 'MEMBER',
     }));
     mutate(normalizedMembers, {
       onSuccess() {

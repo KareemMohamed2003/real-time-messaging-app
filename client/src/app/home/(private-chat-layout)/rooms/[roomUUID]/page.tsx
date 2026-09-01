@@ -1,18 +1,18 @@
 'use client';
 import React, { Suspense, useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 import { useUserStore } from '@/app/store/user-store';
+import { addMessageInCache } from '@/shared/lib/queryMessagesCacheUtils';
+import { useParams } from 'next/navigation';
 import { Stack } from '@mui/material';
 import { socketClient } from '@/shared/lib/socket';
 import { useQueryClient } from '@tanstack/react-query';
-import ChannelsSection from '@/entities/channels/ui/legacy/ChannelsSection(legacy)';
 import UseRoom from '@/entities/rooms/api/useRoom';
 import AddMembersModalv2 from '@/features/add-room-member/ui/AddMembersModalv2';
-// import RoomHeader from '@/entities/rooms/ui/legacy/RoomHeader(legacy)';
-// import RoomMembers from '@/entities/rooms/ui/legacy/RoomMembers(legacy)';
-import UpdateChannelMessagesCache from '@/shared/lib/UpdateChannelMessagesCache';
-import RoomHeader from '@/entities/rooms/ui/RoomHeader';
 import RoomMembers from '@/entities/rooms/ui/RoomMembers';
+import RoomHeader from '@/entities/rooms/ui/RoomHeader';
+import ChannelsSection from '@/entities/channels/ui/ChannelsSection';
+import { RoomConversationSkeleton } from '@/shared/components/UI/Skeletons';
+import { IMessage } from '@/shared/types/api.types';
 // prefetch the friends data  data on the server
 export default function Room() {
   const params = useParams<{ roomUUID: string }>();
@@ -20,17 +20,17 @@ export default function Room() {
   const room = UseRoom(roomUUID)!;
   const [isOpen, setOpen] = useState<boolean>(false);
   const [displayAddMembers, setAddMembersDisplay] = useState<boolean>(false);
-  const { profile } = useUserStore((state) => state);
+  const { profile } = useUserStore(state => state);
   const queryClient = useQueryClient();
   const onCloseAddMembersModal = () => setAddMembersDisplay(false);
-  const handleChannelMessages = (channelId: number, message: string) => {
-    UpdateChannelMessagesCache(queryClient, channelId, message, roomUUID);
+
+  const handleChannelMessages = (channelId: number, message: IMessage) => {
+    addMessageInCache(queryClient, channelId, message, roomUUID);
   };
+
   useEffect(() => {
     socketClient.on('channel:message', handleChannelMessages);
-    console.log('component mounted');
     return () => {
-      console.log('component unmounts');
       socketClient.off('channel:message', handleChannelMessages); // add the callback to this off method later
     };
   }, []);
@@ -53,8 +53,8 @@ export default function Room() {
         displayAddMembers={displayAddMembers}
         setAddMembersDisplay={setAddMembersDisplay}
       />
-      <Suspense fallback={<h2>AddMembersModal </h2>}>
-      <RoomMembers isOpen={isOpen} setOpen={setOpen} roomUUID={roomUUID}/>
+      <Suspense fallback={<RoomConversationSkeleton />}>
+        <RoomMembers isOpen={isOpen} setOpen={setOpen} roomUUID={roomUUID} />
         <AddMembersModalv2
           roomUUID={roomUUID}
           roomLabel={room?.roomName}
