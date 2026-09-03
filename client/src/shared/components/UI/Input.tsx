@@ -5,11 +5,9 @@ import TextField, { TextFieldProps } from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 
 export interface InputProps
   extends Omit<TextFieldProps, 'ref' | 'variant' | 'type' | 'label'> {
-  /** Rendered as its own block above the field — not MUI's floating label */
   label?: string;
   type?: InputHTMLAttributes<HTMLInputElement>['type'];
   maxLength?: number;
@@ -27,6 +25,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     minLength,
     id,
     inputProps,
+    InputProps: inputPropsOverride, 
     ...rest
   },
   ref
@@ -35,6 +34,24 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   const [visible, setVisible] = useState(false);
   const generatedId = useId();
   const inputId = id ?? generatedId;
+
+  const passwordToggle = isPassword ? (
+    <InputAdornment position="start" >
+      <ButtonBase
+        disableRipple
+        onClick={() => setVisible((v) => !v)}
+        sx={{
+          fontSize: 12,
+          fontWeight: 600,
+          color: 'text.secondary',
+          px: 0.5,
+          '&:hover': { color: 'text.primary' },
+        }}
+      >
+        {visible ? 'Hide' : 'Show'}
+      </ButtonBase>
+    </InputAdornment>
+  ) : undefined;
 
   return (
     <>
@@ -67,24 +84,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         fullWidth
         inputProps={{ maxLength, minLength, ...inputProps }}
         InputProps={{
-          endAdornment: isPassword ? (
-            <InputAdornment position="end">
-              <ButtonBase
-                disableRipple
-                onClick={() => setVisible((v) => !v)}
-                sx={{
-                 
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: 'text.secondary',
-                  px: 0.5,
-                  '&:hover': { color: 'text.primary' },
-                }}
-              >
-                {visible ? 'Hide' : 'Show'}
-              </ButtonBase>
-            </InputAdornment>
-          ) : undefined,
+          ...inputPropsOverride,
+          endAdornment: passwordToggle ?? inputPropsOverride?.endAdornment,
         }}
       />
     </>

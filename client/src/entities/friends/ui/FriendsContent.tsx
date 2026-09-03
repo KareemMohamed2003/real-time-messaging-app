@@ -1,5 +1,5 @@
 'use client';
-import { Box, Modal, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import Button from '@/shared/components/UI/Button';
@@ -9,6 +9,7 @@ import useFriendsQuery from '@/entities/friends/api/useFriendsQuery';
 import { socketClient } from '@/shared/lib/socket';
 import { useUserStore } from '@/app/store/user-store';
 import { useEffect, useState } from 'react';
+import { SOCKET_EVENTS } from '@/shared/lib/constants';
 
 type FriendsFilter = 'all' | 'online' | 'pending';
 
@@ -16,10 +17,10 @@ export default function FriendsContent() {
   const [selectedList, setList] = useState<FriendsFilter>('all');
   const [isAddFriendOpen, setAddFriendOpen] = useState(false);
   const { friends, isLoading } = useFriendsQuery();
-  const { onlineFriends } = useUserStore((state) => state);
+  const { onlineFriends } = useUserStore(state => state);
 
   useEffect(() => {
-    if (friends) socketClient.emit('friendsSessions', friends?.all);
+    if (friends) socketClient.emit(SOCKET_EVENTS.ONLINE_FRIENDS, friends?.all);
   }, [friends]);
 
   const segments: { key: FriendsFilter; label: string; count?: number }[] = [
@@ -29,15 +30,7 @@ export default function FriendsContent() {
   ];
 
   return (
-    <Box
-      height="100%"
-      width="100%"
-      display="flex"
-      flexDirection="column"
-      px={3}
-      py={2.5}
-      gap={2}
-    >
+    <Box height="100%" width="100%" display="flex" flexDirection="column" px={3} py={2.5} gap={2}>
       {/* .page-head */}
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Typography variant="h5" fontWeight={700}>
@@ -46,7 +39,7 @@ export default function FriendsContent() {
         <Button
           variant="solid"
           onClick={() => setAddFriendOpen(true)}
-          startIcon={<PersonAddAltOutlinedIcon/>}
+          startIcon={<PersonAddAltOutlinedIcon />}
         >
           Add friend
         </Button>
@@ -62,14 +55,14 @@ export default function FriendsContent() {
       >
         <Box
           display="flex"
-          sx={(theme) => ({
+          sx={theme => ({
             background: theme.palette.surface.elevated,
             border: `1px solid ${theme.palette.divider}`,
             borderRadius: 999,
             p: 0.4,
           })}
         >
-          {segments.map((segment) => {
+          {segments.map(segment => {
             const active = selectedList === segment.key;
             return (
               <Box
@@ -77,7 +70,7 @@ export default function FriendsContent() {
                 component="button"
                 type="button"
                 onClick={() => setList(segment.key)}
-                sx={(theme) => ({
+                sx={theme => ({
                   all: 'unset',
                   cursor: 'pointer',
                   px: 1.75,
@@ -85,12 +78,8 @@ export default function FriendsContent() {
                   borderRadius: 999,
                   fontSize: 12.5,
                   fontWeight: 600,
-                  color: active
-                    ? theme.palette.primary.contrastText
-                    : theme.palette.text.secondary,
-                  backgroundColor: active
-                    ? theme.palette.primary.main
-                    : 'transparent',
+                  color: active ? theme.palette.primary.contrastText : theme.palette.text.secondary,
+                  backgroundColor: active ? theme.palette.primary.main : 'transparent',
                   transition: 'background-color .15s, color .15s',
                 })}
               >
@@ -105,7 +94,7 @@ export default function FriendsContent() {
           display="flex"
           alignItems="center"
           gap={1}
-          sx={(theme) => ({
+          sx={theme => ({
             width: 260,
             backgroundColor: theme.palette.surface.elevated,
             border: `1px solid ${theme.palette.divider}`,
@@ -132,19 +121,8 @@ export default function FriendsContent() {
         </Box>
       </Box>
 
-      <FriendsList
-        friends={friends}
-        selectedList={selectedList}
-        isLoading={isLoading}
-      />
-{/* replace with modal Shell */}
-      <Modal
-        open={isAddFriendOpen}
-        onClose={() => setAddFriendOpen(false)}
-        aria-labelledby="add-friend-title"
-      >
-        <AddFriends closeAddFriendForm={() => setAddFriendOpen(false)} />
-      </Modal>
+      <FriendsList friends={friends} selectedList={selectedList} isLoading={isLoading} />
+      <AddFriends closeAddFriendForm={() => setAddFriendOpen(false)} open={isAddFriendOpen} />
     </Box>
   );
 }

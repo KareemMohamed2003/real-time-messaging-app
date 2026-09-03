@@ -21,12 +21,10 @@ export default function ChannelChat({ channelId, roomUUID }: props) {
     enabled: !!channelId,
   });
   const { profile } = useUserStore(state => state);
-  // when we send new message , groups are undefined
   // Checks isFetched because channelId is not available on first render required in `MessageGroup` /
   if (!isFetched || isLoading) return <RoomConversationSkeleton />;
-  const groups = groupMessagesBySender(data!, profile.uuid); // checks if data is available in case of garbage collection .
+  const groups = groupMessagesBySender(data!, profile.uuid); 
   console.log(groups);
-  //check if user can edit message or not, check if user can delete message or not .
   return (
     <Box
       display={'flex'}
@@ -40,11 +38,11 @@ export default function ChannelChat({ channelId, roomUUID }: props) {
       {groups.map((senderGroup, i) => (
         <MessageGroup
           key={i}
-          channelId={channelId}
           senderName={senderGroup.senderName}
           self={profile.uuid === senderGroup.senderUUID}
           messages={senderGroup.messages}
           roomUUID={roomUUID}
+          queryKey={channelKeys.messages(channelId, roomUUID)}
         />
       ))}
     </Box>

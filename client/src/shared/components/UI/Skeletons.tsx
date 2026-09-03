@@ -3,7 +3,6 @@
 import { Box, CircularProgress } from '@mui/material';
 import { keyframes } from '@mui/material/styles';
 
-
 const shimmer = keyframes`
   0% { background-position: 100% 50%; }
   100% { background-position: 0 50%; }
@@ -19,7 +18,7 @@ interface ShimmerBlockProps {
 export function ShimmerBlock({ width, height = 9, radius = 6, circle }: ShimmerBlockProps) {
   return (
     <Box
-      sx={(theme) => ({
+      sx={theme => ({
         width,
         height,
         borderRadius: circle ? '50%' : radius,
@@ -33,7 +32,7 @@ export function ShimmerBlock({ width, height = 9, radius = 6, circle }: ShimmerB
 }
 
 // ---------------------------------------------------------------------------
-// 
+//
 // people renders without a card wrapper (e.g. RoomMembers).
 // ---------------------------------------------------------------------------
 export function RowSkeleton({ count = 4 }: { count?: number }) {
@@ -84,7 +83,7 @@ export function FriendRowSkeleton({ count = 5 }: { count?: number }) {
           gap={1.6}
           px={1.75}
           py={1.5}
-          sx={(theme) => ({
+          sx={theme => ({
             border: `1px solid ${theme.palette.divider}`,
             borderRadius: `${theme.radius.md}px`,
             background: `linear-gradient(135deg, ${theme.palette.surface.paper}, ${theme.palette.surface.elevated})`,
@@ -101,7 +100,6 @@ export function FriendRowSkeleton({ count = 5 }: { count?: number }) {
     </>
   );
 }
-
 
 export function NotifRowSkeleton({ count = 4, dots }: { count?: number; dots?: boolean[] }) {
   return (
@@ -123,7 +121,6 @@ export function NotifRowSkeleton({ count = 4, dots }: { count?: number; dots?: b
   );
 }
 
-
 export function RoomCardSkeleton({ count = 4 }: { count?: number }) {
   return (
     <>
@@ -134,7 +131,7 @@ export function RoomCardSkeleton({ count = 4 }: { count?: number }) {
           flexDirection="column"
           gap={1.25}
           p={1.875}
-          sx={(theme) => ({
+          sx={theme => ({
             border: `1px solid ${theme.palette.divider}`,
             borderRadius: `${theme.radius.md}px`,
             background: theme.palette.surface.paper,
@@ -155,7 +152,6 @@ export function RoomCardSkeleton({ count = 4 }: { count?: number }) {
   );
 }
 
-
 interface MessageGroupSpec {
   self?: boolean;
   bubbleWidths: number[];
@@ -163,7 +159,14 @@ interface MessageGroupSpec {
 
 export function MessageSkeleton({ groups }: { groups: MessageGroupSpec[] }) {
   return (
-    <Box display="flex" flexDirection="column" gap={2.25} p={2}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      gap={2.25}
+      p={2}
+      flex={1}
+      justifyContent={'space-between'}
+    >
       {groups.map((group, i) => (
         <Box
           key={i}
@@ -189,9 +192,29 @@ export function MessageSkeleton({ groups }: { groups: MessageGroupSpec[] }) {
   );
 }
 
-
 export const DmConversationSkeleton = () => (
-  <MessageSkeleton groups={[{ bubbleWidths: [170] }, { self: true, bubbleWidths: [130] }]} />
+  <MessageSkeleton
+    groups={[
+      { bubbleWidths: [170] },
+      { bubbleWidths: [170] },
+      { bubbleWidths: [170] },
+      { bubbleWidths: [170] },
+      { bubbleWidths: [170] },
+      { bubbleWidths: [170] },
+      { bubbleWidths: [170] },
+      { bubbleWidths: [170] },
+      { self: true, bubbleWidths: [130] },
+
+      { self: true, bubbleWidths: [130] },
+      { self: true, bubbleWidths: [130] },
+      { self: true, bubbleWidths: [130] },
+      { self: true, bubbleWidths: [130] },
+
+      { self: true, bubbleWidths: [130] },
+      { self: true, bubbleWidths: [130] },
+      { self: true, bubbleWidths: [130] },
+    ]}
+  />
 );
 
 export const RoomConversationSkeleton = () => (
@@ -207,7 +230,6 @@ export const RoomConversationSkeleton = () => (
     ]}
   />
 );
-
 
 export function TopListLoader({ label = 'Loading more…' }: { label?: string }) {
   return (

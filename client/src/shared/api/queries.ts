@@ -42,13 +42,13 @@ export const getUserQuery = async () => {
   return userData;
 };
 
-export const getFriendsQuery = async (cookieHeader?: string) => {
+export const getFriendsQuery = async (serverCookieHeader?: string) => {
   const req = await fetch(user_friends_URL, {
     method: 'GET',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+      ...(serverCookieHeader ? { Cookie: serverCookieHeader } : {}),
     },
   });
   const userFriends = await req.json();

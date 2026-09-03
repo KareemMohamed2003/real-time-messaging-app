@@ -9,9 +9,9 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import CloseIcon from '@mui/icons-material/Close';
+import { Divider } from '@mui/material';
 
-export interface ModalShellProps
-  extends Omit<DialogProps, 'title' | 'onSubmit'> {
+export interface ModalShellProps extends Omit<DialogProps, 'title' | 'onSubmit'> {
   open: boolean;
   onClose: () => void;
   /** modal-head h3 */
@@ -30,7 +30,7 @@ export interface ModalShellProps
    */
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void;
   formRef?: Ref<HTMLFormElement>;
-  /** mutation pending state */
+  /** disables backdropClick for pending mutation */
   isPending?: boolean;
 }
 
@@ -48,7 +48,6 @@ export default function ModalShell({
   isPending,
   ...dialogProps
 }: ModalShellProps) {
-  // in our mutation we need to disable the form
   return (
     <Dialog
       open={open}
@@ -63,7 +62,7 @@ export default function ModalShell({
       // current (non-deprecated) API for styling/typing the dialog's card.
       PaperProps={{
         ...(onSubmit ? { component: 'form', onSubmit, ref: formRef } : {}),
-        sx: (theme) => ({
+        sx: theme => ({
           background: theme.palette.surface.paper,
           border: `1px solid ${theme.palette.divider}`,
           borderRadius: `${theme.radius.lg}px`,
@@ -86,35 +85,21 @@ export default function ModalShell({
             {title}
           </Typography>
           {subtitle && (
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              component="p"
-              mt={0.375}
-            >
+            <Typography variant="caption" color="text.secondary" component="p" mt={0.375}>
               {subtitle}
             </Typography>
           )}
         </Box>
         {!hideCloseButton && (
-          <IconButton
-            onClick={onClose}
-            size="small"
-            aria-label="Close"
-            sx={{ mt: -0.5, mr: -0.5 }}
-          >
+          <IconButton onClick={onClose} size="small" aria-label="Close" sx={{ mt: -0.5, mr: -0.5 }}>
             <CloseIcon fontSize="small" />
           </IconButton>
         )}
       </DialogTitle>
-
-      {children && (
-        <DialogContent sx={{ px: 2.5, py: 2 }}>{children}</DialogContent>
-      )}
+      <Divider />
+      {children && <DialogContent sx={{ px: 2.5, py: 2 }}>{children}</DialogContent>}
       {actions && (
-        <DialogActions
-          sx={{ px: 2.5, py: 1.75, justifyContent: 'space-between' }}
-        >
+        <DialogActions sx={{ px: 2.5, py: 1.75, justifyContent: 'space-between' }}>
           {actions}
         </DialogActions>
       )}

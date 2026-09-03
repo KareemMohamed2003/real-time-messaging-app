@@ -1,34 +1,25 @@
-import { Request, Response } from "express";
-import { handleDbError } from "../lib/helpers";
-import {
-  getPrivateMessages,
-  deleteMessage,
-  updateMessageContent,
-} from "../models/model.messages";
-import { AuthRequest } from "./types";
-import { DEFAULT_MESSAGE_INCLUDE } from "../models/model.messages";
-export const getPrivateMessagesAction = async (
-  req: AuthRequest,
-  res: Response,
-) => {
+import { Request, Response } from 'express';
+import { handleDbError } from '../lib/helpers';
+import { getPrivateMessages, deleteMessage, updateMessageContent } from '../models/model.messages';
+import { AuthRequest } from './types';
+import { DEFAULT_MESSAGE_INCLUDE } from '../models/model.messages';
+export const getPrivateMessagesAction = async (req: AuthRequest, res: Response) => {
   try {
-    // console.log("getPrivateMessage Action");
     const userId = req.params.userId;
     const friendId = req.params.friendId;
     const messageId = req.query.messageId;
-    // console.log("userId,friendId", userId, friendId);
     const userMessages = await getPrivateMessages(
       userId,
       friendId,
-      DEFAULT_MESSAGE_INCLUDE,
-      Number(messageId),
+      DEFAULT_MESSAGE_INCLUDE
+      // Number(messageId),
     );
     res.json({ privateMessages: userMessages });
   } catch (e) {
     // console.log(e);
     // const error = handleFetchError(e, "messages");
     // res.status(500).json(error);
-    handleDbError(res, e, "Messages");
+    handleDbError(res, e, 'Messages');
   }
   //  this route should do two things  first we should fetch the messages initially when the app
   // loads and user navigates to private-chat with a friend ,
@@ -48,14 +39,14 @@ export const deleteMessageAction = async (req: AuthRequest, res: Response) => {
   try {
     const uuid = req.token?.uuid!;
     const messageId = Number(req.params.messageId);
-    console.log("messageId", messageId);
+    console.log('messageId', messageId);
     const deletedMessageId = await deleteMessage(uuid, messageId);
     res.json(deletedMessageId);
   } catch (e) {
     // const deleteError = handleDeleteError(e, "message");
     // console.log("error at deleteMessageAction() : ", e);
     // res.status(400).json(deleteError);
-    handleDbError(res, e, "Messages");
+    handleDbError(res, e, 'Messages');
   }
 };
 
@@ -64,11 +55,15 @@ export const updateMessageAction = async (req: AuthRequest, res: Response) => {
     const { messageId, newContent } = req.body;
     console.log(messageId, newContent);
     console.log(req.body.messageId);
-    const updatedMessage = await updateMessageContent(newContent, messageId,DEFAULT_MESSAGE_INCLUDE);
+    const updatedMessage = await updateMessageContent(
+      newContent,
+      messageId,
+      DEFAULT_MESSAGE_INCLUDE
+    );
     res.json(updatedMessage);
   } catch (e) {
     // console.log("error at updateMessageAction() :", e);
     // res.status(500).send();
-    handleDbError(res, e, "Messages");
+    handleDbError(res, e, 'Messages');
   }
 };

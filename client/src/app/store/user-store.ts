@@ -1,12 +1,13 @@
 'use client'
+import { useStore } from 'zustand';
 import { useContext } from 'react';
 import { createStore } from 'zustand/vanilla';
-import { useStore } from 'zustand';
 import { userStoreContext } from './StoreContextProvider';
 import { UserState, userActions } from './types';
-import { TMessage, IUser } from '@/shared/types/api.types';
+import { IUser } from '@/shared/types/api.types';
 import { socketClient } from '@/shared/lib/socket';
 import { RTCConfiguration, cancelCall } from '@/shared/lib/webrtc';
+import { SOCKET_EVENTS } from '@/shared/lib/constants';
 
 export type userStore = userActions & UserState;
 export const defaultUserState = {
@@ -30,7 +31,6 @@ export const defaultUserState = {
     id: 0,
     profile_img: '',
   },
-  privateMessages: new Map(),
   notifications: [],
 };
 
@@ -82,46 +82,6 @@ export const zustandStore = createStore<userStore>()((set, get) => ({
     set((state) => ({
       onlineFriends: [state.onlineFriends, ...newFriends],
     }));
-  },
-  loadMessages: (messages: Map<number, TMessage>) => {
-    set(() => ({
-      privateMessages: messages,
-    }));
-  },
-  updateMessages(newMessage: TMessage) {
-    console.log('new message', newMessage);
-    console.log('current PrivaeMessage ', this.privateMessages);
-    if (![...this.privateMessages.values()].length) {
-      newMessage.id = 1;
-      set((state) => ({
-        privateMessages: state.privateMessages.set(1, newMessage),
-      }));
-      return;
-    }
-    const lastElement = [...this.privateMessages.values()].pop();
-    const lastId = lastElement.id;
-    const newMessageId = lastId + 1;
-    newMessage.id = newMessageId;
-    set((state) => ({
-      privateMessages: state.privateMessages.set(newMessageId, newMessage),
-    }));
-  },
-  deleteMessage(messageId: number) {
-    set((state) => {
-      state.privateMessages.delete(messageId);
-      return {
-        privateMessages: state.privateMessages,
-      };
-    });
-  },
-  editMessage(messageId, newMessage) {
-    set((state) => {
-      const privateMessage = state.privateMessages.get(messageId);
-      privateMessage.message = newMessage;
-      return {
-        privateMessages: state.privateMessages.set(messageId, privateMessage),
-      };
-    });
   },
   setOnlineFriends: (data: any) => {
     set(() => ({
@@ -223,7 +183,7 @@ export const zustandStore = createStore<userStore>()((set, get) => ({
     localPeer.addEventListener('icecandidate', (event) => {
       if (event.candidate) {
         const audioCall = get().audioCall;
-        socketClient.emit('new-icecandidate', {
+        socketClient.emit(SOCKET_EVENTS.NEW_ICE_CANDIDATE, {
           to: audioCall.friendId,
           candidate: event.candidate,
         });

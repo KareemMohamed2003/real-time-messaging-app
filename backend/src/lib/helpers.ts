@@ -6,6 +6,7 @@ import { AppError } from '../prisma/prismaHandlers/AppError';
 import { handlePrismaError } from '../prisma/prismaHandlers/PrismaErrorHandlers';
 import { Response } from 'express';
 import { Prisma } from '@prisma/client';
+import { SOCKET_EVENTS } from './constants';
 
 export interface FlattenedMessage {
   id: number;
@@ -20,7 +21,7 @@ export interface FlattenedMessage {
 type MessageWithUser = Prisma.MessagesGetPayload<{
   include: { user: { select: { profile_img: true; username: true } } };
 }>;
-
+const { PRIVATE_VOICE_CALL_ANSWER, PRIVATE_VOICE_CALL } = SOCKET_EVENTS;
 export const randomId = () => crypto.randomBytes(8).toString('hex');
 export const checkSessionExpiry = () => {
   const interval = setInterval(() => {
@@ -40,12 +41,12 @@ export const resendPendingCall = (
   let activeCallTimer = setTimeout(() => {
     const pendingCall = pendingCalls.get(socketId);
     if (pendingCall) {
-      socket.to(to).emit('onVoiceCallAnswer', {
+      socket.to(to).emit(PRIVATE_VOICE_CALL_ANSWER, {
         to: to,
         type: 'cancelled',
         callerID: socketId,
       });
-      io.to(socketId).emit('onVoiceCallAnswer', {
+      io.to(socketId).emit(PRIVATE_VOICE_CALL_ANSWER, {
         type: 'rejected',
       });
       pendingCalls.delete(socketId);
@@ -57,7 +58,7 @@ export const resendPendingCall = (
     const calleeSocket = Array.from(io.sockets.sockets.values()).find(
       (socket: ISocket) => socket.socketId == to
     );
-    calleeSocket?.emit('voiceCall', {
+    calleeSocket?.emit(PRIVATE_VOICE_CALL, {
       callerInfo: { profile_img, callerName: name, callerID: socketId },
     });
   }, 3500);
@@ -65,7 +66,7 @@ export const resendPendingCall = (
 type AckCallback = (response: any) => void;
 type SocketHandler<Args extends any[]> = (...args: [...Args, AckCallback?]) => Promise<void> | void;
 export const safeAckHandler = (handler: SocketHandler<any>) => {
-  return (...args: unknown[]) => {
+  return async (...args: unknown[]) => {
     const callback = args[args.length - 1];
     const hasCallback = typeof callback === 'function';
     const actualArgs = hasCallback ? args.slice(0, -1) : args;
@@ -75,7 +76,7 @@ export const safeAckHandler = (handler: SocketHandler<any>) => {
     } catch (error) {
       console.error('socket Error captured', error);
       if (hasCallback) {
-        callback({ sent: false, error: 'internal error ' });
+        callback({ sent: false, error: 'internal error' });
       }
     }
   };
@@ -103,12 +104,12 @@ export function flattenMessagesWithSender(
 ): FlattenedMessage | FlattenedMessage[] {
   const isArray = Array.isArray(input);
   const messages = isArray ? input : [input];
-  console.log(messages)
+  console.log(messages);
   const flattendInput = messages.map(({ user, ...message }) => ({
     ...message,
     senderName: user.username,
     senderAvatar: user.profile_img,
   }));
-  console.log(flattendInput)
+  console.log(flattendInput);
   return isArray ? flattendInput : flattendInput[0];
 }

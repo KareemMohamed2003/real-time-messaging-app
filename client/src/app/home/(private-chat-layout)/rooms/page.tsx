@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Box, Modal, Typography } from '@mui/material';
+import { Box, InputAdornment, Modal, Typography } from '@mui/material';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { useUserStore } from '@/app/store/user-store';
@@ -9,9 +9,10 @@ import CreateRoomForm from '@/entities/rooms/ui/CreateRoomForm';
 import RoomCard from '@/entities/rooms/ui/RoomCard';
 import Button from '@/shared/components/UI/Button';
 import { RoomCardSkeleton } from '@/shared/components/UI/Skeletons';
+import Input from '@/shared/components/UI/Input';
 
 export default function Rooms() {
-  const { uuid } = useUserStore((state) => state.profile!);
+  const { uuid } = useUserStore(state => state.profile!);
   const { rooms, isLoading } = useRooms(uuid!);
   const [displayForm, setDisplayForm] = useState(false);
   const closeRoomForm = () => setDisplayForm(false);
@@ -46,36 +47,18 @@ export default function Rooms() {
           display="flex"
           alignItems="center"
           justifyContent="space-between"
-          gap={1.75}
           flexWrap="wrap"
           mb={2.25}
         >
-          <Box
-            display="flex"
-            alignItems="center"
-            gap={1}
-            sx={(theme) => ({
-              width: 280,
-              backgroundColor: theme.palette.surface.elevated,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: `${theme.radius.sm}px`,
-              px: 1.5,
-              py: 0.5,
-              color: theme.palette.text.secondary,
-            })}
-          >
-            <SearchOutlinedIcon sx={{ fontSize: 15 }} />
-            <Box
-              component="input"
-              placeholder="Search rooms"
-              sx={{
-                border: 0,
-                outline: 'none',
-                background: 'transparent',
-                font: 'inherit',
-                fontSize: 13,
-                color: 'inherit',
-                width: '100%',
+          <Box display="flex" alignItems="center">
+            <Input
+              placeholder="search rooms"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start" sx={{ mr: 0, justifySelf: 'center' }}>
+                    <SearchOutlinedIcon sx={{ fontSize: 17 }} />
+                  </InputAdornment>
+                ),
               }}
             />
           </Box>
@@ -102,10 +85,7 @@ export default function Rooms() {
           )}
         </Box>
       </Box>
-    
-      {displayForm && (
-        <CreateRoomForm open={displayForm} closeRoomForm={closeRoomForm} />
-      )}
+      {displayForm && <CreateRoomForm open={displayForm} closeRoomForm={closeRoomForm} />}
     </Box>
   );
 }

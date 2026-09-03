@@ -1,11 +1,7 @@
 export const channelKeys = {
   default: ['channels'],
   all: (roomUUID: string) => [...channelKeys.default, roomUUID],
-  messages: (channelId: number, roomUUID: string) => [
-    ...channelKeys.default,
-    channelId,
-    roomUUID,
-  ],
+  messages: (channelId: number, roomUUID: string) => [...channelKeys.default, channelId, roomUUID],
 };
 
 export const friendsKeys = {
@@ -14,14 +10,11 @@ export const friendsKeys = {
 
 export const roomKeys = {
   all: ['rooms'],
-  roomMembers: (roomUUID: string) => [
-    ...roomKeys.all,
-    roomUUID,
-    'room-members',
-  ],
+  roomMembers: (roomUUID: string) => [...roomKeys.all, roomUUID, 'room-members'],
   room: (roomUUID: string) => [...roomKeys.all, roomUUID],
 };
 
 export const userKeys = {
   profile: ['userProfile'],
+  privateMessages: (friendUUID: string) => ['privateMessages', friendUUID],
 };

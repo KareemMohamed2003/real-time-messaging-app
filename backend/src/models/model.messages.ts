@@ -43,7 +43,28 @@ export const getPrivateMessages = async (
   default_message_include: typeof DEFAULT_MESSAGE_INCLUDE,
   id?: number
 ) => {
-  const query: any = {
+  // const query: any = {
+  //   where: {
+  //     OR: [
+  //       {
+  //         senderUUID: userId,
+  //         receiverUUID: friendId,
+  //         id: { lte: id },
+  //       },
+  //       {
+  //         senderUUID: friendId,
+  //         receiverUUID: userId,
+  //         id: { lte: id },
+  //       },
+  //     ],
+  //   },
+  //   include: default_message_include,
+  // };
+  // if (!id) {
+  //   query.where?.OR?.map((obj: any) => delete obj.id);
+  // }
+  // console.log("get PrivateMessage query object ", query);
+  const userMessages = await prisma.messages.findMany({
     where: {
       OR: [
         {
@@ -59,14 +80,12 @@ export const getPrivateMessages = async (
       ],
     },
     include: default_message_include,
-  };
-  if (!id) {
-    query.where?.OR?.map((obj: any) => delete obj.id);
   }
-  // console.log("get PrivateMessage query object ", query);
-  const userMessages = await prisma.messages.findMany(query);
+
+);
+  // find all messages where senderUUID =yourId,receiver=yourId,  
   // console.log("userMessage Query", userMessages);
-  return userMessages;
+  return flattenMessagesWithSender(userMessages);
 };
 
 export const deleteMessage = async (uuid: string, id: number) => {

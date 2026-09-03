@@ -1,25 +1,23 @@
-import { channelKeys } from '@/shared/api/QueryKeys';
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, QueryKey } from '@tanstack/react-query';
 import { IMessage } from '@/shared/types/api.types';
 /**
  * Adds a new message to the TanStack Query cache for a channel (DM, Room Channels).
  * Appends the message to the existing message array.
  *
  * @param queryClient - The TanStack Query client instance
- * @param channelId - The ID of the channel to add the message to
  * @param newMessage - The new message object to append
- * @param roomUUID - The UUID of the room containing the channel
+ * @param queryKey - The query cache key
  *
  */
 export const addMessageInCache = (
   queryClient: QueryClient,
-  channelId: number,
   newMessage: IMessage,
-  roomUUID: string
+  queryKey: QueryKey
 ) => {
-  console.log(channelId, newMessage, roomUUID);
-  queryClient.setQueryData(channelKeys.messages(channelId, roomUUID), (messages: IMessage[]) => {
-    if (!messages) return [newMessage];
+  console.log(newMessage);
+  queryClient.setQueryData(queryKey, (messages: IMessage[]) => {
+    if (!messages) return undefined;
+    if (messages.some(m => m.id === newMessage.id)) return messages; // de-duplication guard against potential duplicate messages
     const newMessages = [...messages, newMessage];
     return newMessages;
   });
@@ -30,20 +28,16 @@ export const addMessageInCache = (
  * Replaces the message matching the given message's ID.
  *
  * @param queryClient - The TanStack Query client instance
- * @param channelId - The ID of the channel containing the message
- * @param roomUUID - The UUID of the room containing the channel
  * @param updatedMessage - The updated message object (must include a valid `id`)
+ * @param queryKey - The query cache key
  */
 export const updateMessageInCache = (
   queryClient: QueryClient,
-  channelId: number,
   updatedMessage: IMessage,
-  roomUUID: string
+  queryKey: QueryKey
 ) => {
-  console.log(channelId, roomUUID);
-  queryClient.setQueryData(channelKeys.messages(channelId, roomUUID), (oldMessages: IMessage[]) => {
-    if (!Array.isArray(oldMessages)) return oldMessages;
+  queryClient.setQueryData(queryKey, (oldMessages: IMessage[]) => {
+    if (!oldMessages) return undefined; //If the value is undefined, the query data is not updated.
     return oldMessages.map(msg => (msg.id === updatedMessage.id ? updatedMessage : msg));
   });
 };
-

@@ -2,6 +2,7 @@ import { Avatar, Box, Stack, Typography } from '@mui/material';
 import MessageRow from './MessageRow';
 import { useUserStore } from '@/app/store/user-store';
 import UseRoom from '@/entities/rooms/api/useRoom';
+import { QueryKey } from '@tanstack/react-query';
 
 export interface GroupedMessage {
   id: number;
@@ -16,12 +17,8 @@ export interface MessageGroupProps {
   /** true when the current user sent every message in this group */
   self: boolean;
   messages: GroupedMessage[];
-  /** only ever true when self */
-  // canEdit: boolean;
-  // /** true when self, or when the viewer is roomOwner */
-  // canDelete: boolean;
+  queryKey: QueryKey;
   onReply?: (messageId: number) => void;
-  channelId: number;
   roomUUID?: string;
 }
 
@@ -31,13 +28,14 @@ export default function MessageGroup({
   self,
   messages,
   onReply,
-  channelId,
   roomUUID,
+  queryKey
 }: MessageGroupProps) {
   if (messages.length === 0) return null;
   const room = UseRoom(roomUUID!);
   const isRoomOwner = room?.role === 'OWNER';
   const canDeleteMessage = self || isRoomOwner;
+  console.log(self);
   return (
     <Stack
       direction={self ? 'row-reverse' : 'row'}
@@ -68,13 +66,12 @@ export default function MessageGroup({
           <MessageRow
             key={m.id}
             messageId={m.id}
-            channelId={channelId}
-            roomUUID={roomUUID}
             text={m.text}
             self={self}
             canEdit={self}
             canDelete={canDeleteMessage}
             onReply={onReply}
+            queryKey={queryKey}
           />
         ))}
       </Box>

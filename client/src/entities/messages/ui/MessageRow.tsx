@@ -9,7 +9,7 @@ import ReplyIcon from '@mui/icons-material/Reply';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateMessageQuery, deleteMessageQuery } from '@/shared/api/queries';
 import { IMessage } from '@/shared/types/api.types';
 import { channelKeys } from '@/shared/api/QueryKeys';
@@ -26,10 +26,8 @@ export interface MessageRowProps {
   canDelete: boolean;
   /** wired up once real reply threading exists; no-op today, same as the prototype's mocked toast */
   onReply?: (messageId: number) => void;
-  /** the channel this message belongs to — same value for a DM channel or a room's TEXT channel */
-  channelId: number;
-  /** present for room messages, absent for DMs — see note on cache updates below */
-  roomUUID?: string;
+
+  queryKey: QueryKey;
 }
 
 // use zustand store to select roomUUUID instead of having to pass it down
@@ -40,8 +38,7 @@ export default function MessageRow({
   canEdit,
   canDelete,
   onReply,
-  channelId,
-  roomUUID,
+  queryKey,
 }: MessageRowProps) {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
@@ -52,7 +49,7 @@ export default function MessageRow({
     onSuccess: editedMessage => {
       // if data is not defined this will silently fail , we need to make sure this is always data.
       console.log(editedMessage);
-      updateMessageInCache(queryClient, channelId, editedMessage, roomUUID!);
+      updateMessageInCache(queryClient, editedMessage, queryKey);
       setIsEditing(false);
     },
   });
@@ -60,15 +57,12 @@ export default function MessageRow({
   const { mutate: runDelete, isPending: isDeleting } = useMutation({
     mutationFn: (idToDelete: number) => deleteMessageQuery(idToDelete),
     onSuccess: deletedMessageId => {
-      queryClient.setQueryData(
-        channelKeys.messages(channelId, roomUUID!),
-        (messages: IMessage[]) => {
-          if (!Array.isArray(messages)) return messages;
-          const filteredMessages = messages.filter(message => message.id !== deletedMessageId);
-          console.log(filteredMessages);
-          return [...filteredMessages];
-        }
-      );
+      queryClient.setQueryData(queryKey, (messages: IMessage[]) => {
+        if (!Array.isArray(messages)) return messages;
+        const filteredMessages = messages.filter(message => message.id !== deletedMessageId);
+        console.log(filteredMessages);
+        return [...filteredMessages];
+      });
       setConfirmingDelete(false);
     },
   });

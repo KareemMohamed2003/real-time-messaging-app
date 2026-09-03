@@ -1,5 +1,4 @@
 export type UserRole = 'ADMIN' | 'OWNER' | 'MEMBER' ;
-
 export type ChannelType = 'TEXT' | 'VOICE' | 'DIRECT_MESSAGE';
 export enum FriendRequestEnum {
   SENT = 'SENT',

@@ -3,7 +3,6 @@ import { Modal } from '@mui/base';
 import { Box, Stack } from '@mui/material';
 import ChannelChat from '../ChannelChat';
 import CreateChannelForm from '../CreateChannelForm';
-
 import { getRoomChannelsQuery } from '@/shared/api/queries';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';

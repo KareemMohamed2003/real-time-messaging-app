@@ -6,18 +6,14 @@ import { roomKeys } from '@/shared/api/QueryKeys';
 export default function useAddRoomMemberMutation(roomUUID: string) {
   const queryClient = useQueryClient();
   const { mutate, isPending, isSuccess, isError } = useMutation({
-    mutationFn: (newMembers: IRoomMember[]) =>
-      addNewRoomMemberQuery(newMembers),
-    onSuccess: (newMembers:IRoomMember[]) => {
-      console.log(newMembers)
+    mutationFn: (newMembers: IRoomMember[]) => addNewRoomMemberQuery(newMembers),
+    onSuccess: (newMembers: IRoomMember[]) => {
+      console.log(newMembers);
       // update the cache of the room Members .
-      queryClient.setQueryData(
-        roomKeys.roomMembers(roomUUID),
-        (roomMembers: IRoomMember[]) => {
-          if (!roomMembers) return [...newMembers];
-          return [...roomMembers, ...newMembers];
-        }
-      );
+      queryClient.setQueryData(roomKeys.roomMembers(roomUUID), (roomMembers: IRoomMember[]) => {
+        if (!roomMembers) return undefined; // If the value is undefined, the query data is not updated.
+        return [...roomMembers, ...newMembers];
+      });
     },
     onError: () => {
       // display a notification or a modal stating the error etc..

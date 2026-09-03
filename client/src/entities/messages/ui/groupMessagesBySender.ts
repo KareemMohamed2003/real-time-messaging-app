@@ -26,14 +26,11 @@ interface SenderGroupInternal extends SenderGroup {
 
 const GROUPING_WINDOW_MS = 5 * 60 * 1000; // consecutive messages within 5 min from the same sender collapse into one group
 
-
 export function groupMessagesBySender(
-  messages: IMessage[],
+  messages: IMessage[] | Error,
   currentUserUUID: string
 ): SenderGroup[] {
   const groups: SenderGroupInternal[] = [];
-
- 
 
   if (!Array.isArray(messages)) return groups; // prevent app crash if messsages are not an array (e.g undefined,null)
   const persisted = messages?.filter(
@@ -65,7 +62,6 @@ export function groupMessagesBySender(
 
   return groups.map(({ lastCreatedAt, ...group }) => group);
 }
-
 
 function toTimestamp(date: Date | string | undefined): number {
   return date ? new Date(date).getTime() : Date.now();

@@ -2,12 +2,13 @@
 import { socketClient } from './socket';
 import { zustandStore } from '@/app/store/user-store';
 import { Socket } from 'socket.io-client';
+import { SOCKET_EVENTS } from './constants';
 const signalingChannel = socketClient;
 export const RTCConfiguration = {
-  iceServers: [
-    { urls: ['stun:stun.l.google.com:19302', 'stun:stun2.l.google.com:19302'] },
-  ],
+  iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }],
 };
+
+const { PRIVATE_VOICE_CALL_ANSWER, NEW_ICE_CANDIDATE, PRIVATE_VOICE_CALL } = SOCKET_EVENTS;
 // import { zustandStore } from '@/app/store/user-store';
 // export const captureAudio = async () => {
 //   const capturedAudio = (await navigator.mediaDevices.getDisplayMedia())
@@ -19,7 +20,7 @@ export const RTCConfiguration = {
 //     .map((el) => el);
 // };
 export const cancelCall = async (friendId: string, uuid: string) => {
-  signalingChannel.emit('onVoiceCallAnswer', {
+  signalingChannel.emit(PRIVATE_VOICE_CALL_ANSWER, {
     to: friendId,
     callerID: uuid,
     type: 'cancelled',
@@ -35,7 +36,7 @@ export const makeCall = async (
   try {
     const store = zustandStore.getState();
     const localStream = await selectInputMedia();
-    localStream!.getTracks().forEach((track) => {
+    localStream!.getTracks().forEach(track => {
       console.log('tracks', track);
       localPeer.addTrack(track, localStream!);
     });
@@ -45,7 +46,7 @@ export const makeCall = async (
       profile_img,
       name: username,
     };
-    signalingChannel.emit('voiceCall', message);
+    signalingChannel.emit(PRIVATE_VOICE_CALL, message);
     store.setOutgoingCall(to, friend_profile_img, localStream);
   } catch (e) {
     console.error(e);
@@ -56,21 +57,18 @@ export const makeCall = async (
     }
   }
 };
-export const answerCall = async (
-  localPeer: RTCPeerConnection,
-  callerID: string
-) => {
+export const answerCall = async (localPeer: RTCPeerConnection, callerID: string) => {
   try {
     const store = zustandStore.getState();
     const localStream = await selectInputMedia();
     const uuid = store.profile.uuid;
-    localStream!.getTracks().map((track) => {
+    localStream!.getTracks().map(track => {
       localPeer.addTrack(track, localStream!);
     });
     store.answerCall(callerID, localStream);
     const offer = await createOffer(localPeer);
     await localPeer.setLocalDescription(offer);
-    signalingChannel.emit('onVoiceCallAnswer', {
+    signalingChannel.emit(PRIVATE_VOICE_CALL_ANSWER, {
       callerID,
       type: 'offer',
       offer,
@@ -82,7 +80,7 @@ export const answerCall = async (
   // remote user answers the call
 };
 export const rejectCall = async (callerID: string) => {
-  signalingChannel.emit('onVoiceCallAnswer', { callerID, type: 'rejected' });
+  signalingChannel.emit(PRIVATE_VOICE_CALL_ANSWER, { callerID, type: 'rejected' });
   zustandStore.getState().rejectCall(callerID);
 };
 export const selectInputMedia = async () => {
@@ -90,7 +88,7 @@ export const selectInputMedia = async () => {
     audio: true,
   });
   console.log('audio stream', localStream);
-  navigator.mediaDevices.addEventListener('devicechange', async (event) => {
+  navigator.mediaDevices.addEventListener('devicechange', async event => {
     console.log('media device changed :', event);
     const devices = await navigator.mediaDevices.enumerateDevices();
     console.log('updated media devices : ', devices);
@@ -109,27 +107,20 @@ export const createOffer = async (localPeer: RTCPeerConnection) => {
   return offer;
 };
 
-export const handleOffer = async (
-  message: any,
-  socket: Socket,
-  localPeer: RTCPeerConnection
-) => {
+export const handleOffer = async (message: any, socket: Socket, localPeer: RTCPeerConnection) => {
   const desc = new RTCSessionDescription(message.offer);
   await localPeer.setRemoteDescription(desc); // in the webrtc docs example the await keyword wasn't there
   const answer = await localPeer.createAnswer();
   await localPeer.setLocalDescription(answer);
   // console.log('localPeer at caller side offer condition ', localPeer);
-  socket.emit('onVoiceCallAnswer', {
+  socket.emit(PRIVATE_VOICE_CALL_ANSWER, {
     calleeID: message.calleeID,
     type: 'answer',
     answer,
   });
 };
 
-export const handleAnswer = async (
-  message: any,
-  localPeer: RTCPeerConnection
-) => {
+export const handleAnswer = async (message: any, localPeer: RTCPeerConnection) => {
   if (localPeer.remoteDescription) return;
   const desc = new RTCSessionDescription(message.answer);
   await localPeer.setRemoteDescription(desc);
@@ -143,15 +134,12 @@ function handleGetUserMediaError(error: string) {
     console.log(error);
     zustandStore.getState().setNotification({
       type: 'error',
-      message:
-        'unable to access your microphone due to permission restrictions by the system',
+      message: 'unable to access your microphone due to permission restrictions by the system',
     });
   } else if (error.includes('NotFoundError')) {
     zustandStore.getState().setNotification({
       type: 'error',
-      message:
-        'Unable to open your call because no camera and/or microphone' +
-        'were found.',
+      message: 'Unable to open your call because no camera and/or microphone' + 'were found.',
     });
   } else if (error.includes('PermissionDeniedError')) {
     zustandStore.getState().setNotification({
@@ -159,19 +147,18 @@ function handleGetUserMediaError(error: string) {
       message: 'Unable to open your call permission denied',
     });
   }
-
 }
 
 //--------------------------------- web rtc signaling-------------------------------------------------
 export const initWebRtc = () => {
-  socketClient.on('voiceCall', async ({ callerInfo }) => {
+  socketClient.on(PRIVATE_VOICE_CALL, async ({ callerInfo }) => {
     const { callerName, profile_img, callerID } = callerInfo;
     zustandStore.getState().setIncomingCall(callerName, callerID, profile_img);
     console.log('callerID', callerID);
     console.log(profile_img);
   });
 
-  socketClient.on('onVoiceCallAnswer', async (message) => {
+  socketClient.on(PRIVATE_VOICE_CALL_ANSWER, async message => {
     const store = zustandStore.getState();
     const localPeer = store.localPeer!;
     if (message.type == 'offer') {
@@ -191,7 +178,7 @@ export const initWebRtc = () => {
       store.deleteIncomingCall(message.callerID);
     }
   });
-  socketClient.on('new-icecandidate', async ({ candidate }) => {
+  socketClient.on(NEW_ICE_CANDIDATE, async ({ candidate }) => {
     try {
       const localPeer = zustandStore.getState().localPeer;
       await localPeer!.addIceCandidate(candidate);
