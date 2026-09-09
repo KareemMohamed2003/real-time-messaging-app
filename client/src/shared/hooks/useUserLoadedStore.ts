@@ -6,7 +6,7 @@ import { userKeys } from '../api/QueryKeys';
 import { useEffect, useState } from 'react';
 
 export default function useUserLoadedStore() {
-  const { setProfile } = useUserStore((state) => state);
+  const { setProfile } = useUserStore(state => state);
   const [isUserStateInit, setInit] = useState<boolean>(false);
   const query = useQuery({
     queryKey: userKeys.profile,
@@ -14,6 +14,7 @@ export default function useUserLoadedStore() {
     staleTime: Infinity,
     throwOnError: true,
   });
+
   useEffect(() => {
     if (query.data) {
       console.log(query.data);

@@ -43,6 +43,7 @@ export const getPrivateMessages = async (
   default_message_include: typeof DEFAULT_MESSAGE_INCLUDE,
   id?: number
 ) => {
+<<<<<<< Updated upstream
   // const query: any = {
   //   where: {
   //     OR: [
@@ -64,6 +65,8 @@ export const getPrivateMessages = async (
   //   query.where?.OR?.map((obj: any) => delete obj.id);
   // }
   // console.log("get PrivateMessage query object ", query);
+=======
+>>>>>>> Stashed changes
   const userMessages = await prisma.messages.findMany({
     where: {
       OR: [
@@ -80,11 +83,16 @@ export const getPrivateMessages = async (
       ],
     },
     include: default_message_include,
+<<<<<<< Updated upstream
   }
 
 );
   // find all messages where senderUUID =yourId,receiver=yourId,  
   // console.log("userMessage Query", userMessages);
+=======
+  });
+  // find all messages where senderUUID =yourId,receiver=yourId,
+>>>>>>> Stashed changes
   return flattenMessagesWithSender(userMessages);
 };
 
@@ -131,6 +139,10 @@ export const createRoomMessage = async (
       senderUUID: senderUUID,
       message: message,
       channelId: channelId,
+<<<<<<< Updated upstream
+=======
+      receiverUUID: null, // set to null , since the receiver is room,channel members not a single friend .
+>>>>>>> Stashed changes
     },
     include: default_message_include,
   });
@@ -138,3 +150,44 @@ export const createRoomMessage = async (
   console.log(`createMessage : senderId${senderUUID} message${message}`);
   return flattenMessagesWithSender(newMessage);
 };
+<<<<<<< Updated upstream
+=======
+
+export const getRecentDMConversations = async (uuid: string) => {
+  const latestDmsPerChannel = await prisma.messages.groupBy({
+    by: ['channelId'],
+    where: {
+      OR: [{ senderUUID: uuid }, { receiverUUID: uuid }],
+      channel: { type: 'DIRECT_MESSAGE' },
+    },
+    _max: { id: true }, // use id instead of createdAt
+    orderBy: { _max: { id: 'desc' } },
+    // take: limit, // add later for performance improvement
+  });
+
+  const recentMessagesPerChannel = await prisma.messages.findMany({
+    where: {
+      id: { in: latestDmsPerChannel.map(g => g._max.id as number) },
+    },
+    include: {
+      user: { select: { profile_img: true, username: true, uuid: true } },
+      receiver: { select: { profile_img: true, username: true, uuid: true } },
+    },
+    orderBy: { id: 'desc' },
+  });
+  console.log('recentMessagesPerChannel :', recentMessagesPerChannel);
+  const recentMessages = recentMessagesPerChannel.map(recentMessage =>
+    recentMessage.senderUUID === uuid
+      ? {
+          ...recentMessage.receiver,
+          lastMessage: recentMessage.message,
+        }
+      : {
+          ...recentMessage.user,
+          lastMessage: recentMessage.message,
+        }
+  );
+  console.log('claude :', recentMessages);
+  return recentMessages;
+};
+>>>>>>> Stashed changes

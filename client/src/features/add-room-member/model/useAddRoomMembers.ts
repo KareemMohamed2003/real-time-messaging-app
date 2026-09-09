@@ -1,7 +1,7 @@
 import { IRoomMember, UserRole } from '@/shared/types/api.types';
 import { useMemo, useCallback, useState } from 'react';
 import useRoomMembers from '@/entities/rooms/api/useRoomMembers';
-import UseFriendsQuery from '@/entities/friends/api/useFriendsQuery';
+import UseFriendsQuery from '@/entities/friends/api/useSuspenseFriendsQuery';
 import useAddRoomMemberMutation from '@/features/add-room-member/api/useAddRoomMemberMutation';
 import { IAddableRoomMember } from './types';
 

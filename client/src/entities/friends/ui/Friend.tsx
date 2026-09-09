@@ -8,9 +8,13 @@ import { IFriend } from '@/shared/types/api.types';
 import User from '@/shared/components/User';
 
 export interface FriendProps extends IFriend {
+<<<<<<< Updated upstream
   /** Real presence — FriendsList already reads friend.is_online elsewhere,
    *  it just wasn't being forwarded here. Optional + defaults to true so
    *  existing call sites that don't pass it keep the old always-on look. */
+=======
+
+>>>>>>> Stashed changes
   isOnline?: boolean;
 }
 
@@ -28,7 +32,11 @@ export default function Friend({
   profile_img,
   isRequestSender,
   friendId,
+<<<<<<< Updated upstream
   isOnline = true,
+=======
+  isOnline ,
+>>>>>>> Stashed changes
 }: FriendProps) {
   const { acceptFriendRequest } = useAcceptFriendRequest();
   const { profile } = useUserStore((state) => state);

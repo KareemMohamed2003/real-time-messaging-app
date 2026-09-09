@@ -1,4 +1,5 @@
 'use client';
+<<<<<<< Updated upstream
 import { Stack } from '@mui/material';
 import { Suspense } from 'react';
 import { useParams } from 'next/navigation';
@@ -8,11 +9,18 @@ import CallManager from '@/features/voice-call/ui/CallManager';
 import UseFriendsQuery from '@/entities/friends/api/useFriendsQuery';
 import { getFriendSocketId } from '@/shared/lib/utils';
 import { DmConversationSkeleton } from '@/shared/components/UI/Skeletons';
+=======
+
+import { useParams } from 'next/navigation';
+import { useUserStore } from '@/app/store/user-store';
+import FriendConversation from '@/widgets/friend-conversation/ui/FriendConversation';
+>>>>>>> Stashed changes
 
 export default function PrivateChat() {
   const dynamicParam = useParams<{ friendId: string }>();
   const friendId = dynamicParam.friendId;
   const { profile } = useUserStore(state => state);
+<<<<<<< Updated upstream
   const { friends } = UseFriendsQuery();
   const { uuid, username, profile_img } = getFriendSocketId(friendId, friends?.all);
 
@@ -29,4 +37,8 @@ export default function PrivateChat() {
       </Suspense>
     </Stack>
   );
+=======
+
+  return <FriendConversation currentUserUUID={profile.uuid} friendUUID={friendId} />;
+>>>>>>> Stashed changes
 }

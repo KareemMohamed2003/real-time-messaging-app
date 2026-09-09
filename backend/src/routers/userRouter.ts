@@ -21,6 +21,7 @@ import {
   getPrivateMessagesAction,
   updateMessageAction,
   deleteMessageAction,
+  getRecentDMconversationsAction,
 } from "../controllers/messages.controller";
 import {
   createRoomAction,
@@ -41,14 +42,15 @@ userRouter.post("/accept_friend_request", acceptFriendRequestAction);
 userRouter.post("/reject_friend_request", rejectFriendAction);
 userRouter.get("/friends", getFriendsAction);
 userRouter.get("/profile/:id", getUserAction);
-userRouter.get("/private-messages/:userId/:friendId", getPrivateMessagesAction);
 userRouter.post(
   "/upload_profile_pic/:uuid",
   multerUpload.single("uploaded_file"),
   updateUserProfileAction,
 );
-userRouter.post("/update_message", updateMessageAction);
 userRouter.delete("/profile_pic", deleteProfileImgAction);
+userRouter.get("/private-messages/:userId/:friendId", getPrivateMessagesAction);
+userRouter.get("/recent_conversations",getRecentDMconversationsAction)
+userRouter.post("/update_message", updateMessageAction);
 userRouter.delete("/delete_message/:messageId", deleteMessageAction);
 
 //////////////////////////////////////////// channel routes ///////////////////////////////////////////////////////////////////
@@ -56,6 +58,10 @@ userRouter.post("/add_channel", createChannelAction);
 userRouter.post("/get_channels", getRoomChannelsAction);
 userRouter.post("/get_channel_messages", getChannelMessagesAction);
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 //////////////////////////////////////////// rooms routes ////////////////////////////////////////////////////////////////////
 userRouter.post("/createRoom", createRoomAction);
 userRouter.post("/get_rooms", getUserJoinedRoomsAction);

@@ -16,7 +16,11 @@ export const get_channels_URL = `${serverURL}/user/get_channels`;
 export const get_channels_messages_URL = `${serverURL}/user/get_channel_messages`;
 export const add_roomMember_URL = `${serverURL}/user/add_room_members`;
 export const get_roomMembers_URL = `${serverURL}/user/get_room_members`;
+<<<<<<< Updated upstream
 
+=======
+export const get_recent_conversations_URL = `${serverURL}/user/recent_conversations`;
+>>>>>>> Stashed changes
 export const SOCKET_EVENTS = {
   CONNECT: 'connect',
   DISCONNECT: 'disconnect',

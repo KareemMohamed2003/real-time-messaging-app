@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 export type UserRole = 'ADMIN' | 'OWNER' | 'MEMBER' ;
 export type ChannelType = 'TEXT' | 'VOICE' | 'DIRECT_MESSAGE';
 export enum FriendRequestEnum {
@@ -5,6 +6,11 @@ export enum FriendRequestEnum {
   REJECTED = 'REJECTED',
   ACCEPTED = 'ACCEPTED',
 }
+=======
+export type UserRole = 'ADMIN' | 'OWNER' | 'MEMBER';
+export type ChannelType = 'TEXT' | 'VOICE' | 'DIRECT_MESSAGE';
+export type FriendRequest = 'SENT' | 'REJECTED' | 'ACCEPTED';
+>>>>>>> Stashed changes
 
 export interface IUser {
   id: number;
@@ -27,7 +33,7 @@ export interface IFriend {
   friendId: number;
   profile_img: string;
   senderName: string;
-  request_status: FriendRequestEnum;
+  request_status: FriendRequest;
   isRequestSender: boolean;
   username: string;
   uuid: string;
@@ -76,6 +82,18 @@ export interface IJoinedRoom extends IRoom {
 export interface IRoomMember {
   roomUUID: string;
   userId: string;
+<<<<<<< Updated upstream
   role:UserRole;
   user?: IUser;
+=======
+  role: UserRole;
+  user?: IUser;
+}
+
+export interface IDirectMessage {
+  username: string;
+  uuid: string;
+  profile_img: string | null;
+  lastMessage: string;
+>>>>>>> Stashed changes
 }

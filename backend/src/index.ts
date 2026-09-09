@@ -11,6 +11,10 @@ import { checkDB } from "./lib/db.ts";
 import { checkSessionExpiry } from "./lib/helpers.ts";
 import { authorizeUser } from "./middleware/auth-middleware.ts";
 import { corsOptions } from "./lib/constants.ts";
+<<<<<<< Updated upstream
+=======
+import { getRecentDMConversations } from "./models/model.messages.ts";
+>>>>>>> Stashed changes
 
 const app = express();
 export const server = createServer(app);
@@ -26,9 +30,12 @@ process.on("SIGTERM", () => {
   console.log("shutting down server...");
   clearInterval(intervalId);
 });
+
+
 server.listen(3333, () => {
   checkDB();
   initSocketServer(server);
+  getRecentDMConversations('1056091a-a11b-404f-b26d-9514bfbcbff9')
   console.log("server is listening on  http://localhost:3333");
 });
 

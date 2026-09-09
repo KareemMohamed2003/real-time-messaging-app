@@ -246,3 +246,29 @@ export function TopListLoader({ label = 'Loading more…' }: { label?: string })
     </Box>
   );
 }
+<<<<<<< Updated upstream
+=======
+
+
+export function DmItemSkeleton() {
+  return (
+    <Box display="flex" alignItems="center" gap={1.375} mx={1} my={0.25} px={1.5} py={1.25}>
+      <ShimmerBlock circle width={38} height={38} />
+      <Box flex={1} display="flex" flexDirection="column" gap={0.75} minWidth={0}>
+        <ShimmerBlock width="50%" />
+        <ShimmerBlock width="75%" />
+      </Box>
+    </Box>
+  );
+}
+
+export function DmListSkeleton({ count = 6 }: { count?: number }) {
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <DmItemSkeleton key={i} />
+      ))}
+    </>
+  );
+}
+>>>>>>> Stashed changes
