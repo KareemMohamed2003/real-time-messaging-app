@@ -4,8 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Typography } from '@mui/material';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import { useState } from 'react';
-import { useUserStore } from '@/app/store/user-store';
-import Button from '@/shared/components/UI/Button';
+import { useUserStore } from '@/app/store/use-user-store';import Button from '@/shared/components/UI/Button';
 import Input from '@/shared/components/UI/Input';
 import {
   friendRequestSchema,

@@ -2,6 +2,7 @@ import { ZodFormattedError } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useState, FormEvent, FormEventHandler } from 'react';
 import { validateCredentials, registerUser } from '@/shared/lib/actions/authActions';
+import { AppRoutes } from '@/shared/lib/utils';
 
 interface IFormState {
   errors: ZodFormattedError<{ [propety: string]: any }> | null;
@@ -55,7 +56,7 @@ export default function useRegister(): [
       }
       router.refresh(); //  we need to refresh router before we navigate to clear the cache that was causing
       // too many redirects problem .
-      router.replace('/login');
+      router.replace(AppRoutes.LOGIN_ROUTE);
     }
   };
 

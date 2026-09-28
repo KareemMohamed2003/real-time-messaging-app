@@ -2,8 +2,7 @@
 import { updateProfilePic } from '@/shared/lib/actions/userActions';
 import { mainStyles } from '@/themes(legacy)';
 import { checkFileSize, togglePortalEffect } from '@/shared/lib/utils';
-import { useUserStore } from '@/app/store/user-store';
-import Button from '@/shared/components/UI/(legacy)/Button(legacy)';
+import { useUserStore } from '@/app/store/use-user-store';import Button from '@/shared/components/UI/(legacy)/Button(legacy)';
 import Portal from '@/shared/components/Portal';
 import { Avatar, Stack, Typography } from '@mui/material';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';

@@ -5,8 +5,7 @@ import RoomMembers from '@/entities/rooms/ui/RoomMembers';
 import RoomHeader from '@/entities/rooms/ui/RoomHeader';
 import ChannelsSection from '@/entities/channels/ui/ChannelsSection';
 import AddMembersModal from '@/features/add-room-member/ui/AddMembersModal';
-import { useUserStore } from '@/app/store/user-store';
-import { addMessageInCache } from '@/shared/lib/queryMessagesCacheUtils';
+import { useUserStore } from '@/app/store/use-user-store';import { addMessageInCache } from '@/shared/lib/queryMessagesCacheUtils';
 import { useParams } from 'next/navigation';
 import { Stack } from '@mui/material';
 import { socketClient } from '@/shared/lib/socket';
@@ -52,6 +51,7 @@ export default function Room() {
       }}
     >
       <RoomHeader
+      roomUUID={roomUUID}
         roomName={room?.roomName}
         isOpen={isOpen}
         setOpen={setOpen}

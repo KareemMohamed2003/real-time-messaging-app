@@ -2,12 +2,12 @@
 import { Box, Stack } from '@mui/material';
 import ChannelChat from './ChannelChat';
 import CreateChannelForm from './CreateChannelForm';
-import ChannelsNav from './ChannelsNav';
+import ChannelsNav from '../../../widgets/channel-nav/ui/ChannelsNav';
+import MessageForm from '../../messages/ui/MessageForm';
+import UseSendChannelMessage from '../api/UseSendChannelMessage';
 import { getRoomChannelsQuery } from '@/shared/api/queries';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import MessageForm from '../../messages/ui/MessageForm';
-import UseSendChannelMessage from '../api/UseSendChannelMessage';
 import { channelKeys } from '@/shared/api/QueryKeys';
 import { ChannelRowSkeleton, RoomConversationSkeleton } from '@/shared/components/UI/Skeletons';
 
@@ -30,8 +30,7 @@ export default function ChannelsSection({ roomUUID, uuid }: props) {
   const channelId = selectedChannel ? selectedChannel : activeChannel;
   const closeChannelForm = () => toggleChannelForm(false);
   const openChannelForm = () => toggleChannelForm(true);
-  console.log('active channel at channelSection.tsx', activeChannel);
-  console.log('channelId at channelSection.tsx', channelId);
+
   if (isLoading) {
     return (
       <Box display="flex" height="100%" width="100%" sx={{ overflowY: 'hidden' }}>

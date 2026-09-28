@@ -1,8 +1,7 @@
 import FriendProfileHeader from '@/entities/friends/ui/FriendProfileHeader';
 import PrivateVoiceCall from './PrivateVoiceCall';
 import OutGoingCall from './OutGoingCall';
-import { useUserStore } from '@/app/store/user-store';
-interface props {
+import { useUserStore } from '@/app/store/use-user-store';interface props {
   friendId: string;
   friendName: string;
   profile_img: string;

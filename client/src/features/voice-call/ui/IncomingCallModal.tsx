@@ -1,8 +1,7 @@
 import { Stack } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { useEffect, useState } from 'react';
-import { useUserStore } from '@/app/store/user-store';
-import IncomingCall from './IncomingCall';
+import { useUserStore } from '@/app/store/use-user-store';import IncomingCall from './IncomingCall';
 
 export default function IncomingCallModal() {
   const [open, setOpen] = useState(false);

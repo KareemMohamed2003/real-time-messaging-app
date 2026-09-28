@@ -1,13 +1,15 @@
 import { prisma } from '../prisma/prisma.ts';
 import { ChannelType } from '@prisma/client';
 import { createChannel } from './model.channels.ts';
-export const createRoom = async (userId: string, name: string) => {
+import { Rooms } from '@prisma/client';
+import { createRoomPayload } from '../controllers/types.ts';
+export const createRoom = async (payload: createRoomPayload) => {
   const newRoom = await prisma.rooms.create({
-    data: { roomName: name, ownerId: userId },
+    data: { ...payload },
   });
   await prisma.roomMember.create({
     data: {
-      userId,
+      userId: payload.ownerId!,
       role: 'OWNER',
       roomUUID: newRoom.roomUUID,
     },
@@ -53,10 +55,10 @@ export const deleteRoom = async (uuid: string, roomUUID: string) => {
   });
 };
 
-export const updateRoomName = async (uuid: string, roomUUID: string, newName: string) => {
+export const updateRoom = async (uuid: string, roomUUID: string, payload: Partial<Rooms>) => {
   return prisma.rooms.update({
     data: {
-      roomName: newName,
+      ...payload,
     },
     where: {
       roomUUID: roomUUID,

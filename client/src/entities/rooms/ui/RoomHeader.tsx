@@ -3,13 +3,16 @@ import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { Box, IconButton, InputBase, Tooltip, Typography } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
-
+import SettingsIcon from '@mui/icons-material/Settings';
+import { useRouter } from 'next/navigation';
+import { AppRoutes } from '@/shared/lib/utils';
 interface props {
   roomName: string;
   setAddMembersDisplay: Dispatch<SetStateAction<boolean>>;
   setOpen: Dispatch<SetStateAction<boolean>>;
   displayAddMembers: boolean;
   isOpen: boolean;
+  roomUUID: string;
 }
 
 export default function RoomHeader({
@@ -18,7 +21,9 @@ export default function RoomHeader({
   isOpen,
   displayAddMembers,
   setOpen,
+  roomUUID,
 }: props) {
+  const router = useRouter();
   return (
     <Box
       px={2.5}
@@ -28,7 +33,7 @@ export default function RoomHeader({
       alignItems="center"
       justifyContent="space-between"
       gap={3}
-      sx={(theme) => ({ borderBottom: `1px solid ${theme.palette.divider}` })}
+      sx={theme => ({ borderBottom: `1px solid ${theme.palette.divider}` })}
     >
       <Typography fontWeight={700} fontSize={14.5} noWrap>
         {roomName}
@@ -39,7 +44,7 @@ export default function RoomHeader({
           display="flex"
           alignItems="center"
           gap={1}
-          sx={(theme) => ({
+          sx={theme => ({
             width: 220,
             backgroundColor: theme.palette.surface.elevated,
             border: `1px solid ${theme.palette.divider}`,
@@ -54,12 +59,13 @@ export default function RoomHeader({
           })}
         >
           <SearchOutlinedIcon sx={{ fontSize: 16 }} />
-          <InputBase
-            placeholder="Search"
-            sx={{ fontSize: 13, flex: 1, color: 'text.primary' }}
-          />
+          <InputBase placeholder="Search" sx={{ fontSize: 13, flex: 1, color: 'text.primary' }} />
         </Box>
-
+        <Tooltip title="settings">
+          <IconButton onClick={() => router.push(AppRoutes.ROOM_SETTINGS_ROUTE(roomUUID))}>
+            <SettingsIcon sx={{ fontSize: 20 }} />
+          </IconButton>
+        </Tooltip>
         <Tooltip title="Add members">
           <IconButton onClick={() => setAddMembersDisplay(!displayAddMembers)}>
             <GroupAddOutlinedIcon sx={{ fontSize: 20 }} />

@@ -16,17 +16,9 @@ import {
   user_friends_URL,
   userProfileURL,
 } from '@/shared/lib/constants';
-import { requestAborter } from '@/shared/lib/utils';
 import { IRoomMember } from '@/shared/types/api.types';
+import { requestAborter } from './client';
 
-export const queryHandler = () => {
-  //method ,
-  // default headers ,custom headers if required
-  // url
-  /// should use custom error classes .
-  // cookie header if required for server side fetching
-  // aborter property if required
-};
 const jsonHeaders = {
   'Content-Type': 'application/json',
 };

@@ -16,9 +16,6 @@ export const roomKeys = {
 
 export const userKeys = {
   profile: ['userProfile'],
-<<<<<<< Updated upstream
-=======
   recentDMs:['recentDMs'],
->>>>>>> Stashed changes
   privateMessages: (friendUUID: string) => ['privateMessages', friendUUID],
 };
