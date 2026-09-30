@@ -7,9 +7,7 @@ const signalingChannel = socketClient;
 export const RTCConfiguration = {
   iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }],
 };
-
 const { PRIVATE_VOICE_CALL_ANSWER, NEW_ICE_CANDIDATE, PRIVATE_VOICE_CALL } = SOCKET_EVENTS;
-// import { zustandStore } from '@/app/store/user-store';
 // export const captureAudio = async () => {
 //   const capturedAudio = (await navigator.mediaDevices.getDisplayMedia())
 //     .getAudioTracks()

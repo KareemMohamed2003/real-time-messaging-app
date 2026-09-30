@@ -3,8 +3,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getChannelMessagesQuery } from '@/shared/api/queries';
 import { channelKeys } from '@/shared/api/QueryKeys';
 import { IMessage } from '@/shared/types/api.types';
-import { useUserStore } from '@/app/store/user-store';
-import MessageGroup from '@/entities/messages/ui/MessageGroup';
+import { useUserStore } from '@/app/store/use-user-store';import MessageGroup from '@/entities/messages/ui/MessageGroup';
 import { groupMessagesBySender } from '@/entities/messages/ui/groupMessagesBySender';
 import { RoomConversationSkeleton } from '@/shared/components/UI/Skeletons';
 interface props {

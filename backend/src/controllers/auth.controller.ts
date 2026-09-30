@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { signInUser, registerUser } from "../models/model.users.ts";
-import { generateEncryptedJwt } from "../lib/auth/auth.js";
+import { generateEncryptedJwt } from "../auth/auth.js";
 import { randomId } from "../lib/helpers.ts";
 import { AuthRequest } from "./types.ts";
 import { deleteUserSession } from "../lib/db.ts";

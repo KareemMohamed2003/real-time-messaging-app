@@ -1,7 +1,6 @@
 'use client';
 import useRooms from '@/entities/rooms/api/useRooms';
-import { useUserStore } from '@/app/store/user-store';
-
+import { useUserStore } from '@/app/store/use-user-store';
 export default function RoomsLayout({
   children,
 }: {

@@ -1,5 +1,4 @@
-import { useUserStore } from '@/app/store/user-store';
-import { useEffect, useState } from 'react';
+import { useUserStore } from '@/app/store/use-user-store';import { useEffect, useState } from 'react';
 import ErrorNotification from './ErrorNotification';
 import { Box } from '@mui/material';
 

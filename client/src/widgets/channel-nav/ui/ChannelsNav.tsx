@@ -36,8 +36,8 @@ export default function ChannelsNav({
 }: ChannelsNavProps) {
   const { textChannels, voiceChannels } = useMemo(
     () => ({
-      textChannels: channels?.filter((c) => c.type === 'TEXT') ?? [],
-      voiceChannels: channels?.filter((c) => c.type === 'VOICE') ?? [],
+      textChannels: channels?.filter(c => c.type === 'TEXT') ?? [],
+      voiceChannels: channels?.filter(c => c.type === 'VOICE') ?? [],
     }),
     [channels]
   );
@@ -48,13 +48,14 @@ export default function ChannelsNav({
       flexShrink={0}
       width={220}
       height="100%"
-      sx={(theme) => ({
+      sx={theme => ({
         borderRight: `1px solid ${theme.palette.divider}`,
         display: 'none',
         [theme.breakpoints.up(880)]: { display: 'flex' },
       })}
     >
       <Box
+        flex={1}
         px={1}
         py={1.5}
         display="flex"
@@ -72,11 +73,7 @@ export default function ChannelsNav({
         >
           <Typography sx={sectionLabelSx}>Channels</Typography>
           <Tooltip title="Create channel">
-            <IconButton
-              size="small"
-              onClick={openChannelForm}
-              sx={{ width: 28, height: 28 }}
-            >
+            <IconButton size="small" onClick={openChannelForm} sx={{ width: 28, height: 28 }}>
               <AddIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -88,11 +85,8 @@ export default function ChannelsNav({
           <>
             {textChannels.length > 0 && (
               <>
-                <Typography sx={{ ...sectionLabelSx, pl: 1.25, mt: 0.75 }}>
-                  Text
-                </Typography>
-
-                {textChannels.map((channel) => (
+                <Typography sx={{ ...sectionLabelSx, pl: 1.25, mt: 0.75 }}>Text</Typography>
+                {textChannels.map(channel => (
                   <Channel
                     key={channel.channelId}
                     channelId={channel.channelId}
@@ -107,10 +101,8 @@ export default function ChannelsNav({
 
             {voiceChannels.length > 0 && (
               <>
-                <Typography sx={{ ...sectionLabelSx, pl: 1.25, mt: 0.75 }}>
-                  Voice
-                </Typography>
-                {voiceChannels.map((channel) => (
+                <Typography sx={{ ...sectionLabelSx, pl: 1.25, mt: 0.75 }}>Voice</Typography>
+                {voiceChannels.map(channel => (
                   <Channel
                     key={channel.channelId}
                     channelId={channel.channelId}

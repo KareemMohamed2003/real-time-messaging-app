@@ -1,6 +1,7 @@
 import { $Enums } from '@prisma/client';
 import { prisma } from '../prisma/prisma.ts';
 import { DEFAULT_MESSAGE_INCLUDE } from './model.messages.ts';
+import { BadRequestError } from '../prisma/prismaHandlers/AppError.ts';
 
 export const createChannel = async (
   type: $Enums.ChannelType,
@@ -82,4 +83,40 @@ export const createChannelParticipant = async (channelId: number, userId: string
     },
   });
   return channelParticipant;
+};
+
+export const deleteChannel = async (channelId: number, roomUUID: string) => {
+  return prisma.$transaction(async tsx => {
+    await prisma.channel.findFirstOrThrow({
+      where: {
+        channelId,
+      },
+    });
+    const remainingTextChannels = await prisma.channel.count({
+      where: {
+        type: 'TEXT',
+        roomUUID: roomUUID,
+      },
+    });
+    if (remainingTextChannels > 1) {
+      await prisma.channel.delete({
+        where: {
+          channelId: channelId,
+        },
+      });
+    }
+
+    throw new BadRequestError('channels', 'room must keep at least one text channel');
+  });
+};
+
+export const updateChannel = async (channelId: number, name: string, roomUUID: string) => {
+  await prisma.channel.update({
+    data: {
+      channelName: name,
+    },
+    where: {
+      channelId: channelId,
+    },
+  });
 };

@@ -1,15 +1,11 @@
 import { Request, Response } from 'express';
 import { handleDbError } from '../lib/helpers';
-<<<<<<< Updated upstream
-import { getPrivateMessages, deleteMessage, updateMessageContent } from '../models/model.messages';
-=======
 import {
   getPrivateMessages,
   deleteMessage,
   updateMessageContent,
   getRecentDMConversations,
 } from '../models/model.messages';
->>>>>>> Stashed changes
 import { AuthRequest } from './types';
 import { DEFAULT_MESSAGE_INCLUDE } from '../models/model.messages';
 export const getPrivateMessagesAction = async (req: AuthRequest, res: Response) => {
@@ -50,12 +46,6 @@ export const deleteMessageAction = async (req: AuthRequest, res: Response) => {
     const deletedMessageId = await deleteMessage(uuid, messageId);
     res.json(deletedMessageId);
   } catch (e) {
-<<<<<<< Updated upstream
-    // const deleteError = handleDeleteError(e, "message");
-    // console.log("error at deleteMessageAction() : ", e);
-    // res.status(400).json(deleteError);
-=======
->>>>>>> Stashed changes
     handleDbError(res, e, 'Messages');
   }
 };
@@ -72,10 +62,6 @@ export const updateMessageAction = async (req: AuthRequest, res: Response) => {
     );
     res.json(updatedMessage);
   } catch (e) {
-<<<<<<< Updated upstream
-    // console.log("error at updateMessageAction() :", e);
-    // res.status(500).send();
-=======
     handleDbError(res, e, 'Messages');
   }
 };
@@ -87,7 +73,6 @@ export const getRecentDMconversationsAction = async (req: AuthRequest, res: Resp
     console.log(recentDMConversations)
     res.json(recentDMConversations);
   } catch (e) {
->>>>>>> Stashed changes
     handleDbError(res, e, 'Messages');
   }
 };

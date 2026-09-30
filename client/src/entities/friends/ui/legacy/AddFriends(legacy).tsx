@@ -3,8 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
-import { useUserStore } from '@/app/store/user-store';
-import Button from '@/shared/components/UI/(legacy)/Button(legacy)';
+import { useUserStore } from '@/app/store/use-user-store';import Button from '@/shared/components/UI/(legacy)/Button(legacy)';
 import Input from '@/shared/components/UI/(legacy)/Input(legacy)';
 import {
   friendRequestSchema,

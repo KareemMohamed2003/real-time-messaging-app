@@ -1,21 +1,22 @@
 'use client';
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import Button from '@/shared/components/UI/Button';
 import FriendsList from '@/entities/friends/ui/FriendsList';
-import UseSuspenseFriendsQuery from '@/entities/friends/api/useSuspenseFriendsQuery';
+import AddFriends from '@/entities/friends/ui/AddFriends';
 import { socketClient } from '@/shared/lib/socket';
-import { useUserStore } from '@/app/store/user-store';
-import { useEffect, useState } from 'react';
+import { useUserStore } from '@/app/store/use-user-store';import { useEffect, useState } from 'react';
 import { SOCKET_EVENTS } from '@/shared/lib/constants';
 import { Box, Typography } from '@mui/material';
-import AddFriends from '@/entities/friends/ui/AddFriends';
-import Input from '@/shared/components/UI/Input';
 import { useQuery } from '@tanstack/react-query';
 import { getFriendsQuery } from '@/shared/api/queries';
 import { friendsKeys } from '@/shared/api/QueryKeys';
+import useSearch from '@/shared/hooks/useSearch';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import Input from '@/shared/components/UI/Input';
 type FriendsFilter = 'all' | 'online' | 'pending';
+
 export default function FriendsPage() {
+  
   const [selectedList, setList] = useState<FriendsFilter>('all');
   const [isAddFriendOpen, setAddFriendOpen] = useState(false);
   const { data: friends, isLoading } = useQuery({
@@ -99,10 +100,11 @@ export default function FriendsPage() {
           })}
         </Box>
         <Box>
-          <Input
+          {/* <Input
+  
             InputProps={{ startAdornment: <SearchOutlinedIcon sx={{ fontSize: 16 }} /> }}
             placeholder="Search friends"
-          />
+          /> */}
         </Box>
       </Box>
 

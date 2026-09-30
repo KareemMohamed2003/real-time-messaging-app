@@ -9,7 +9,6 @@ export default function useAddRoomMemberMutation(roomUUID: string) {
     mutationFn: (newMembers: IRoomMember[]) => addNewRoomMemberQuery(newMembers),
     onSuccess: (newMembers: IRoomMember[]) => {
       console.log(newMembers);
-      // update the cache of the room Members .
       queryClient.setQueryData(roomKeys.roomMembers(roomUUID), (roomMembers: IRoomMember[]) => {
         if (!roomMembers) return undefined; // If the value is undefined, the query data is not updated.
         return [...roomMembers, ...newMembers];

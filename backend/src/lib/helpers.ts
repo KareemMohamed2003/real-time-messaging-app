@@ -5,8 +5,10 @@ import { ISocket } from './sockets/socket';
 import { AppError } from '../prisma/prismaHandlers/AppError';
 import { handlePrismaError } from '../prisma/prismaHandlers/PrismaErrorHandlers';
 import { Response } from 'express';
-import { Prisma } from '@prisma/client';
+import { Prisma, Rooms } from '@prisma/client';
 import { SOCKET_EVENTS } from './constants';
+import { uploadImageToCloudinary } from './cloudinary/cloudinary';
+import { createRoomPayload } from '../controllers/types';
 
 export interface FlattenedMessage {
   id: number;
@@ -113,3 +115,17 @@ export function flattenMessagesWithSender(
   console.log(flattendInput);
   return isArray ? flattendInput : flattendInput[0];
 }
+
+export const handleRoomFileUpload = async (
+  imageFile: Express.Multer.File,
+  roomName: string,
+  userId: string
+) => {
+  let room_profile_url;
+  const roomPayload: createRoomPayload = { roomName: roomName, ownerId: userId, icon: null };
+  if (imageFile) {
+    room_profile_url = await uploadImageToCloudinary(imageFile);
+  }
+  if (room_profile_url) roomPayload.icon = room_profile_url;
+  return roomPayload;
+};

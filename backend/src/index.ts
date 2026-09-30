@@ -11,10 +11,7 @@ import { checkDB } from "./lib/db.ts";
 import { checkSessionExpiry } from "./lib/helpers.ts";
 import { authorizeUser } from "./middleware/auth-middleware.ts";
 import { corsOptions } from "./lib/constants.ts";
-<<<<<<< Updated upstream
-=======
 import { getRecentDMConversations } from "./models/model.messages.ts";
->>>>>>> Stashed changes
 
 const app = express();
 export const server = createServer(app);
@@ -26,11 +23,12 @@ app.use("/auth", authRouter);
 app.use("/user", authorizeUser, userRouter);
 const port = process.env.port || 3000;
 const intervalId = checkSessionExpiry(); // this will delete expired user sessions every 5 minutes
+
 process.on("SIGTERM", () => {
   console.log("shutting down server...");
   clearInterval(intervalId);
 });
-
+ 
 
 server.listen(3333, () => {
   checkDB();

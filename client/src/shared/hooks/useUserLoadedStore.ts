@@ -1,9 +1,10 @@
 'use client';
 import { getUserQuery } from '@/shared/api/queries';
-import { useUserStore } from '@/app/store/user-store';
+
 import { useQuery } from '@tanstack/react-query';
 import { userKeys } from '../api/QueryKeys';
 import { useEffect, useState } from 'react';
+import { useUserStore } from '@/app/store/use-user-store';
 
 export default function useUserLoadedStore() {
   const { setProfile } = useUserStore(state => state);

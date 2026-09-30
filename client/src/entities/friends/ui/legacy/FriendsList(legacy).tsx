@@ -1,7 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useUserStore } from '@/app/store/user-store';
-import { useRouter } from 'next/navigation';
+import { useUserStore } from '@/app/store/use-user-store';import { useRouter } from 'next/navigation';
 import AddFriends from './AddFriends';
 import { primaryBg } from '@/shared/lib/constants';
 import { IFriend } from '@/shared/types/api.types';

@@ -8,7 +8,7 @@ import ModalShell from '@/shared/components/UI/ModalShell';
 import Input from '@/shared/components/UI/Input';
 import Button, { GhostButton } from '@/shared/components/UI/Button';
 import SegmentedControl from '@/shared/components/UI/SegmentedControl';
-import useAddChannels from '../api/useAddChannels';
+import { useAddChannels } from '@/features/create-room-channel/index';
 
 interface CreateChannelFormProps {
   closeChannelForm: () => void;
@@ -22,28 +22,18 @@ const CHANNEL_TYPE_OPTIONS = [
 
 const CreateChannelForm = forwardRef<HTMLFormElement, CreateChannelFormProps>(
   function CreateChannelForm({ closeChannelForm, roomUUID }, ref) {
-    const {
-      handleSubmit,
-      reset,
-      register,
-      onSubmit,
-      errors,
-      control,
-      isPending,
-    } = useAddChannels({
+    const { handleSubmit, reset, register, onSubmit, errors, control, isPending } = useAddChannels({
       roomUUID,
       closeChannelForm,
     });
 
     return (
       <ModalShell
-      
         disableEscapeKeyDown={true}
         open
         onClose={closeChannelForm}
         title="Create a channel"
         onSubmit={handleSubmit(onSubmit)}
-        // formRef={ref}
         actions={
           <>
             <GhostButton
@@ -70,12 +60,7 @@ const CreateChannelForm = forwardRef<HTMLFormElement, CreateChannelFormProps>(
         />
 
         <Box mt={2}>
-          <Typography
-            fontSize={12.5}
-            fontWeight={600}
-            color="text.secondary"
-            mb={0.75}
-          >
+          <Typography fontSize={12.5} fontWeight={600} color="text.secondary" mb={0.75}>
             Channel type
           </Typography>
           <Controller
