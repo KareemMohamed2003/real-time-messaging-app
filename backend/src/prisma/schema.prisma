@@ -109,7 +109,7 @@ model Channel {
   type                ChannelType          @default(DIRECT_MESSAGE)
   room                Rooms?               @relation(fields: [roomUUID], references: [roomUUID], onDelete: Cascade)
   messages            Messages[]
-  channelParticipants ChannelParticipant[] 
+  channelParticipants ChannelParticipant[]
 
   // in the future  only specific users will have access to certain channels  
   @@index([type]) // helps when filtering DMs vs room channels(better performance)
@@ -118,7 +118,7 @@ model Channel {
 model Rooms {
   roomName String
   roomUUID String       @unique @default(uuid())
-  icon     String?
+  icon     Bytes?
   ownerId  String
   members  RoomMember[]
   channels Channel[]
@@ -126,7 +126,6 @@ model Rooms {
   @@id([roomName, ownerId])
 }
 
-// consider not storing the `owner` in RoomMember not have to worry about deleting him
 model RoomMember {
   roomUUID String
   userId   String

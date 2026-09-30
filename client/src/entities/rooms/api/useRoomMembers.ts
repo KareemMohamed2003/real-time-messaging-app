@@ -5,16 +5,16 @@ import { IRoomMember } from '@/shared/types/api.types';
 import { useMemo } from 'react';
 import { IAddableRoomMember } from '@/features/add-room-member/model/types';
 import { filterAddableFriends } from '../model/utilis';
+type RoomMembersData = Awaited<ReturnType<typeof getRoomMembersQuery>>;
 interface useRoomMembers {
-  roomMembers: IRoomMember[];
+  roomMembers: RoomMembersData;
   addableFriends: IAddableRoomMember[];
-  isLoading:boolean
 }
 export default function useRoomMembers(
   roomUUID: string,
   friends: IAddableRoomMember[]
 ): useRoomMembers {
-  const { data,isLoading } = useQuery<IRoomMember[]>({
+  const { data } = useQuery<IRoomMember[]>({
     queryFn: () => getRoomMembersQuery(roomUUID),
     queryKey: roomKeys.roomMembers(roomUUID),
     enabled: !!roomUUID,
@@ -28,8 +28,7 @@ export default function useRoomMembers(
   }, [friends, data]);
 
   return {
-    roomMembers: data!  ,
+    roomMembers: data as IRoomMember[],
     addableFriends,
-    isLoading
   };
 }

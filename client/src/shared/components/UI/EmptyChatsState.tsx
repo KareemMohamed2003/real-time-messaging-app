@@ -9,10 +9,18 @@ import Button from '@/shared/components/UI/Button';
 import { AppRoutes } from '@/shared/lib/utils';
 
 export interface EmptyChatsStateProps {
+  /**
+   * 'no-conversations' — the user has never messaged anyone yet (reference's
+   * #screen-dm-empty, copy taken verbatim).
+   * 'no-selection' — conversations exist in the sidebar but none is open.
+   * Not present in the reference prototype (its demo always opens straight
+   * into a conversation), added because a populated list with nothing
+   * selected is a normal, reachable state in a real app.
+   */
   variant?: 'no-conversations' | 'no-selection';
 }
 
-export default function EmptyChatsState({ variant  }: EmptyChatsStateProps) {
+export default function EmptyChatsState({ variant = 'no-conversations' }: EmptyChatsStateProps) {
   const router = useRouter();
   const isNoConversations = variant === 'no-conversations';
 

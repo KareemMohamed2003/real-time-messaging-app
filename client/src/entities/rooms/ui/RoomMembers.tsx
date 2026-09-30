@@ -2,7 +2,11 @@ import { Box, Drawer, Stack, Typography, IconButton } from '@mui/material';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import User from '@/shared/components/User';
 import useRoomMembers from '../api/useRoomMembers';
+<<<<<<< Updated upstream
+import UseFriendsQuery from '@/entities/friends/api/useFriendsQuery';
+=======
 import UseFriendsQuery from '@/entities/friends/api/useSuspenseFriendsQuery';
+>>>>>>> Stashed changes
 import { IRoomMember } from '@/shared/types/api.types';
 
 interface props {

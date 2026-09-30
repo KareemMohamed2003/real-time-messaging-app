@@ -1,35 +1,25 @@
-import { v2 as cloudinary } from 'cloudinary';
-import { Multer } from 'multer';
-import multer from 'multer';
-
+import { v2 as cloudinary } from "cloudinary";
 // Configuration
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET, // Click 'View API Keys' above to copy your API secret
+  cloud_name: "dsmcekoq5",
+  api_key: "286412355627297",
+  api_secret: "b9QwteZoLb0j-K_PDEtmgzv8uV0", // Click 'View API Keys' above to copy your API secret
 });
 // console.log("cloudinary config", cloudinary.config());
 
 export const deleteCloudinaryImage = async (id: string) => {
   const assetToDelete = await cloudinary.uploader.destroy(id, {
-    resource_type: 'image',
+    resource_type: "image",
   });
-  if (assetToDelete.result !== 'ok') {
-    console.log('failed to delete image');
-    throw new Error('Deletion failed: ' + assetToDelete.result);
-  }
-};
-
-export const uploadImageToCloudinary = async (file: Express.Multer.File) => {
-  try {
-    const base64Image = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
-    const uploadedImage = await cloudinary.uploader.upload(base64Image, {
-      folder: 'room_profile_images',
-      resource_type: 'image',
-    });
-    return uploadedImage.secure_url;
-  } catch (error) {
-    console.error('failed to upload image to cloudinary :', error);
+  if (assetToDelete.result !== "ok") {
+    console.log("failed to delete image");
+    throw new Error("Deletion failed: " + assetToDelete.result);
   }
 };
 export default cloudinary;
+
+// Cloud name	 dsmcekoq5
+// API key	 : 286412355627297
+// API secret	 : b9QwteZoLb0j-K_PDEtmgzv8uV0
+// API environment vasriable
+// CLOUDINARY_URL=cloudinary://286412355627297:b9QwteZoLb0j-K_PDEtmgzv8uV0@dsmcekoq5

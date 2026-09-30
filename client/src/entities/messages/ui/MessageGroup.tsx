@@ -1,6 +1,7 @@
 import { Avatar, Box, Stack, Typography } from '@mui/material';
 import MessageRow from './MessageRow';
-import { useUserStore } from '@/app/store/use-user-store';import UseRoom from '@/entities/rooms/api/useRoom';
+import { useUserStore } from '@/app/store/user-store';
+import UseRoom from '@/entities/rooms/api/useRoom';
 import { QueryKey } from '@tanstack/react-query';
 
 export interface GroupedMessage {

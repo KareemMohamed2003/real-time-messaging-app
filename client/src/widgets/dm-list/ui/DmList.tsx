@@ -2,7 +2,7 @@
 import { Avatar, Box, InputAdornment, TextField, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import DmListItem from '@/entities/conversation/ui/DmListItem';
-import { SetStateAction, Dispatch } from 'react';
+import { useState, useMemo, SetStateAction, Dispatch } from 'react';
 import { getRecentConversations } from '@/shared/api/queries';
 import { userKeys } from '@/shared/api/QueryKeys';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -15,11 +15,10 @@ export interface DmListProps {
 }
 
 export default function DmList({ activeFriendUUID, onSelectConversation }: DmListProps) {
-
+  // const [search, setSearch] = useState('');
   const { data: conversations } = useSuspenseQuery<IDirectMessage[]>({
     queryKey: userKeys.recentDMs,
     queryFn: getRecentConversations,
-    
   });
   const {
     filteredList: filteredConversations,
@@ -58,7 +57,9 @@ export default function DmList({ activeFriendUUID, onSelectConversation }: DmLis
         </Typography>
       </Box>
 
-
+      {/* MuiOutlinedInput's theme override already supplies the surface2
+          background, border/focus-ring colors, and autofill fix — no need
+          to re-declare any of that here, just the search icon + placeholder. */}
       <Box sx={{ px: 2.25, py: 1.5, flexShrink: 0 }}>
         <TextField
           value={search}

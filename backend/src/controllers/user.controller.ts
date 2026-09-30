@@ -18,6 +18,11 @@ export const getUserAction = async (req: AuthRequest, res: Response) => {
     console.log(userData);
     return res.json(userData);
   } catch (error) {
+    // console.log("an Error occured at getUserData()", error);
+    // // console.log(error);
+    // // res.status(500).json(error);
+    // const { message, statusCode } = handlePrismaError(error, "friends");
+    // res.status(statusCode).json(message);
     handleDbError(res, error, "Users");
   }
 };
@@ -25,7 +30,9 @@ export const getUserAction = async (req: AuthRequest, res: Response) => {
 export const getLoggedUserAction = async (req: AuthRequest, res: Response) => {
   try {
     const { username, email } = req?.token!;
+    // console.log(username, email);
     const userData = await getLoggedUserData(username, email);
+    // console.log("userdata", userData);
     const user = {
       username: userData?.username,
       email: userData?.email,
@@ -35,6 +42,8 @@ export const getLoggedUserAction = async (req: AuthRequest, res: Response) => {
     };
     res.json(user);
   } catch (e) {
+    // console.log("get userAction error", e);
+    // res.status(500).send("Something went wrong with getting your data"); //
     handleDbError(res, e, "Users");
   }
 };
@@ -72,6 +81,7 @@ export const updateUserProfileAction = async (
     console.log("updatedUser ", updatedUser);
     res.status(200).json({ profile_img: updatedUser?.profile_img });
   } catch (e) {
+    // res.status(400).json("something went wrong with uploading the file ");
     handleDbError(res, e, "Users");
   }
 };
@@ -86,7 +96,8 @@ export const deleteProfileImgAction = async (
     await updateUser(null, uuid);
     return res.status(204).end();
   } catch (e) {
-
+    // console.log("error at delete profileImgAction() : ", e);
+    // return res.status(400).end();
     handleDbError(res, e, "Users");
   }
 };

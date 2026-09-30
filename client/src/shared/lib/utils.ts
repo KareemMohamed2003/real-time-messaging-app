@@ -32,12 +32,19 @@ export const convertToMap = (array: [], key: any) => {
   return new Map(array.map((element: any) => [element[key], element]));
 };
 
+export const requestAborter = () => {
+  const controller = new AbortController();
+  const timeout = 60000; // 1 min timeout
+  setTimeout(() => {
+    controller.abort();
+  }, timeout);
+  return controller.signal;
+};
 
 
 export const AppRoutes = {
   HOME_ROUTE: '/home/chats',
   ROOM_ROUTE: (roomUUID: string) => `/home/rooms/${roomUUID}`,
-  ROOM_SETTINGS_ROUTE: (roomUUID: string) => `/home/rooms/${roomUUID}/settings`, 
   FRIENDS_ROUTE: `/home/friends`,
   PRIVATE_CHAT_ROUTE: (friendUUID: string) => `friends/${friendUUID}`,
   ROOMS_ROUTE: `/home/rooms`,

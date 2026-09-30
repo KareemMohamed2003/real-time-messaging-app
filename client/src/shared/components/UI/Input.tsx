@@ -6,7 +6,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
 
-export interface InputProps extends Omit<TextFieldProps, 'ref' | 'variant' | 'type' | 'label'> {
+export interface InputProps
+  extends Omit<TextFieldProps, 'ref' | 'variant' | 'type' | 'label'> {
   label?: string;
   type?: InputHTMLAttributes<HTMLInputElement>['type'];
   maxLength?: number;
@@ -24,7 +25,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     minLength,
     id,
     inputProps,
-    InputProps: inputPropsOverride,
+    InputProps: inputPropsOverride, 
     ...rest
   },
   ref
@@ -35,10 +36,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   const inputId = id ?? generatedId;
 
   const passwordToggle = isPassword ? (
-    <InputAdornment position="start">
+    <InputAdornment position="start" >
       <ButtonBase
         disableRipple
-        onClick={() => setVisible(v => !v)}
+        onClick={() => setVisible((v) => !v)}
         sx={{
           fontSize: 12,
           fontWeight: 600,
@@ -58,7 +59,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         <Typography
           component="label"
           htmlFor={inputId}
-          sx={theme => ({
+          sx={(theme) => ({
             display: 'block',
             fontSize: 12.5,
             fontWeight: 600,

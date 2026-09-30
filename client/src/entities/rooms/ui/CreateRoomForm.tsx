@@ -1,21 +1,20 @@
 'use client';
-import { useState } from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { useRef, useState } from 'react';
+import { Box, CircularProgress, IconButton, Typography } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { TRoomForm, RoomProfileSchema } from '../model/types';
-import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useUserStore } from '@/app/store/use-user-store';
+import { useUserStore } from '@/app/store/user-store';
 import UseAddRoom from '../api/useAddRoom';
 import Button from '@/shared/components/UI/Button';
 import Input from '@/shared/components/UI/Input';
 import { roomKeys } from '@/shared/api/QueryKeys';
 import { AppRoutes } from '@/shared/lib/utils';
 import ModalShell from '@/shared/components/UI/ModalShell';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
-import ImagePicker from './ImagePicker';
-
 interface props {
   closeRoomForm: () => void;
   open: boolean;
@@ -24,7 +23,7 @@ interface props {
 export default function CreateRoomForm({ closeRoomForm, open }: props) {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { profile } = useUserStore(state => state);
+  const { profile } = useUserStore((state) => state);
 
   // UI-only for now — the current `useAddRoom` mutation/schema only takes
   // `name` + `uuid`, so description/visibility/image aren't sent anywhere
@@ -32,13 +31,20 @@ export default function CreateRoomForm({ closeRoomForm, open }: props) {
   // included the moment the backend contract supports them, rather than
   // silently doing nothing when touched.
   // state for room (image,description) implement later (backend-side)!!
-
+  // uncomment when implementing the (image,description options)
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [description, setDescription] = useState('');
   const [visibility, setVisibility] = useState<'private' | 'public'>('private');
 
+  const handleImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setImagePreview(URL.createObjectURL(file));
+  };
   ///////////////////////end of comment //////////////////////////////
   const successCallback = async () => {
     reset();
+    setImagePreview(null);
     setDescription('');
     setVisibility('private');
     await queryClient.invalidateQueries({ queryKey: roomKeys.all });
@@ -51,24 +57,31 @@ export default function CreateRoomForm({ closeRoomForm, open }: props) {
   };
   const { mutate, isPending } = UseAddRoom(successCallback, errorCb);
 
+  const createRoomSchema = z.object({
+    name: z
+      .string()
+      .min(2, { message: 'room name must be at least 2 characters' })
+      .max(30, { message: 'room name must not excceed 30 characters' }),
+  });
+  type CreateRoomForm = z.infer<typeof createRoomSchema> & {
+    uuid: string; // user's uuid
+  };
+
   const {
-    control,
     setError,
     clearErrors,
     formState: { errors },
     reset,
     handleSubmit,
     register,
-  } = useForm<TRoomForm>({
-    resolver: zodResolver(RoomProfileSchema),
+  } = useForm<CreateRoomForm>({
+    resolver: zodResolver(createRoomSchema),
     mode: 'onSubmit',
     defaultValues: { name: '' },
   });
 
-  const onSubmit = (data: TRoomForm) => {
-    console.log(data);
-    console.log(profile.uuid)
-    mutate({ name: data.name, uuid: profile.uuid!, room_image: data.room_image! });
+  const onSubmit = (data: CreateRoomForm) => {
+    mutate({ name: data.name, uuid: profile.uuid! });
   };
 
   return (
@@ -87,7 +100,11 @@ export default function CreateRoomForm({ closeRoomForm, open }: props) {
             Cancel
           </Button>
           <Button type="submit" variant="solid" disabled={isPending}>
-            {isPending ? <CircularProgress size={18} color="inherit" /> : 'Create room'}
+            {isPending ? (
+              <CircularProgress size={18} color="inherit" />
+            ) : (
+              'Create room'
+            )}
           </Button>
         </>
       }
@@ -96,7 +113,7 @@ export default function CreateRoomForm({ closeRoomForm, open }: props) {
         {/* .modal-body */}
         <Box display="flex" flexDirection="column" gap={1}>
           {/* uncomment upload image for later usage (needs backend implementation) */}
-          <Box>
+          {/* <Box>
             <Typography
               sx={{
                 fontSize: 12.5,
@@ -108,24 +125,112 @@ export default function CreateRoomForm({ closeRoomForm, open }: props) {
               Room image (optional)
             </Typography>
             <Box display="flex" alignItems="center" gap={1.5}>
-              <Controller
-                control={control}
-                name="room_image"
-                render={({ field }) => (
-                  <ImagePicker
-                    name={field.name}
-                    onChange={field.onChange}
-                    fallback={<PhotoCameraOutlinedIcon sx={{ fontSize: 17 }} />}
-                  />
+              <Box sx={{ position: 'relative', flexShrink: 0 }}>
+                <Box
+                  component="button"
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  sx={(theme) => ({
+                    all: 'unset',
+                    cursor: 'pointer',
+                    width: 68,
+                    height: 68,
+                    borderRadius: '50%',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: theme.palette.surface.elevated,
+                    color: theme.palette.text.disabled,
+                    border: `1.5px ${imagePreview ? 'solid' : 'dashed'} ${theme.palette.divider}`,
+                    '&:hover .room-image-hover': { opacity: 1 },
+                  })}
+                >
+                  {imagePreview && (
+                    <Box
+                      component="img"
+                      src={imagePreview}
+                      alt=""
+                      sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  )}
+                  <Box
+                    className="room-image-hover"
+                    sx={(theme) => ({
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 0.25,
+                      backgroundColor: 'rgba(8,11,18,.66)',
+                      color: '#fff',
+                      opacity: imagePreview ? 0 : 1,
+                      transition: 'opacity .12s',
+                    })}
+                  >
+                    <PhotoCameraOutlinedIcon sx={{ fontSize: 17 }} />
+                    <Typography
+                      sx={{
+                        fontSize: 9.5,
+                        fontWeight: 700,
+                        letterSpacing: '0.02em',
+                      }}
+                    >
+                      {imagePreview ? 'Change' : 'Upload'}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {imagePreview && (
+                  <IconButton
+                    aria-label="Remove image"
+                    onClick={() => {
+                      setImagePreview(null);
+                      if (fileInputRef.current) fileInputRef.current.value = '';
+                    }}
+                    sx={(theme) => ({
+                      position: 'absolute',
+                      top: -2,
+                      right: -2,
+                      width: 22,
+                      height: 22,
+                      backgroundColor: theme.palette.surface.high,
+                      border: `2px solid ${theme.palette.surface.paper}`,
+                      color: theme.palette.text.secondary,
+                      '&:hover': {
+                        color: '#fff',
+                        backgroundColor: theme.palette.error.main,
+                        borderColor: theme.palette.error.main,
+                      },
+                    })}
+                  >
+                    <CloseRoundedIcon sx={{ fontSize: 11 }} />
+                  </IconButton>
                 )}
+              </Box>
+
+              <Typography sx={{ fontSize: 11.5, color: 'text.disabled' }}>
+                PNG or JPG, up to 5MB.
+              </Typography>
+              <Box
+                component="input"
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg"
+                onChange={handleImagePick}
+                sx={{ display: 'none' }}
               />
             </Box>
-            {errors.room_image && (
-              <Typography mt={1} color="error.main">
-                {errors.room_image.message}
-              </Typography>
-            )}
-          </Box>
+          </Box> */}
 
           <Input
             type="text"

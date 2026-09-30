@@ -1,5 +1,4 @@
-import { Rooms } from '@prisma/client';
-import { Request } from 'express';
+import { Request, Response } from "express";
 
 export interface AuthRequest extends Request {
   token?: {
@@ -12,4 +11,3 @@ export interface AuthRequest extends Request {
   };
 }
 
-export type createRoomPayload = Omit<Rooms, 'roomUUID'>;

@@ -6,7 +6,8 @@ import CallEndIcon from '@mui/icons-material/CallEnd';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import MicIcon from '@mui/icons-material/Mic';
 import { cancelCall } from '@/shared/lib/webrtc';
-import { useUserStore } from '@/app/store/use-user-store';
+import { useUserStore } from '@/app/store/user-store';
+
 export default function PrivateVoiceCall() {
   const { grey } = mainStyles;
   const { audioCall, profile, toggleMic } = useUserStore((state) => state);

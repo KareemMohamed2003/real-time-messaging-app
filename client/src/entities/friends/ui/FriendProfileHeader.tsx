@@ -1,6 +1,7 @@
 import { Avatar, Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { makeCall } from '@/shared/lib/webrtc';
-import { useUserStore } from '@/app/store/use-user-store';import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
+import { useUserStore } from '@/app/store/user-store';
+import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
 
 interface props {
   friendName: string;

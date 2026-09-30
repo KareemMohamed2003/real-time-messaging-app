@@ -1,13 +1,15 @@
-import sqlite from 'sqlite3';
-import { open } from 'sqlite';
+import sqlite from "sqlite3";
+import { open } from "sqlite";
 export const db = await open({
-  filename: './database.db',
+  filename: "./database.db",
   driver: sqlite.Database,
 });
-db.configure("busyTimeout",5000);
 export const getUserSession = async (session_id: string) => {
   try {
-    const user = await db.get('SELECT * FROM users_sessions where sessionId = ? ', [session_id]);
+    const user = await db.get(
+      "SELECT * FROM users_sessions where sessionId = ? ",
+      [session_id],
+    );
     // console.log("user_SESSION", user);
     return user;
   } catch (e) {
@@ -18,18 +20,22 @@ export const getUserSession = async (session_id: string) => {
 
 export const deleteUserSession = async (sessionId: string) => {
   try {
-    const expiredSession = await db.run('DELETE FROM users_sessions where sessionId = ? ', [
-      sessionId,
-    ]);
-    console.log('deleted expired session ', expiredSession);
+    const expiredSession = await db.run(
+      "DELETE FROM users_sessions where sessionId = ? ",
+      [sessionId],
+    );
+    console.log( 'deleted expired session ', expiredSession);
   } catch (e) {
-    console.log('error at deleteUserSession(): ', e);
+    console.log("error at deleteUserSession(): ", e);
   }
 };
 export const getSessionBySocketId = async (socketId: string) => {
   try {
     // console.log(`socketId given to getSessionBySocketId`, socketId);
-    const userSession = await db.get('SELECT * from users_sessions where socketId = ?', [socketId]);
+    const userSession = await db.get(
+      "SELECT * from users_sessions where socketId = ?",
+      [socketId],
+    );
     // console.log(`userSession : `, userSession);
     return userSession;
   } catch (e) {
@@ -38,15 +44,18 @@ export const getSessionBySocketId = async (socketId: string) => {
   }
 };
 // updates user connection status in sqlite database
-export const updatedConnectionStatus = async (sessionId: string, status: boolean) => {
+export const updatedConnectionStatus = async (
+  sessionId: string,
+  status: boolean,
+) => {
   try {
     const updateUserConnection = await db.run(
       `UPDATE users_sessions set connected = ${status}  where sessionId = ?`,
-      [sessionId]
+      [sessionId],
     );
     // console.log("updatedUserConnection", updateUserConnection);
   } catch (e) {
-    console.log('error at updateUserConnection :  ', e);
+    console.log("error at updateUserConnection :  ", e);
   }
 };
 
@@ -57,7 +66,7 @@ export const addUserSession = async (
   userId: number,
   connected: boolean,
   expires_at: string,
-  profileImg: string
+  profileImg: string,
 ) => {
   try {
     const insert = await db.run(
@@ -70,24 +79,32 @@ export const addUserSession = async (
       connected,
       expiresAt) 
        values(?,?,?,?,?,?,?)`,
-      [socketId, username, userId, profileImg, sessionId, connected, expires_at],
+      [
+        socketId,
+        username,
+        userId,
+        profileImg,
+        sessionId,
+        connected,
+        expires_at,
+      ],
       (err: any) => {
-        console.log('err:', err);
-      }
+        console.log("err:", err);
+      },
     );
     console.log(insert);
   } catch (e) {
-    console.log('insertion failed at addUserSession: ', e);
+    console.log("insertion failed at addUserSession: ", e);
     return false;
   }
 };
 
 export const checkDB = async () => {
   try {
-    const users = await db.get('SELECT * FROM users_sessions');
+    const users = await db.get("SELECT * FROM users_sessions");
     //console.log("checkDB() current  users", users);
   } catch (err: any) {
-    console.log('error in listUsersTable() : ', err);
+    console.log("error in listUsersTable() : ", err);
     // console.log(err.message); // "SQLITE_ERROR: no such table: nonexistent_table"
     // console.log(err.code);    // "SQLITE_ERROR"
     // console.log(err.errno);   // 1
@@ -100,7 +117,7 @@ export const checkDB = async () => {
       profileImg TEXT ,
       connected INTEGER CHECK(connected IN (0, 1)) ,
       sessionId TEXT NOT NULL, expiresAt TEXT NOT NULL)`;
-    if (err.message.includes('no such table: users')) {
+    if (err.message.includes("no such table: users")) {
       const excute = db.exec(query);
     }
   }
@@ -108,40 +125,43 @@ export const checkDB = async () => {
 
 export const deleteExpiredUsersSessions = () => {
   try {
-    const query = "DELETE  from users_sessions  where datetime(expiresAt) <= datetime('now')";
+    const query =
+      "DELETE  from users_sessions  where datetime(expiresAt) <= datetime('now')";
     db.run(query);
-    
     // console.log("queryRes", queryRes);
   } catch (e) {
-    console.log('error at deleteExpiredUsersSession :', e);
+    console.log("error at deleteExpiredUsersSession :", e);
   }
 };
 // don't forget to close the database when the server disconnects if that's neccessary
 
 export const clearDB = () => {
   try {
-    const deleteQuery = db.exec('DELETE * FROM users_sessions');
+    const deleteQuery = db.exec("DELETE * FROM users_sessions");
   } catch (e) {
-    console.log('error at clearDB():', e);
+    console.log("error at clearDB():", e);
   }
 };
 
 export const findOnlineFriends = async (friends: []) => {
+  // i am trying to implement a query that finds th online friends however there  friends are stored in
+  // an array i need to go through each element of the array and  query each friend to check if it matches
+  // if he's online or not
   try {
-    const placeholders = friends?.map(() => '?').join(', ');
+    const placeholders = friends?.map(() => "?").join(", ");
+    // console.log("placeholders", placeholders);
+    // console.log("friends", friends);
+    // extract uuiids from the friends array
     const friendsIDS = friends?.map((friend: any) => friend.friendId);
-    console.log('friendsUUIDS', friendsIDS);
-    if (!friendsIDS?.length) return null;
-        // const sql = `select * from users_sessions where userId IN (${placeholders}) AND connected = 1`;
+    console.log("friendsUUIDS", friendsIDS);
 
-    const sql = `SELECT * FROM ( SELECT *,ROW_NUMBER() OVER (PARTITION BY userId ORDER BY expiresAt DESC ) AS rn
-    FROM users_sessions
-    WHERE connected = 1 AND userId IN (${placeholders})) WHERE rn = 1;`;
+    if (!friendsIDS?.length) return null;
+    const sql = `select * from users_sessions where userId IN (${placeholders}) AND connected = 1`;
     const friendsQuery = await db.all(sql, friendsIDS);
-    console.log('friendsQuery rows returned:', friendsQuery);
-    const friendsRes = friendsQuery.map(friend => ({
+    console.log("friendsQuery rows returned:", friendsQuery);
+    const friendsRes = friendsQuery.map((friend) => ({
       socketId: friend.socketId,
-      request_status: 'ACCEPTED',
+      request_status: "ACCEPTED",
       username: friend.username,
       friendId: friend.userId,
       is_online: friend.connected,
@@ -149,6 +169,11 @@ export const findOnlineFriends = async (friends: []) => {
     }));
     return friendsRes;
   } catch (e) {
-    console.log('error at findOnlineFriends :', e);
+    console.log("error at findOnlineFriends :", e);
+    // return {error:"Error while finding online friends"}
   }
 };
+
+// export const findOfflineFriends=async (friends:[]) => {
+
+// }

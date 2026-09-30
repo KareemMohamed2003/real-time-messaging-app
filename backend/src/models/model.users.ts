@@ -1,11 +1,11 @@
-import { prisma } from '../prisma/prisma.ts';
+import { prisma } from "../prisma/prisma.ts";
 import {
   handleAuthError,
   handleRegisterationError,
-} from '../prisma/prismaHandlers/PrismaErrorHandlers.ts';
-import bc from 'bcryptjs';
-import { checkPassword } from '../auth/auth.js';
-import { $Enums } from '@prisma/client';
+} from "../prisma/prismaHandlers/PrismaErrorHandlers.ts";
+import bc from "bcryptjs";
+import { checkPassword } from "../lib/auth/auth.js";
+import { $Enums } from "@prisma/client";
 type TUser = {
   username: string;
   email: string;
@@ -77,10 +77,10 @@ export const signInUser = async (data: { email: string; password: string }) => {
         email: email,
       },
     });
-    console.log('user : ', user);
-    if (!user) return { success: false, errorMsg: 'invalid credentials' };
+    console.log("user : ", user);
+    if (!user) return { success: false, errorMsg: "invalid credentials" };
     if (!checkPassword(password, user!.password)) {
-      return { success: false, errorMsg: 'invalid credentials' };
+      return { success: false, errorMsg: "invalid credentials" };
     }
 
     return {
@@ -110,11 +110,11 @@ export const getUserFriendsList = async (username: string) => {
       receiver: {
         select: { uuid: true, username: true, profile_img: true },
       },
-      sender: { select: { uuid: true, username: true, profile_img: true } },
+      sender: { select: { uuid: true, username: true, profile_img: true ,} },
     },
     where: {
       AND: [
-        { OR: [{ request_status: 'ACCEPTED' }, { request_status: 'SENT' }] },
+        { OR: [{ request_status: "ACCEPTED" }, { request_status: "SENT" }] },
         { OR: [{ senderName: username }, { receiverName: username }] },
       ],
     },
@@ -125,20 +125,20 @@ export const getUserFriendsList = async (username: string) => {
     all: [],
     pending: [],
   };
-  const assignFriendRequests = (
-    request: IFriendRequest,
-    userFriends: TUserFriends,
-    friendObj: TFriend
-  ) => {
-    request.request_status === 'ACCEPTED'
-      ? userFriends.all.push(friendObj)
-      : userFriends.pending.push(friendObj);
-  };
-  friendRequests.map(request => {
+   const assignFriendRequests = (
+      request: IFriendRequest,
+      userFriends: TUserFriends,
+      friendObj: TFriend,
+    ) => {
+      request.request_status === "ACCEPTED"
+        ? userFriends.all.push(friendObj)
+        : userFriends.pending.push(friendObj);
+    };
+  friendRequests.map((request) => {
     const receiverName = request.receiverName;
     const senderName = request.senderName;
     const request_status = request.request_status;
-
+   
     if (senderName === username) {
       const receiver = {
         username: receiverName,
@@ -184,7 +184,7 @@ export const getUserData = async (userId: string) => {
 
 export const updateUser = async (profileImg: string | null, uuid: string) => {
   try {
-    console.log('profileImg , uuid', profileImg, uuid);
+    console.log("profileImg , uuid", profileImg, uuid);
     const user = await prisma.users.update({
       data: {
         profile_img: profileImg,
@@ -193,10 +193,10 @@ export const updateUser = async (profileImg: string | null, uuid: string) => {
         uuid,
       },
     });
-    if (!user) throw new Error('failed to update user Profile !');
+    if (!user) throw new Error("failed to update user Profile !");
     return user;
   } catch (e) {
-    console.log('error at updateUser() ', e);
+    console.log("error at updateUser() ", e);
     // return false;
     // create an update handler for Errors .
   }

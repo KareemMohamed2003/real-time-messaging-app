@@ -1,5 +1,8 @@
 'use client'
+import { useStore } from 'zustand';
+import { useContext } from 'react';
 import { createStore } from 'zustand/vanilla';
+import { userStoreContext } from './StoreContextProvider';
 import { UserState, userActions } from './types';
 import { IUser } from '@/shared/types/api.types';
 import { socketClient } from '@/shared/lib/socket';
@@ -232,3 +235,10 @@ export const createUserStore = () => {
   return zustandStore;
 };
 
+export const useUserStore = <T>(selector: (store: userStore) => T): T => {
+  const userContext = useContext(userStoreContext);
+  if (!userContext) {
+    throw new Error(`useUserStore must be used within CounterStoreProvider`);
+  }
+  return useStore(userContext, selector);
+};

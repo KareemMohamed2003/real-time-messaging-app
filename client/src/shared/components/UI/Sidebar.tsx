@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Avatar, Stack, Typography, Box } from '@mui/material';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { NavLink } from '@/shared/components/UI/NavLink';
-import { useUserStore } from '@/app/store/use-user-store';import { AppRoutes } from '@/shared/lib/utils';
+import { useUserStore } from '@/app/store/user-store';
+import { AppRoutes } from '@/shared/lib/utils';
 import { primaryNavItems } from './nav-items';
 
 

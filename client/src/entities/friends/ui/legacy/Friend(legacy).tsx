@@ -2,7 +2,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import { Avatar, Box, Typography } from '@mui/material';
 import { useAcceptFriendRequest } from '@/features/accept-friend-request';
-import { useUserStore } from '@/app/store/use-user-store';import { IFriend } from '@/shared/types/api.types';
+import { useUserStore } from '@/app/store/user-store';
+import { IFriend } from '@/shared/types/api.types';
 
 export default function Friend({
   username,

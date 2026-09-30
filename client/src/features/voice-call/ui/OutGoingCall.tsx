@@ -3,7 +3,8 @@ import { Box, Stack, Typography } from '@mui/material';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import User from '../../../shared/components/User';
 import { cancelCall } from '@/shared/lib/webrtc';
-import { useUserStore } from '@/app/store/use-user-store';interface props {
+import { useUserStore } from '@/app/store/user-store';
+interface props {
   friendId: string;
   friendName: string;
   friend_profile_img: string;

@@ -3,16 +3,19 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { createChannelQuery } from '@/shared/api/queries';
 import { channelKeys } from '@/shared/api/QueryKeys';
-import { channelForm, createChannelSchema } from '@/entities/channels/model/types';
-
-
+import { z } from 'zod';
 interface props {
   roomUUID: string;
   closeChannelForm: () => void;
 }
 export default function useAddChannels({ roomUUID }: props) {
   const queryClient = useQueryClient();
-
+  const createChannelSchema = z.object({
+    name: z.string().min(2).max(16),
+    type: z.enum(['text', 'voice']),
+    description: z.string().optional(),
+  });
+  type channelForm = z.infer<typeof createChannelSchema>;
   const onSubmit = ({ name, type }: channelForm) => {
     mutate({ channelName: name, roomUUID, type });
   };
@@ -25,7 +28,7 @@ export default function useAddChannels({ roomUUID }: props) {
       queryClient.invalidateQueries({ queryKey: channelKeys.all(roomUUID) });
       reset();
     },
-    onError: error => {
+    onError: (error) => {
       console.log(error);
     },
   });

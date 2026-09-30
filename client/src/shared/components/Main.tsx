@@ -1,7 +1,8 @@
 import React, { ReactNode, useEffect } from 'react';
 import { initSocket } from '@/shared/lib/socket';
 import { Stack, Box } from '@mui/material';
-import { useUserStore } from '@/app/store/use-user-store';import Sidebar from '@/shared/components/UI/Sidebar';
+import { useUserStore } from '@/app/store/user-store';
+import Sidebar from '@/shared/components/UI/Sidebar';
 import SessionMonitorWrapper from '@/features/authentication/ui/SessionMonitorWrapper';
 import IncomingCallModal from '../../features/voice-call/ui/IncomingCallModal';
 import NotificationManager from './notifications/NotificationsManager';

@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect } from 'react';
 import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
@@ -22,14 +23,12 @@ export default function Channel({
   active,
   onClick,
 }: ChannelProps) {
-
   useEffect(() => {
     joinChannel(channelId);
     return () => {
       leaveChannel(channelId);
     };
   }, []);
-  
   // check enum usage
   const Icon = type === 'VOICE' ? InterpreterModeIcon : TagIcon;
 

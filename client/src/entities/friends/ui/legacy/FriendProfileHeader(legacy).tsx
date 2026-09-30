@@ -1,7 +1,8 @@
 import { Box } from '@mui/material';
 import { mainStyles } from '@/themes(legacy)';
 import { makeCall } from '@/shared/lib/webrtc';
-import { useUserStore } from '@/app/store/use-user-store';import CallIcon from '@mui/icons-material/Call';
+import { useUserStore } from '@/app/store/user-store';
+import CallIcon from '@mui/icons-material/Call';
 import User from '@/shared/components/User';
 
 interface props {
