@@ -1,21 +1,18 @@
-import { mainStyles } from '@/themes';
+import { mainStyles } from '@/themes(legacy)';
 import { Box, Stack, Typography } from '@mui/material';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import User from '../../../shared/components/User';
-import { cancelCall } from '@/shared/lib/webrtc';
-import { useUserStore } from '@/app/store/user-store';
+import { useUserStore } from '@/app/store/use-user-store';
+import usePrivateCallService from '@/shared/hooks/usePrivateCallService';
 interface props {
   friendId: string;
   friendName: string;
   friend_profile_img: string;
 }
-export default function OutGoingCall({
-  friendId,
-  friendName,
-  friend_profile_img,
-}: props) {
+export default function OutGoingCall({ friendId, friendName, friend_profile_img }: props) {
   const { grey } = mainStyles;
-  const { profile } = useUserStore((state) => state);
+  const { profile } = useUserStore(state => state);
+  const { cancelCall } = usePrivateCallService();
   return (
     <Stack
       display={'flex'}
@@ -42,9 +39,7 @@ export default function OutGoingCall({
         display={'flex'}
         alignItems={'center'}
       >
-        <CallEndIcon
-          sx={{ fontSize: '1.70rem', alignSelf: 'center', margin: 'auto' }}
-        />
+        <CallEndIcon sx={{ fontSize: '1.70rem', alignSelf: 'center', margin: 'auto' }} />
       </Box>
     </Stack>
   );

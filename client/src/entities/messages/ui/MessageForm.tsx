@@ -1,10 +1,12 @@
-import Input from '@/shared/components/UI/Input';
+'use client';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import SendIcon from '@mui/icons-material/Send';
-import { Box } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import AttachButton from './AttachButton';
+import Input from '@/shared/components/UI/Input';
+import AttachButton from './legacy/AttachButton';
 
 interface MessageFormProps {
   onSubmit: (data: MessageFormData) => void | Promise<void>;
@@ -15,6 +17,7 @@ export const messageSchema = z.object({
 });
 
 export type MessageFormData = z.infer<typeof messageSchema>;
+
 export default function MessageForm({ onSubmit }: MessageFormProps) {
   const {
     register,
@@ -28,56 +31,54 @@ export default function MessageForm({ onSubmit }: MessageFormProps) {
       message: '',
     },
   });
+
   const submitHandler = (data: MessageFormData) => {
     if (!data.message.trim()) return;
-    data.message;
-    console.log(data)
     onSubmit(data);
     reset();
   };
 
   return (
-    <form onSubmit={handleSubmit(submitHandler)}>
-      <Box
-        mb={2}
-        display="flex"
-        alignItems="center"
-        gap={3}
-        width="100%"
-        px={4}
+    <Box
+      component="form"
+      onSubmit={handleSubmit(submitHandler)}
+      display="flex"
+      alignItems="center"
+      gap={1.25}
+      px={2.25}
+      py={1.75}
+      sx={(theme) => ({
+        borderTop: `1px solid ${theme.palette.divider}`,
+        width: '100%',
+      })}
+    >
+      {/* <AttachButton /> */}
+
+      <Input
+        type="text"
+        placeholder="Message"
+        fullWidth
+        {...register('message')}
+        sx={{
+          '& .MuiOutlinedInput-root': { borderRadius: '999px' },
+        }}
+      />
+
+      <IconButton
+        type="submit"
+        aria-label="Send"
+        sx={(theme) => ({
+          borderRadius: '20px',
+          flexShrink: 0,
+          width: 40,
+          height: 40,
+          bgcolor: theme.palette.primary.main,
+          color: '#fff',
+          '&:hover': { bgcolor: theme.palette.primary.light },
+        })}
       >
-        <Input
-          type="text"
-          style={{ width: '100%' }}
-          placeholder="Message"
-          {...register('message')}
-        />
-
-        <AttachButton />
-
-        <Box
-          sx={{ background: '#277DCF' }}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          height={45}
-          width={45}
-          borderRadius="50%"
-          p={3}
-        >
-          <button
-            type="submit"
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-            }}
-          >
-            <SendIcon sx={{ color: 'white' }} />
-          </button>
-        </Box>
-      </Box>
-    </form>
+        <SendIcon sx={{ fontSize: 18 }} />
+      </IconButton>
+    </Box>
   );
 }

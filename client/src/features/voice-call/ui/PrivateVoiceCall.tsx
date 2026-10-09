@@ -1,33 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
-import { mainStyles } from '@/themes';
+import { useEffect, useRef } from 'react';
+import { mainStyles } from '@/themes(legacy)';
 import { Box } from '@mui/material';
 import User from '@/shared/components/User';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import MicIcon from '@mui/icons-material/Mic';
-import { cancelCall } from '@/shared/lib/webrtc';
-import { useUserStore } from '@/app/store/user-store';
-
+import { useUserStore } from '@/app/store/use-user-store';
+import usePrivateCallService from '@/shared/hooks/usePrivateCallService';
 export default function PrivateVoiceCall() {
   const { grey } = mainStyles;
-  const { audioCall, profile, toggleMic } = useUserStore((state) => state);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const { friendId, remoteStream, localStream, isMuted } = audioCall!;
+  const { audioCall, profile, toggleMic } = useUserStore(state => state);
+  const { cancelCall } = usePrivateCallService();
+  const { friendId, remoteStream, isMuted } = audioCall!;
   console.log('remoteStream', audioCall.remoteStream);
   const { friend_profile_img } = audioCall;
   const connectedUsers = [
     { profilePic: profile.profile_img, name: profile.username },
     { profilePic: friend_profile_img, name: audioCall.friendName },
   ];
-
+  const audioRef = useRef<HTMLAudioElement>(null);
   useEffect(() => {
-    console.log('useEFFECT HOOK');
     audioRef!.current!.srcObject = audioCall.remoteStream!;
-
-    return () => {
-      const tracks = remoteStream?.getTracks();
-      tracks?.forEach((track) => track.stop());
-    };
   }, [remoteStream]);
   return (
     <Box
@@ -58,7 +51,10 @@ export default function PrivateVoiceCall() {
 
         <Box
           component={'div'}
-          onClick={() => cancelCall(friendId, profile.uuid!)}
+          onClick={() => {
+            console.log('cancel Call');
+            cancelCall(friendId, profile.uuid!);
+          }}
           sx={{ background: 'red' }}
           borderRadius={'10px'}
           px={1.2}

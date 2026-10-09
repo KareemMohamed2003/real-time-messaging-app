@@ -1,8 +1,8 @@
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
-import Button from '../../../shared/components/UI/Button';
+import Button from '../../../shared/components/UI/(legacy)/Button(legacy)';
 import { togglePortalEffect } from '@/shared/lib/utils';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { mainStyles } from '@/themes';
+import { mainStyles } from '@/themes(legacy)';
 interface IDeleteAvatarPopup {
   setPopup: Dispatch<SetStateAction<boolean>>;
   submitForm: () => void;

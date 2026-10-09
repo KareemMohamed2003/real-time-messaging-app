@@ -1,12 +1,12 @@
 import { Stack } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { useEffect, useState } from 'react';
-import { useUserStore } from '@/app/store/user-store';
+import { useUserStore } from '@/app/store/use-user-store';
 import IncomingCall from './IncomingCall';
 
 export default function IncomingCallModal() {
   const [open, setOpen] = useState(false);
-  const { incomingCalls, localPeer } = useUserStore((state) => state);
+  const { incomingCalls, audioCall } = useUserStore((state) => state);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
@@ -15,6 +15,7 @@ export default function IncomingCallModal() {
   useEffect(() => {
     handleOpen();
   }, [incomingCalls]);
+
   if (incomingCalls.size)
     return (
       <Modal
@@ -43,12 +44,12 @@ export default function IncomingCallModal() {
               key={callerID}
               callerID={callerID}
               profile_img={call.friend_profile_img!}
-              localPeer={localPeer!}
+              localPeer={audioCall.localPeer!}
               caller={call.friendName}
             />
           ))}
         </Stack>
       </Modal>
     );
-  else return null;
+   return null;
 }

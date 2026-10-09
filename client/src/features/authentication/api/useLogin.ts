@@ -5,7 +5,7 @@ import {
 import { ZodFormattedError } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useState, FormEvent, FormEventHandler } from 'react';
-import { createSocketSession } from '@/shared/lib/utils';
+import { AppRoutes, createSocketSession } from '@/shared/lib/utils';
 
 interface IFormState {
   errors: ZodFormattedError<{ [propety: string]: any }> | null;
@@ -58,7 +58,7 @@ export default function useLogin(): [
       console.log('expires ,sessionId', expires, sessionId);
       createSocketSession(expires, sessionId);
       router.refresh(); // purge next-js router memory to avoid going back to login page after authentication
-      router.replace('/home/chats');
+      router.replace(AppRoutes.HOME_ROUTE);
     }
   };
 

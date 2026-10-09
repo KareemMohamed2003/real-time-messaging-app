@@ -1,38 +1,60 @@
-import MuiButton, { ButtonProps } from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
-import { ReactNode } from 'react';
-interface IButtonProps extends ButtonProps {
-  children?: string[] | string | ReactNode;
-  type?: 'submit' | 'reset' | 'button';
-  BootstrapBtnProps?: any;
+'use client';
+
+import MuiButton, { ButtonProps as MuiButtonProps } from '@mui/material/Button';
+import { styled, type CSSObject, type Theme } from '@mui/material/styles';
+
+export type ButtonVariant = 'solid' | 'ghost' | 'danger';
+
+export interface ButtonProps extends Omit<MuiButtonProps, 'variant' | 'color'> {
+
+  variant?: ButtonVariant;
 }
-// #3178C6
-const BootstrapButton = styled(MuiButton)<IButtonProps>(({ theme }) => ({}));
-const getDefaultProps = (sx: any) => {
-  return {
-    backgroundColor: sx?.bgColor,
-    padding: sx?.p,
-    color: sx?.color ? sx.color : 'white',
-    borderRadius: sx?.borderRadius,
-    textTransform: 'none',
-    fontSize: sx?.fontSize ? sx?.fontSize : '0.875rem',
+
+
+const variantStyles: Record<ButtonVariant, (theme: Theme) => CSSObject> = {
+  solid: (theme) => ({
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+    '&:hover': { backgroundColor: theme.palette.primary.light },
+  }),
+  ghost: (theme) => ({
+    backgroundColor: 'transparent',
+    color: theme.palette.text.secondary,
+    border: `1px solid ${theme.palette.divider}`,
     '&:hover': {
-      backgroundColor: sx?.bgColor,
+      backgroundColor: 'transparent',
+      color: theme.palette.text.primary,
+      borderColor: theme.palette.text.disabled,
     },
-    '&:active': {
-      background: sx?.bgColor ? sx.bgColor : null,
-    },
-    ...sx,
-  };
+  }),
+  danger: (theme) => ({
+    backgroundColor: theme.palette.error.main,
+    color: theme.palette.error.contrastText,
+    '&:hover': { backgroundColor: theme.palette.error.light },
+  }),
 };
-export default function Button({ sx, children, type, ...BootstrapBtnpPops }: IButtonProps) {
+
+const StyledButton = styled(MuiButton, {
+  shouldForwardProp: (prop) => prop !== 'uiVariant',
+})<{ uiVariant: ButtonVariant }>(({ theme, uiVariant }) => variantStyles[uiVariant](theme));
+
+export default function Button({
+  variant = 'solid',
+  type = 'button',
+  children,
+  ...rest
+}: ButtonProps) {
   return (
-    <BootstrapButton
-      type={type ? type : 'button'}
-      sx={getDefaultProps(sx)}
-      {...BootstrapBtnpPops}
-    >
+    <StyledButton uiVariant={variant} type={type} disableElevation {...rest}>
       {children}
-    </BootstrapButton>
+    </StyledButton>
   );
 }
+
+
+export const GhostButton = (props: Omit<ButtonProps, 'variant'>) => (
+  <Button variant="ghost" {...props} />
+);
+export const DangerButton = (props: Omit<ButtonProps, 'variant'>) => (
+  <Button variant="danger" {...props} />
+);

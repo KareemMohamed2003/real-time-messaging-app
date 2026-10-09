@@ -2,18 +2,24 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Typography } from '@mui/material';
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import { useState } from 'react';
-import { useUserStore } from '@/app/store/user-store';
-import Button from '@/shared/components/UI/Button';
+import { useUserStore } from '@/app/store/use-user-store';import Button from '@/shared/components/UI/Button';
 import Input from '@/shared/components/UI/Input';
 import {
   friendRequestSchema,
   FriendRequestFormValues,
 } from '@/entities/friends/model/friendRequestSchema';
 import { useSendFriendRequest } from '@/features/send-friend-request';
+import ModalShell from '@/shared/components/UI/ModalShell';
 
-export default function AddFriends() {
-  const { profile } = useUserStore((state) => state);
+interface props {
+  closeAddFriendForm: () => void;
+  open: boolean;
+}
+
+export default function AddFriends({ closeAddFriendForm, open }: props) {
+  const { profile } = useUserStore(state => state);
   const [sentTo, setSentTo] = useState<string | null>(null);
 
   const {
@@ -30,63 +36,74 @@ export default function AddFriends() {
 
   const onSubmit = (data: FriendRequestFormValues) => {
     mutate(
-      {
-        userId: profile.id,
-        friendName: data.friendInput,
-      },
+      { userId: profile.id, friendName: data.friendInput },
       {
         onSuccess: () => {
           setSentTo(data.friendInput);
           reset();
         },
-        // onError:()=>{
-
-        // }
       }
     );
   };
 
-  return (
-    <Box display={'flex'} flexDirection={'column'}>
-      <Box
-        display={'flex'}
-        gap={2}
-        component="form"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <Input
-          placeholder={'friend name'}
-          type={'text'}
-          {...register('friendInput')}
-          onChange={() => setSentTo(null)}
-        />
-        <Button
-          type="submit"
-          disabled={isPending}
-          sx={{ flexShrink: 0, bgColor: '#239F6B' }}
-        >
-          <Typography fontWeight={600}>send friend request</Typography>
-        </Button>
-      </Box>
+  // register('friendInput') returns its own onChange (needed for RHF's
+  // validation/dirty-state tracking). The original spread it onto <Input>
+  // and then passed a second onChange prop right after it — in JSX, the
+  // later prop wins, so that second onChange silently replaced RHF's
+  // entirely instead of running alongside it. Composing both here instead.
+  const { onChange: rhfOnChange, ...friendInputField } = register('friendInput');
 
-      {errors.friendInput && (
-        <Typography mt={1} color={'red'}>
-          {errors.friendInput.message}
-        </Typography>
-      )}
-      {/* this should be replaced with our error from the backend instead of this generic error */}
+  return (
+    <ModalShell
+      title="Add friend"
+      isPending={isPending}
+      onSubmit={handleSubmit(onSubmit)}
+      open={open}
+      onClose={closeAddFriendForm}
+      actions={
+        <>
+          <Button variant="ghost" onClick={closeAddFriendForm}>
+            Close
+          </Button>
+          <Button type="submit" variant="solid" disabled={isPending}>
+            Send request
+          </Button>
+        </>
+      }
+    >
+      <Input
+        label="Friend name"
+        type="text"
+        required
+        error={!!errors.friendInput}
+        helperText={errors.friendInput?.message}
+        {...friendInputField}
+        onChange={e => {
+          rhfOnChange(e);
+          setSentTo(null);
+        }}
+      />
+
+      {/* TODO: swap for the actual backend error message once the API
+            returns one — this generic fallback was already flagged as a
+            placeholder in the original component. */}
       {mutationError && (
-        <Typography mt={2} fontWeight={'bold'} color={'red'}>
-          {`failed to send friend request `} {
-          
-          } 
-        </Typography>
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={0.75}
+          sx={{ color: 'error.main', fontSize: 12.5 }}
+        >
+          <ErrorOutlineRoundedIcon sx={{ fontSize: 15 }} />
+          Failed to send friend request.
+        </Box>
       )}
+
       {sentTo && (
-        <Typography mt={2} fontWeight={'bold'} color={'green'}>
-          {`Success! your friend request to ${sentTo} was sent`}
+        <Typography sx={{ color: 'success.main', fontSize: 12.5, fontWeight: 600 }}>
+          Success! Your friend request to {sentTo} was sent.
         </Typography>
       )}
-    </Box>
+    </ModalShell>
   );
 }

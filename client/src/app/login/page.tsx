@@ -1,84 +1,147 @@
 'use client';
 import useLogin from '@/features/authentication/api/useLogin';
-import CustomLink from '@/shared/components/CustomLink';
 import Button from '@/shared/components/UI/Button';
 import Input from '@/shared/components/UI/Input';
-import { Typography, Stack, Box, CircularProgress } from '@mui/material';
-import { useState } from 'react';
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
+import { Typography, Stack, Box, Paper, CircularProgress } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { AppRoutes } from '@/shared/lib/utils';
+
+
 export default function LoginPage() {
   const [formState, dispatchForm] = useLogin();
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const router = useRouter();
+
   return (
-    <Stack alignItems="center" height={'100%'}>
-      <Stack width="30%" height="100%" justifyContent="center" gap={5}>
-        <Typography
-          variant={'h2'}
-          textAlign="center"
-          sx={{
-            backgroundImage:
-              'linear-gradient(90deg, rgba(129,130,130,1) 0%, rgba(45,45,45,1) 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-          fontWeight="bold"
+    <Stack
+      alignItems="center"
+      justifyContent="center"
+      height="100%"
+      sx={(theme) => ({ backgroundImage: theme.gradients.auth })}
+    >
+      <Paper
+        sx={(theme) => ({
+          width: 400,
+          maxWidth: '92vw',
+          borderRadius: `${theme.radius.lg}px`,
+          p: { xs: 3, sm: 4.25 },
+        })}
+      >
+        {/* logo mark  */}
+        <Box display="flex" alignItems="center" gap={1.25} mb={3.25}>
+          <Typography variant="h6" fontWeight={700}>
+            chat App
+          </Typography>
+        </Box>
+
+        {/* tab-pill switcher */}
+        <Box
+          display="flex"
+          sx={(theme) => ({
+            background: theme.palette.surface.elevated,
+            borderRadius: 999,
+            p: 0.5,
+            mb: 3,
+          })}
         >
-          sign in
-        </Typography>
+          <Box
+            component="button"
+            type="button"
+            sx={(theme) => ({
+              all: 'unset',
+              flex: 1,
+              textAlign: 'center',
+              cursor: 'pointer',
+              py: 1,
+              borderRadius: 999,
+              fontWeight: 600,
+              fontSize: 13,
+              color: theme.palette.primary.contrastText,
+              backgroundColor: theme.palette.primary.main,
+            })}
+          >
+            Sign in
+          </Box>
+          <Box
+            component="button"
+            type="button"
+            onClick={() => router.push(AppRoutes.REGISTER_ROUTE)}
+            sx={(theme) => ({
+              all: 'unset',
+              flex: 1,
+              textAlign: 'center',
+              cursor: 'pointer',
+              py: 1,
+              borderRadius: 999,
+              fontWeight: 600,
+              fontSize: 13,
+              color: theme.palette.text.secondary,
+            })}
+          >
+            Create account
+          </Box>
+        </Box>
+
         <Box
           component="form"
-          display={'flex'}
-          flexDirection={'column'}
-          gap={2.5}
+          display="flex"
+          flexDirection="column"
+          gap={2}
           onSubmit={dispatchForm}
         >
-          <Input placeholder={'email'} name="email" type={'email'} required />
+          {/* this field doesn't use the error handling of the zod schema */}
+          <Input label="Email" name="email" type="email" required />
+
           <Input
-            setShowpassword={setShowPassword}
-            showPassword={showPassword}
+            label="Password"
             name="password"
-            placeholder={'password'}
-            type={'password'}
+            type="password"
             required
+            error={!!formState?.errors?.password}
+            helperText={formState?.errors?.password?._errors[0]}
           />
-          {formState?.errors?.password && (
-            <Typography textAlign={'center'} color={'red'}>
-              {formState?.errors?.password._errors[0]}
-            </Typography>
-          )}
+
           <Button
             type="submit"
-            sx={{
-              fontSize: '1.3rem',
-              bgColor: '#CB6013',
-              borderRadius: 16,
-              color: 'white',
-              p: '6px 35px',
-            }}
-            variant="contained"
+            variant="solid"
+            fullWidth
             disabled={formState.disableForm}
+            sx={{ mt: 0.5, justifyContent: 'center', py: 1.25 }}
           >
             {formState.disableForm ? (
-              <CircularProgress color="inherit" />
+              <CircularProgress size={20} color="inherit" />
             ) : (
-              'sign in'
+              'Sign in'
             )}
           </Button>
 
           {formState?.internalError && (
-            <Typography textAlign="center" color={'red'}>
-              {formState?.internalError}
-            </Typography>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              gap={0.75}
+              sx={{ color: 'error.main', fontSize: 12.5 }}
+            >
+              <ErrorOutlineRoundedIcon sx={{ fontSize: 15 }} />
+              {formState.internalError}
+            </Box>
           )}
 
           {formState?.errors?.credentials && (
-            <Typography textAlign={'center'} color={'red'}>
-              {formState?.errors?.credentials._errors[0]}
-            </Typography>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              gap={0.75}
+              sx={{ color: 'error.main', fontSize: 12.5 }}
+            >
+              <ErrorOutlineRoundedIcon sx={{ fontSize: 15 }} />
+              {formState.errors.credentials._errors[0]}
+            </Box>
           )}
         </Box>
-        <CustomLink placeholder="don't have an account?" href="/register" />
-      </Stack>
+      </Paper>
     </Stack>
   );
 }
