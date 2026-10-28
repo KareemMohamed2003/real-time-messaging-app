@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:backend/src/lib/sockets/onConnectionHandler.ts
 import { DefaultEventsMap, Server } from "socket.io";
 import { createRoomMessage } from "../../models/model.messages";
 import { updatedConnectionStatus, findOnlineFriends } from "../db";
@@ -18,11 +19,45 @@ export const onConnection = async (
   socket.join(socketId);
   socket.on("disconnect", async (reason) => {
     console.log("disconnected event", reason);
+=======
+import { DefaultEventsMap, Server } from 'socket.io';
+import { createRoomMessage, DEFAULT_MESSAGE_INCLUDE } from '../../models/model.messages';
+import { updatedConnectionStatus, findOnlineFriends } from '../db';
+import { ISocket } from './socket';
+// import { onPrivateMessage, } from './socketHandlers';
+import { onVoiceCall, onVoiceCallAnswer, onPrivateMessage } from './v2/socketHandlers.v2';
+import { SOCKET_EVENTS } from '../constants';
+import { safeAsyncAckHandler } from './socket.helpers';
+import { CallManager } from './v2/callManager';
+const {
+  PRIVATE_MESSAGE,
+  CHANNEL_MESSAGE,
+  CHANNEL_LEAVE,
+  CHANNEL_JOIN,
+  NEW_ICE_CANDIDATE,
+  PRIVATE_VOICE_CALL,
+  PRIVATE_VOICE_CALL_ANSWER,
+  ONLINE_FRIENDS,
+} = SOCKET_EVENTS;
+export const onConnection = async (
+  io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
+  socket: ISocket,
+  calls: CallManager
+) => {
+  const socketId = socket.socketId!;
+  socket.join(socketId);
+  socket.onAny((eventName, ...args) => {
+    console.log(`Incoming [${eventName}]:`, args);
+  });
+  calls.ringPendingFor(socketId, socket); // reconnect → immediate delivery, correct TTL
+
+  socket.on('disconnect', async reason => {
+    console.log('disconnected event', reason);
+>>>>>>> Stashed changes:backend/src/lib/socket/onConnectionHandler.ts
     updatedConnectionStatus(socket.sessionId!, false);
-    // const matchingSockets = await io.in(socket.socketId!).fetchSockets();
-    // console.log("disconnect event ,  matchingSockets", matchingSockets);
   });
   updatedConnectionStatus(socket.sessionId!, true);
+<<<<<<< Updated upstream:backend/src/lib/sockets/onConnectionHandler.ts
   socket.on("private message", async (message, acknowledged) => {
     onPrivateMessage(socket, message, acknowledged);
   });
@@ -41,6 +76,11 @@ export const onConnection = async (
     console.log("socket", socket);
   });
   socket.on("friendsSessions", async (friends) => {
+=======
+  socket.on(PRIVATE_MESSAGE, (message, callback) => onPrivateMessage(socket, message, callback));
+
+  socket.on(ONLINE_FRIENDS, async friends => {
+>>>>>>> Stashed changes:backend/src/lib/socket/onConnectionHandler.ts
     const onlineFriends = await findOnlineFriends(friends);
     console.log("online friends : ", onlineFriends);
     // this was  causing a infinite call loop this friendsSessions event is being called infinitely
@@ -63,8 +103,13 @@ export const onConnection = async (
   });
 
   socket.on(
+<<<<<<< Updated upstream:backend/src/lib/sockets/onConnectionHandler.ts
     "channel:message",
     safeAckHandler(async (message, senderUUID, channelId, callback) => {
+=======
+    CHANNEL_MESSAGE,
+    safeAsyncAckHandler(async (message, senderUUID, channelId, callback) => {
+>>>>>>> Stashed changes:backend/src/lib/socket/onConnectionHandler.ts
       if (!channelId || !message) {
         if (callback) callback({ sent: false, error: "Bad Request" });
         return;
@@ -82,12 +127,28 @@ export const onConnection = async (
   // other events to add later (`announce`  event when user joins  channel)
   //------------------------------------------------ audio call via plainWebRtc-----------------------
 
+<<<<<<< Updated upstream:backend/src/lib/sockets/onConnectionHandler.ts
   socket.on("voiceCall", (message) => {
     onVoiceCall(message, socket, io, pendingCalls);
   });
   socket.on("onVoiceCallAnswer", (message) => {
     onVoiceCallAnswer(message, socket, pendingCalls);
   });
+=======
+
+  socket.on(PRIVATE_VOICE_CALL, m => onVoiceCall(m, socket, calls));
+  socket.on(PRIVATE_VOICE_CALL_ANSWER, m => onVoiceCallAnswer(m, socket, calls));
+
+  // old code handlers
+
+  // socket.on(PRIVATE_VOICE_CALL, message => {
+  //   onVoiceCall(message, socket, io, pendingCalls);
+  // });
+
+  // socket.on(PRIVATE_VOICE_CALL_ANSWER, message => {
+  //   onVoiceCallAnswer(message, socket, pendingCalls);
+  // });
+>>>>>>> Stashed changes:backend/src/lib/socket/onConnectionHandler.ts
 
   socket.on("new-icecandidate", ({ to, candidate }) => {
     console.log("new-icecandidate event", { to, candidate });

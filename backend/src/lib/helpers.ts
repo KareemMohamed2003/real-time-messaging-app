@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import crypto from "crypto";
 import { deleteExpiredUsersSessions } from "./db";
 import { Server } from "socket.io";
@@ -6,12 +7,39 @@ import { AppError } from "../prisma/prismaHandlers/AppError";
 import { handlePrismaError } from "../prisma/prismaHandlers/PrismaErrorHandlers";
 import { Response } from "express";
 export const randomId = () => crypto.randomBytes(8).toString("hex");
+=======
+import crypto from 'crypto';
+import { deleteExpiredUsersSessions } from './db';
+import { AppError } from '../prisma/prismaHandlers/AppError';
+import { handlePrismaError } from '../prisma/prismaHandlers/PrismaErrorHandlers';
+import { Response } from 'express';
+import { Prisma } from '@prisma/client';
+import { uploadImageToCloudinary } from './cloudinary/cloudinary';
+import { createRoomPayload } from '../controllers/controllers.types';
+
+export interface FlattenedMessage {
+  id: number;
+  channelId: number;
+  senderUUID: string;
+  receiverUUID: string | null;
+  createdAt: Date;
+  message: string;
+  senderName: string;
+  senderAvatar: string | null;
+}
+type MessageWithUser = Prisma.MessagesGetPayload<{
+  include: { user: { select: { profile_img: true; username: true } } };
+}>;
+
+export const randomId = () => crypto.randomBytes(8).toString('hex');
+>>>>>>> Stashed changes
 export const checkSessionExpiry = () => {
   const interval = setInterval(() => {
     deleteExpiredUsersSessions();
   }, 1000);
   return interval;
 };
+<<<<<<< Updated upstream
 export const resendPendingCall = (
   pendingCalls: Map<string, { to: string }>,
   io: Server,
@@ -66,6 +94,8 @@ export const safeAckHandler = (handler: SocketHandler<any>) => {
     }
   };
 };
+=======
+>>>>>>> Stashed changes
 
 export function sendApiError(res: Response, appError: AppError) {
   res.status(appError.statusCode).json({

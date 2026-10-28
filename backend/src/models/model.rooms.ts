@@ -1,9 +1,20 @@
+<<<<<<< Updated upstream
 import { prisma } from "../prisma/prisma.ts";
 import { ChannelType } from "@prisma/client";
 import { createChannel } from "./model.channels.ts";
 export const createRoom = async (userId: string, name: string) => {
   const newRoom = await prisma.rooms.create({
     data: { roomName: name, ownerId: userId },
+=======
+import { prisma } from '../prisma/prisma.ts';
+import { ChannelType } from '@prisma/client';
+import { createChannel } from './model.channels.ts';
+import { Rooms } from '@prisma/client';
+import { createRoomPayload } from '../controllers/controllers.types.ts';
+export const createRoom = async (payload: createRoomPayload) => {
+  const newRoom = await prisma.rooms.create({
+    data: { ...payload},
+>>>>>>> Stashed changes
   });
   await prisma.roomMember.create({
     data: {

@@ -3,6 +3,7 @@ import {  handleDbError } from "../lib/helpers";
 import {
   getPrivateMessages,
   deleteMessage,
+<<<<<<< Updated upstream
   updateMessage,
 } from "../models/model.messages";
 import { AuthRequest } from "./types";
@@ -11,6 +12,14 @@ export const getPrivateMessagesAction = async (
   req: AuthRequest,
   res: Response,
 ) => {
+=======
+  updateMessageContent,
+  getRecentDMConversations,
+} from '../models/model.messages';
+import { AuthRequest } from './controllers.types';
+import { DEFAULT_MESSAGE_INCLUDE } from '../models/model.messages';
+export const getPrivateMessagesAction = async (req: AuthRequest, res: Response) => {
+>>>>>>> Stashed changes
   try {
     // console.log("getPrivateMessage Action");
     const userId = req.params.userId;

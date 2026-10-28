@@ -3,6 +3,7 @@ import { createStore } from 'zustand/vanilla';
 import { createDefaultUserState, userStore } from './store.types';
 import { socketClient } from '@/shared/lib/socket';
 import { SOCKET_EVENTS } from '@/shared/lib/constants';
+<<<<<<< Updated upstream
 
 export const createUserStore = () => {
   console.log('createUserStore');
@@ -10,6 +11,24 @@ export const createUserStore = () => {
     ...createDefaultUserState(),
 
     setRooms: (rooms: []) => set(() => ({ rooms })), //  these functions may change later
+=======
+// const MAX_CLOSED = 50;
+const callsExpiryTimers = new Map<string, ReturnType<typeof setTimeout>>(); // key: callerID, calleeID
+// we haven't handled  the outgoing call timeout yet
+const clearExpiry = (callerID: string) => { // maybe just use callId instead of callerId as this is used in outgoing,incoming calls expiration timers
+  const t = callsExpiryTimers.get(callerID);
+  if (t) {
+    clearTimeout(t);
+    callsExpiryTimers.delete(callerID);
+  }
+};
+
+// const tombstone = (ids: string[], id?: string) => (id ? [...ids, id].slice(-MAX_CLOSED) : ids);
+export const createUserStore = () => {
+  console.log('createUserStore');
+  return createStore<userStore>()((set, get) => ({
+    ...createDefaultUserState(),
+>>>>>>> Stashed changes
     setProfile: profile => {
       set(() => ({
         profile: {
@@ -56,9 +75,24 @@ export const createUserStore = () => {
       }));
     },
 
+<<<<<<< Updated upstream
     setIncomingCall: (caller, callerID, caller_profile_img) => {
       set(state => {
         const updatedCalls = state.incomingCalls.set(callerID, {
+=======
+    setIncomingCall: (caller, callerID, caller_profile_img, callId, ttlMs) => {
+      set(state => {
+        const audioCall = state.audioCall;
+        const incomingCalls = new Map(state.incomingCalls);
+        // not sure about these if(s)
+        if (incomingCalls.get(callerID)?.callId === callId)
+          return { ...state, incomingCalls: state.incomingCalls }; // duplicate resend: idempotent
+        if (audioCall.callState === 'ACCEPTED' && audioCall.friendId === callerID) {
+          return { ...state, incomingCalls: state.incomingCalls }; // already in a call with them
+        }
+        clearExpiry(callerID);
+        const updatedIncomingCalls = incomingCalls.set(callerID, {
+>>>>>>> Stashed changes
           friend_profile_img: caller_profile_img,
           callState: 'PENDING',
           friendId: callerID,
@@ -66,6 +100,7 @@ export const createUserStore = () => {
           isMuted: false,
           localPeer: null,
           bufferedIceCandidates: [],
+<<<<<<< Updated upstream
         });
 
         return {
@@ -93,6 +128,37 @@ export const createUserStore = () => {
         };
       });
     },
+=======
+          callId,
+        });
+        return {
+          ...state,
+          incomingCalls: updatedIncomingCalls,
+        };
+      });
+      //  the timeout of the client is not working
+      // // failsafe only: the server's cancel normally arrives first
+      callsExpiryTimers.set(
+        callerID,
+        setTimeout(() => get().deleteIncomingCall(callerID, callId), ttlMs)
+      );
+    },
+    deleteIncomingCall: (callerID, callId) => {
+      set(state => {
+        const entry = get().incomingCalls.get(callerID); // the modal currently shown for this caller (if any)
+        // (not sure if `!callId` is correct here )
+        const matches = !!entry && (!callId || entry.callId === callId); // "is this delete really about THAT modal?"
+        if (matches) clearExpiry(callerID); // only then stop its failsafe timer
+        const updatedIncomingCalls = new Map(state.incomingCalls);
+        updatedIncomingCalls.delete(callerID);
+        return {
+          incomingCalls: updatedIncomingCalls,
+        };
+      });
+    },
+
+    rejectCall: callerID => get().deleteIncomingCall(callerID),
+>>>>>>> Stashed changes
     answerCall: (callerID, localStream, localPeer) => {
       set(state => {
         const incomingCalls = new Map(state.incomingCalls);
@@ -105,7 +171,11 @@ export const createUserStore = () => {
             callState: 'ACCEPTED',
             friendId: callerID,
             localStream,
+<<<<<<< Updated upstream
             bufferedIceCandidates:[]
+=======
+            bufferedIceCandidates: [],
+>>>>>>> Stashed changes
           },
           incomingCalls,
         };
@@ -125,26 +195,56 @@ export const createUserStore = () => {
             isMuted: false,
             localPeer: null,
             bufferedIceCandidates: [],
+<<<<<<< Updated upstream
+=======
+            callId: '',
+            ttlMs: 0,
+>>>>>>> Stashed changes
           },
         };
       });
     },
 
+<<<<<<< Updated upstream
     setOutgoingCall: (calleeID, friend_profile_img, localStream, localPeer) => {
+=======
+    setOutgoingCall: (calleeID, friend_profile_img, localStream, localPeer, friendName, callId) => {
+>>>>>>> Stashed changes
       console.log('set outgoing call');
       set(state => ({
         audioCall: {
           callState: 'OUT-GOING',
           friendId: calleeID,
+<<<<<<< Updated upstream
           friendName: '',
+=======
+          friendName: friendName,
+>>>>>>> Stashed changes
           friend_profile_img,
           remoteStream: null,
           localStream,
           isMuted: false,
           localPeer,
           bufferedIceCandidates: state.audioCall.bufferedIceCandidates,
+<<<<<<< Updated upstream
         },
       }));
+=======
+          callId,
+        },
+      }));
+      callsExpiryTimers.set(
+        calleeID,
+        setTimeout(() => {
+          if (get().audioCall.callState === 'ACCEPTED') {
+             clearExpiry(calleeID);
+             return ;
+          }
+          get().resetAudioCallState();
+          // clearExpiry(calleeID);
+        }, 22000) // this is 22 sec in case server sends answer response late
+      );
+>>>>>>> Stashed changes
     },
     toggleMic: () => {
       const localStream = get().audioCall.localStream!;

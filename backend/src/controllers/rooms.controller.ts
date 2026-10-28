@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import { handleDbError, sendApiError } from "../lib/helpers";
 import {
   addNewRoomMembers,
@@ -21,6 +22,23 @@ export const createRoomAction = async (req: AuthRequest, res: Response) => {
     console.log(name, userId);
     const newRoom = await createRoom(userId, name);
     console.log("new room name ", name);
+=======
+import { handleDbError, handleRoomFileUpload } from '../lib/helpers';
+import { addNewRoomMembers, deleteRoomMember, getRoomMembers } from '../models/model.RoomMember';
+import { createRoom, deleteRoom, getUserJoinedRooms, updateRoom } from '../models/model.rooms';
+import { AuthRequest } from './controllers.types';
+import { Response } from 'express';
+
+export const createRoomAction = async (req: AuthRequest, res: Response) => {
+  try {
+    const imageFile = req?.file!;
+    const { name, } = req.body;
+    const userId=req.token?.uuid!
+    console.log(name);
+    const roomPayload = await handleRoomFileUpload(imageFile, name, userId);
+    const newRoom = await createRoom(roomPayload);
+    console.log('new room name ', name);
+>>>>>>> Stashed changes
     console.log(newRoom);
     res.status(200).json(newRoom);
   } catch (e) {

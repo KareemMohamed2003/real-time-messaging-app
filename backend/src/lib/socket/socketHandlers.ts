@@ -1,7 +1,15 @@
+<<<<<<< Updated upstream:backend/src/lib/sockets/socketHandlers.ts
 import { DefaultEventsMap, Server } from "socket.io";
 import { createMessage } from "../../models/model.messages";
 import { resendPendingCall } from "../helpers";
 import { ISocket } from "./socket";
+=======
+import { DefaultEventsMap, Server } from 'socket.io';
+import { createMessage, DEFAULT_MESSAGE_INCLUDE } from '../../models/model.messages';
+import { ISocket } from './socket';
+import { SOCKET_EVENTS } from '../constants';
+import { safeAsyncAckHandler, resendPendingCall } from './socket.helpers';
+>>>>>>> Stashed changes:backend/src/lib/socket/socketHandlers.ts
 
 export const onVoiceCallAnswer = (
   message: any,
@@ -40,11 +48,15 @@ export const onVoiceCallAnswer = (
   }
 };
 
+<<<<<<< Updated upstream:backend/src/lib/sockets/socketHandlers.ts
 export const onPrivateMessage = async (
   socket: ISocket,
   message: any,
   acknowledged: any,
 ) => {
+=======
+export const onPrivateMessage = safeAsyncAckHandler(async (socket: ISocket, message: any, callback) => {
+>>>>>>> Stashed changes:backend/src/lib/socket/socketHandlers.ts
   const to = message.to;
   const content = message.content;
   const from = message.from;
@@ -72,6 +84,7 @@ export const onVoiceCall = async (
     (el: any) => el.socketId === to,
   );
   if (!calleeSocket) {
+<<<<<<< Updated upstream:backend/src/lib/sockets/socketHandlers.ts
     return resendPendingCall(
       pendingCalls,
       io,
@@ -81,6 +94,13 @@ export const onVoiceCall = async (
     );
   }
   calleeSocket!.emit("voiceCall", {
+=======
+    console.log('callSocket not found resorting to resendPendingCall()');
+    return resendPendingCall(pendingCalls, io, message, socket.socketId!, socket);
+  }
+  // is this necessary  think it should deleted becuase we are invoking the resendPendingCall already so no need to calleeSocket.emit .. 
+  calleeSocket!.emit(PRIVATE_VOICE_CALL, {
+>>>>>>> Stashed changes:backend/src/lib/socket/socketHandlers.ts
     callerInfo: { profile_img, callerName: name, callerID: socket.socketId },
   });
   resendPendingCall(pendingCalls, io, message, socket.socketId!, socket);

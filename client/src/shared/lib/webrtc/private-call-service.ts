@@ -10,6 +10,11 @@ export type TCallerInfo = {
   callerName: string;
   profile_img: string;
   callerID: string;
+<<<<<<< Updated upstream
+=======
+  callId: string;
+  ttlMs: number;
+>>>>>>> Stashed changes
 };
 
 const { PRIVATE_VOICE_CALL_ANSWER, PRIVATE_VOICE_CALL } = SOCKET_EVENTS;
@@ -19,8 +24,13 @@ export function createPrivateCallService(userStore: userStoreApi) {
   const userStoreState = () => userStore.getState();
 
   const handlePrivateCall = async ({ callerInfo }: { callerInfo: TCallerInfo }) => {
+<<<<<<< Updated upstream
     const { callerName, profile_img, callerID } = callerInfo;
     userStoreState().setIncomingCall(callerName, callerID, profile_img);
+=======
+    const { callerName, profile_img, callerID, callId, ttlMs } = callerInfo;
+    userStoreState().setIncomingCall(callerName, callerID, profile_img, callId, ttlMs);
+>>>>>>> Stashed changes
     console.log('incomingCall() : callerId:', callerID);
     console.log(profile_img);
   };
@@ -30,6 +40,10 @@ export function createPrivateCallService(userStore: userStoreApi) {
       to: friendId,
       callerID: uuid,
       type: 'cancelled',
+<<<<<<< Updated upstream
+=======
+      callId: userStoreState().audioCall.callId,
+>>>>>>> Stashed changes
     });
     destroyPeerConnection();
   };
@@ -44,7 +58,11 @@ export function createPrivateCallService(userStore: userStoreApi) {
     handlePrivateCall,
     destroyPeerConnection,
   });
+<<<<<<< Updated upstream
   const makeCall = async (to: string, friend_profile_img: string) => {
+=======
+  const makeCall = async (to: string, friend_profile_img: string, friendName: string) => {
+>>>>>>> Stashed changes
     userStoreState().flushIceCandidates();
     let localStream: MediaStream | undefined;
     let peer: RTCPeerConnection | undefined;
@@ -57,13 +75,33 @@ export function createPrivateCallService(userStore: userStoreApi) {
       });
       console.log('rtcPeer', peer);
       const { username, profile_img } = userStoreState().profile;
+<<<<<<< Updated upstream
+=======
+      const callId = crypto.randomUUID();
+
+>>>>>>> Stashed changes
       const message = {
         to: to,
         profile_img,
         name: username,
+<<<<<<< Updated upstream
       };
       signalingChannel.emit(PRIVATE_VOICE_CALL, message);
       userStoreState().setOutgoingCall(to, friend_profile_img, localStream, peer);
+=======
+        callId,
+      };
+      signalingChannel.emit(PRIVATE_VOICE_CALL, message);
+
+      userStoreState().setOutgoingCall(
+        to,
+        friend_profile_img,
+        localStream,
+        peer,
+        friendName,
+        callId
+      );
+>>>>>>> Stashed changes
     } catch (e) {
       console.error(e);
       if (e instanceof Error) {
@@ -84,6 +122,16 @@ export function createPrivateCallService(userStore: userStoreApi) {
     let peer: RTCPeerConnection | undefined;
     try {
       localStream = await selectInputMedia();
+<<<<<<< Updated upstream
+=======
+      const incoming = userStoreState().incomingCalls.get(callerID);
+
+      if (!incoming) {
+        // call cancelled/expired during the permission prompt
+        localStream.getTracks().forEach(t => t.stop());
+        return;
+      }
+>>>>>>> Stashed changes
       peer = createPeerConnection();
       const uuid = userStoreState().profile.uuid;
       localStream!.getTracks().map(track => {
@@ -92,11 +140,21 @@ export function createPrivateCallService(userStore: userStoreApi) {
       userStoreState().answerCall(callerID, localStream, peer);
       const offer = await createOffer(peer);
       await peer.setLocalDescription(offer);
+<<<<<<< Updated upstream
+=======
+      //BTW : no callId is passed to this emit 
+
+>>>>>>> Stashed changes
       signalingChannel.emit(PRIVATE_VOICE_CALL_ANSWER, {
         callerID,
         type: 'offer',
         offer,
         calleeID: uuid,
+<<<<<<< Updated upstream
+=======
+        callId:incoming.callId
+     
+>>>>>>> Stashed changes
       });
     } catch (e) {
       console.log(e);
@@ -106,11 +164,19 @@ export function createPrivateCallService(userStore: userStoreApi) {
         peer.close();
       }
     }
+<<<<<<< Updated upstream
     // remote user answers the call
   };
 
   const rejectCall = async (callerID: string) => {
     signalingChannel.emit(PRIVATE_VOICE_CALL_ANSWER, { callerID, type: 'rejected' });
+=======
+  };
+
+  const rejectCall = async (callerID: string) => {
+    const callId = userStoreState().incomingCalls.get(callerID)?.callId;
+    signalingChannel.emit(PRIVATE_VOICE_CALL_ANSWER, { callerID, callId, type: 'rejected' });
+>>>>>>> Stashed changes
     userStoreState().rejectCall(callerID);
   };
 

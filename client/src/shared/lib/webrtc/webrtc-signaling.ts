@@ -3,23 +3,38 @@ import { SOCKET_EVENTS } from '../constants';
 import { userStoreApi } from '@/app/store/store.types';
 import { TCallerInfo } from './private-call-service';
 const { PRIVATE_VOICE_CALL_ANSWER, NEW_ICE_CANDIDATE, PRIVATE_VOICE_CALL } = SOCKET_EVENTS;
+<<<<<<< Updated upstream
 type signalingHandler = {
+=======
+
+type createSignaling = {
+>>>>>>> Stashed changes
   userStore: userStoreApi;
   socketClient: Socket;
   handlePrivateCall: ({ callerInfo }: { callerInfo: TCallerInfo }) => void;
   destroyPeerConnection: () => void;
 };
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 export default function createSignaling({
   userStore,
   socketClient,
   handlePrivateCall,
   destroyPeerConnection,
+<<<<<<< Updated upstream
 }: signalingHandler) {
   const userStoreState = () => userStore.getState();
   // we need to check if the two users are calling each other at the same time .
   // we need to know who is calling us let's say we send a call to user a at the same time we recieved a call
   // from user a then we should have the socket id of user a .
   // collect ice candidates
+=======
+}: createSignaling) {
+  const userStoreState = () => userStore.getState();
+
+>>>>>>> Stashed changes
   const createOffer = async (localPeer: RTCPeerConnection) => {
     const offer = await localPeer.createOffer({
       offerToReceiveAudio: true,
@@ -30,7 +45,11 @@ export default function createSignaling({
 
   const handleOffer = async (message: any, socket: Socket, localPeer: RTCPeerConnection) => {
     const desc = new RTCSessionDescription(message.offer);
+<<<<<<< Updated upstream
     await localPeer.setRemoteDescription(desc); // in the webrtc docs example the await keyword wasn't there
+=======
+    await localPeer.setRemoteDescription(desc);
+>>>>>>> Stashed changes
     await assignPeerIceCandidates(localPeer);
     const answer = await localPeer.createAnswer();
     await localPeer.setLocalDescription(answer);
@@ -42,6 +61,10 @@ export default function createSignaling({
   };
 
   const handlePeerAnswer = async (message: any, localPeer: RTCPeerConnection) => {
+<<<<<<< Updated upstream
+=======
+    console.log('signaling state at handlePeerAnswer() ', localPeer.signalingState);
+>>>>>>> Stashed changes
     if (localPeer.signalingState !== 'have-local-offer') return;
     try {
       const answer = new RTCSessionDescription(message.answer);
@@ -52,7 +75,11 @@ export default function createSignaling({
     }
   };
   /**
+<<<<<<< Updated upstream
    * assigns buffered Ice-Candidates (when remoteDescription was not set) to local peer
+=======
+   * assigns buffered ICE-Candidates (stored when remoteDescription was not set) to local peer
+>>>>>>> Stashed changes
    * @param localPeer
    */
   const assignPeerIceCandidates = async (localPeer: RTCPeerConnection) => {
@@ -105,7 +132,16 @@ export default function createSignaling({
           if (peer && audioCall.callState === 'ACCEPTED') await handlePeerAnswer(message, peer);
           break;
         case 'rejected':
+<<<<<<< Updated upstream
           if (audioCall.callState === 'OUT-GOING') destroyPeerConnection();
+=======
+          if (
+            audioCall.callState === 'OUT-GOING' &&
+            (!message.callId || message.callId === audioCall.callId)
+          ) {
+            destroyPeerConnection();
+          }
+>>>>>>> Stashed changes
           break;
         case 'cancelled':
           if (audioCall.callState && audioCall.friendId === message.callerID) {

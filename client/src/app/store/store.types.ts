@@ -11,6 +11,11 @@ export type tCall = {
   isMuted: boolean;
   localPeer: RTCPeerConnection | null;
   bufferedIceCandidates: any[];
+<<<<<<< Updated upstream
+=======
+  callId: string;
+
+>>>>>>> Stashed changes
 };
 export type TRequestStatus = 'ACCEPTED' | 'PENDING' | 'REJECTED';
 export type TCallState = TRequestStatus | null | 'OUT-GOING';
@@ -39,22 +44,43 @@ export type TNotification = {
   message: string;
 };
 export type userActions = {
+<<<<<<< Updated upstream
   setRooms: (rooms: []) => void;
+=======
+>>>>>>> Stashed changes
   setProfile: (userProfile: IUser) => void;
   setOnlineFriends: (friends: TOnlineFriend[]) => void;
   updateOnlineFriends: (newFriends: any) => void;
   setNotification: (notifications: TNotification) => void;
   updateProfile: (newProfileData: any) => void;
+<<<<<<< Updated upstream
   setIncomingCall: (caller: string, callerID: string, caller_profile_img: string) => void;
+=======
+  setIncomingCall: (
+    caller: string,
+    callerID: string,
+    caller_profile_img: string,
+    callId: string,
+    ttlMs: number
+  ) => void;
+>>>>>>> Stashed changes
   answerCall: (callerID: string, localStream: MediaStream, localPeer: RTCPeerConnection) => void;
   rejectCall: (callerID: string) => void;
   setOutgoingCall: (
     calleeID: string,
     profile_img: string,
     localStream: MediaStream,
+<<<<<<< Updated upstream
     localPeer: RTCPeerConnection
   ) => void;
   deleteIncomingCall: (callerID: string) => void;
+=======
+    localPeer: RTCPeerConnection,
+    friendName: string,
+    callId:string,
+  ) => void;
+deleteIncomingCall: (callerID: string, callId?: string) => void;
+>>>>>>> Stashed changes
   resetAudioCallState: () => void;
   toggleMic: () => void;
   onIceCandidate: (event: RTCPeerConnectionIceEvent) => void;
@@ -79,6 +105,11 @@ export const createDefaultUserState = () => ({
     isMuted: false,
     localPeer: null,
     bufferedIceCandidates: [],
+<<<<<<< Updated upstream
+=======
+    callId: '',
+    ttlMs:0
+>>>>>>> Stashed changes
   },
   incomingCalls: new Map(),
   rooms: [],

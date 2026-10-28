@@ -3,9 +3,18 @@ import {
   createChannel,
   getChannelMessages,
   getRoomChannels,
+<<<<<<< Updated upstream
 } from "../models/model.channels";
 import { AuthRequest } from "./db.controller";
 import { Request, Response } from "express";
+=======
+  updateChannel,
+} from '../models/model.channels';
+
+import { Response } from 'express';
+import { AuthRequest } from './controllers.types';
+import { DEFAULT_MESSAGE_INCLUDE } from '../models/model.messages';
+>>>>>>> Stashed changes
 // channels
 export const getRoomChannelsAction = async (
   req: AuthRequest,
