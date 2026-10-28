@@ -1,15 +1,21 @@
 import { QueryClient } from '@tanstack/react-query';
 import { environmentManager } from '@tanstack/react-query';
 
-// Add TypeScript global declaration here
 declare global {
   interface Window {
     __TANSTACK_QUERY_CLIENT__: import('@tanstack/query-core').QueryClient;
   }
 }
- function makeQueryClient() {
+
+
+function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
+      // mutationCach: {
+      //   onError: () => {
+
+      //   },
+      // },
       queries: {
         // With SSR, we usually want to set some default staleTime
         // above 0 to avoid refetching immediately on the client
@@ -26,9 +32,7 @@ export function getQueryClient() {
     return makeQueryClient();
   } else {
     if (!browserQueryClient) {
-
       browserQueryClient = makeQueryClient();
-    
       window.__TANSTACK_QUERY_CLIENT__ = browserQueryClient;
     }
     return browserQueryClient;

@@ -1,10 +1,7 @@
-import Input from '@/shared/components/UI/(legacy)/Input(legacy)';
 import { primaryBg } from '@/themes(legacy)';
 import { Box, Stack } from '@mui/material';
-interface NotificationsProps {
-  Notifications: any[];
-}
-export default function Notifications({ Notifications }: NotificationsProps) {
+
+export default function Notifications() {
   return (
     <Box
       display={'flex'}
@@ -14,21 +11,6 @@ export default function Notifications({ Notifications }: NotificationsProps) {
       mt={3}
       gap={4}
       alignItems={'center'}
-    >
-      <Box width={'80%'}>
-        <Input placeholder={'search'} type={'text'} style={{ width: '100%' }} />
-      </Box>
-
-      <Stack
-        gap={5}
-        height={'85%'}
-        width={'80%'}
-        borderRadius={'30px'}
-        p={'1.3rem'}
-        sx={{
-          background: primaryBg,
-        }}
-      ></Stack>
-    </Box>
+    ></Box>
   );
 }

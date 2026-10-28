@@ -30,7 +30,7 @@ export default function LoginPage() {
         {/* logo mark  */}
         <Box display="flex" alignItems="center" gap={1.25} mb={3.25}>
           <Typography variant="h6" fontWeight={700}>
-            chat App
+          Relay 
           </Typography>
         </Box>
 

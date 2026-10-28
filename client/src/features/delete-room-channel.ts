@@ -11,7 +11,7 @@ export default function useDeleteChannels({ roomUUID }: props) {
   const onDelete = ({ channelId }: { channelId: number }) => {
     mutate({ channelId });
   };
-  const query = async ({ channelId }: any) => {
+  const query = async ({ channelId }:  { channelId: number }) => {
     return await apiClient(deleteChannel_URL(channelId, roomUUID), { method: 'DELETE' });
   };
   const { mutate, isPending } = useMutation({
@@ -21,6 +21,7 @@ export default function useDeleteChannels({ roomUUID }: props) {
     },
     onError: error => {
       console.log(error);
+      //
     },
   });
 

@@ -1,6 +1,6 @@
 import { Avatar, Box, Stack, Typography } from '@mui/material';
 import MessageRow from './MessageRow';
-import { useUserStore } from '@/app/store/use-user-store';import UseRoom from '@/entities/rooms/api/useRoom';
+import UseRoom from '@/entities/rooms/api/useRoom';
 import { QueryKey } from '@tanstack/react-query';
 
 export interface GroupedMessage {
@@ -34,7 +34,7 @@ export default function MessageGroup({
   const room = UseRoom(roomUUID!);
   const isRoomOwner = room?.role === 'OWNER';
   const canDeleteMessage = self || isRoomOwner;
-  console.log(self);
+
   return (
     <Stack
       direction={self ? 'row-reverse' : 'row'}

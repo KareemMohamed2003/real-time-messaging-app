@@ -23,8 +23,7 @@ export default function PrivateChatComponent({ friendUUID, uuid }: IPrivateChat)
   });
   const { sendPrivateMessage } = UseSendPrivateMessage(friendUUID);
   const groupedChat = groupMessagesBySender(privateMessages, uuid);
-  console.log(privateMessages);
-  console.log(groupedChat);
+
 
   return (
     <Box

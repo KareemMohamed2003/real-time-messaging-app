@@ -13,7 +13,8 @@ export const RoomProfileSchema = z.object({
         .refine(f => ['image/png', 'image/jpeg'].includes(f.type), 'Only PNG or JPEG allowed'),
       z.string(), // existing image URL
       // z.null(), // user removed the image
-    ]).optional()
+    ])
+    .optional(),
 });
 
 export type TRoomForm = z.infer<typeof RoomProfileSchema> & {

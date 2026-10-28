@@ -8,7 +8,7 @@ import ModalShell from '@/shared/components/UI/ModalShell';
 import Input from '@/shared/components/UI/Input';
 import Button, { GhostButton } from '@/shared/components/UI/Button';
 import SegmentedControl from '@/shared/components/UI/SegmentedControl';
-import useAddChannels from '../../../features/create-room-channel/api/create-room-channel';
+import useAddChannels from '@/features/create-room-channel/api/create-room-channel';
 
 interface CreateChannelFormProps {
   closeChannelForm: () => void;
@@ -20,7 +20,7 @@ const CHANNEL_TYPE_OPTIONS = [
   { value: 'voice', label: '🔊 Voice' },
 ];
 
-export const CreateChannelForm = forwardRef<HTMLFormElement, CreateChannelFormProps>(
+ const CreateChannelForm = forwardRef<HTMLFormElement, CreateChannelFormProps>(
   function CreateChannelForm({ closeChannelForm, roomUUID }, ref) {
     const { handleSubmit, reset, register, onSubmit, errors, control, isPending } = useAddChannels({
       roomUUID,

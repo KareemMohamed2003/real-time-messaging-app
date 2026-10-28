@@ -44,7 +44,7 @@ export default function CreateRoomForm({ closeRoomForm, open }: props) {
     await queryClient.invalidateQueries({ queryKey: roomKeys.all });
     clearErrors();
     closeRoomForm();
-    router.replace(AppRoutes.ROOMS_ROUTE);
+    // router.replace(AppRoutes.ROOMS_ROUTE);
   };
   const errorCb = (error: any) => {
     setError('name', { type: 'server', message: error.message });

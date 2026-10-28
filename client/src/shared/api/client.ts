@@ -1,5 +1,4 @@
 import { createApiErrorFromResponse } from './errors';
-
 type RequestOptions = Omit<RequestInit, 'body'> & { body?: unknown };
 export const requestAborter = () => {
   const controller = new AbortController();
@@ -46,9 +45,9 @@ export async function apiClient<T>(
   const responseText = await response.text();
   if (!responseText.trim()) return null as T;
 
-  return JSON.parse(responseText)   ;
+  return JSON.parse(responseText);
 
-  // return  
+  // return
 }
 // we will use this function later to display error notifications as we haven't yet implemented them in our app .
 function handleApiError(error: unknown) {}

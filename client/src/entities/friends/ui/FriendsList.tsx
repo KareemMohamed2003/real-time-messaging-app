@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/use-user-store';import { AppRoutes } from '@/shared/lib/utils';
 import Friend from './Friend';
 import { FriendRowSkeleton } from '@/shared/components/UI/Skeletons';
-import { TOnlineFriend } from '@/app/store/types';
+import { TOnlineFriend } from '@/app/store/store.types';
 type FriendsFilter = 'all' | 'online' | 'pending';
 
 interface FriendsListProps {
@@ -41,7 +41,8 @@ export default function FriendsList({ selectedList, friends, isLoading }: Friend
         console.log(friendUUID);
         return (
           <Box
-            key={friendUUID}
+
+          key={friendUUID}
             onClick={() => {
               if (friend.request_status === 'ACCEPTED' || friend?.is_online) {
                 router.push(AppRoutes.PRIVATE_CHAT_ROUTE(friendUUID));

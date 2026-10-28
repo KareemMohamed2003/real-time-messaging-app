@@ -1,6 +1,5 @@
 'use client';
 import { Avatar, Box, Typography, alpha } from '@mui/material';
-import type { Theme } from '@mui/material/styles';
 import { getAvatarGradient, getInitials } from '@/shared/lib/avatar';
 export type PresenceStatus = 'online' | 'offline' | 'away';
 
@@ -19,12 +18,7 @@ export interface DmListItemProps {
   preview: string;
   /** true when this is the open conversation */
   active?: boolean;
-  /**
-   * Not present in the reference's .dm-item markup (only room cards and
-   * notifications show unread state there) — added here since a chat list
-   * with zero unread signal is a real product gap. Bolds the name + shows
-   * a small accent dot; omit if you'd rather match the reference exactly.
-   */
+
   unread?: boolean;
   onClick: () => void;
 }

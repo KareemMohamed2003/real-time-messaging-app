@@ -10,7 +10,6 @@ import { useParams } from 'next/navigation';
 import { Stack } from '@mui/material';
 import { socketClient } from '@/shared/lib/socket';
 import { useQueryClient } from '@tanstack/react-query';
-import AddMembersModalv2 from '@/features/add-room-member/ui/AddMembersModalv2';
 import { RoomConversationSkeleton } from '@/shared/components/UI/Skeletons';
 import { IMessage } from '@/shared/types/api.types';
 import { SOCKET_EVENTS } from '@/shared/lib/constants';

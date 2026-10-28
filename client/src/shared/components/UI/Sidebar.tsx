@@ -1,6 +1,4 @@
 'use client';
-
-import PrivateVoiceCall from '@/features/voice-call/ui/PrivateVoiceCall';
 import { useRouter } from 'next/navigation';
 import { Avatar, Stack, Typography, Box } from '@mui/material';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
@@ -12,7 +10,7 @@ import { primaryNavItems } from './nav-items';
 export default function Sidebar() {
   const { PROFILE_ROUTE } = AppRoutes;
   const router = useRouter();
-  const { profile, audioCall } = useUserStore((state) => state);
+  const { profile } = useUserStore((state) => state);
 
   return (
     <Stack
@@ -63,28 +61,7 @@ export default function Sidebar() {
         </Typography>
       )}
 
-      {audioCall.callState === 'ACCEPTED' && <PrivateVoiceCall />}
+
     </Stack>
   );
 }
-
-// -----------------------------------------------------------------------
-// NOTE — background gradient intentionally NOT painted here.
-// The reference prototype's own CSS comment explains why: rail + content
-// must share ONE gradient canvas, otherwise two adjacent panels end up
-// with two different glows and a visible seam appears between them.
-// Apply `theme.gradients.shell` once, on the layout wrapper that contains
-// BOTH <Sidebar /> and the page content, e.g.:
-//
-//   <Box sx={(theme) => ({
-//     display: 'flex', flexDirection: 'column', height: '100%',
-//   })}>
-//     <Box sx={{ display: 'flex', flex: 1, minHeight: 0 }}>
-//       <Sidebar />
-//       <Box sx={{ flex: 1, minWidth: 0 }}>{children}</Box>
-//     </Box>
-//     <BottomNav />
-//   </Box>
-//
-// with `backgroundImage: theme.gradients.shell` on the outer Box.
-// -----------------------------------------------------------------------

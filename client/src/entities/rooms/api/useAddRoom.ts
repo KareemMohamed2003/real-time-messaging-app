@@ -14,11 +14,7 @@ export default function UseAddRoom(
       formdata.append('room_image', room_image!);
       return await apiClient(createRoom_URL, {
         method: 'POST',
-        body: {
-          name,
-          uuid,
-          room_image,
-        },
+        body:formdata
       });
     },
     onSuccess: successCallback,

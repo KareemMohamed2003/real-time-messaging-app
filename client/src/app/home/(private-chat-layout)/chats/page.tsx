@@ -2,14 +2,14 @@
 import { Suspense, useState } from 'react';
 import { Box, Stack } from '@mui/material';
 import { DmListSkeleton } from '@/shared/components/UI/Skeletons';
-import DmList from '@/widgets/dm-list/ui/DmList';
-import FriendConversation from '@/widgets/friend-conversation/ui/FriendConversation';
-import EmptyChatsState from '@/shared/components/UI/EmptyChatsState';
 import { useUserStore } from '@/app/store/use-user-store';
 import { useQuery } from '@tanstack/react-query';
 import { getRecentConversations } from '@/shared/api/queries';
 import { userKeys } from '@/shared/api/QueryKeys';
 import { IDirectMessage } from '@/shared/types/api.types';
+import FriendConversation from '@/widgets/friend-conversation/ui/FriendConversation';
+import DmList from '@/widgets/dm-list/ui/DmList';
+import EmptyChatsState from '@/shared/components/UI/EmptyChatsState';
 
 export default function ChatsPage() {
   const profile = useUserStore(state => state.profile);

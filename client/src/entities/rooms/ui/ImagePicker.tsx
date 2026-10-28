@@ -1,10 +1,8 @@
 'use client';
-
-import { useEffect, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { Box, IconButton, Typography } from '@mui/material';
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 import CloseIcon from '@mui/icons-material/Close';
-import { ControllerRenderProps, UseFormRegister, UseFormRegisterReturn } from 'react-hook-form';
 import useImagePicker from '@/shared/lib/useImagePicker';
 export interface ImagePickerProps {
   /** existing image URL, if one is already set */

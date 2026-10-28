@@ -13,9 +13,15 @@ interface props {
 export default function FriendConversation({ currentUserUUID, friendUUID }: props) {
   const { friends } = UseSuspenseFriendsQuery();
   const { username, profile_img } = getFriendSocketId(friendUUID, friends?.all);
+
   return (
     <Stack display={'flex'} height={'100%'} width={'100%'}>
-      <CallManager friendName={username} friendId={friendUUID} profile_img={profile_img} />
+      <CallManager
+        friendName={username}
+        friendId={friendUUID}
+        profile_img={profile_img}
+      />
+
       <Suspense fallback={<DmConversationSkeleton />}>
         <PrivateChatComponent
           friendName={username}

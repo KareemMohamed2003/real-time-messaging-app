@@ -11,8 +11,6 @@ import { useQuery } from '@tanstack/react-query';
 import { getFriendsQuery } from '@/shared/api/queries';
 import { friendsKeys } from '@/shared/api/QueryKeys';
 import useSearch from '@/shared/hooks/useSearch';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import Input from '@/shared/components/UI/Input';
 type FriendsFilter = 'all' | 'online' | 'pending';
 
 export default function FriendsPage() {

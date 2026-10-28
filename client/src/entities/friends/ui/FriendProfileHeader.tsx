@@ -1,6 +1,6 @@
 import { Avatar, Box, IconButton, Tooltip, Typography } from '@mui/material';
-import { makeCall } from '@/shared/lib/webrtc';
-import { useUserStore } from '@/app/store/use-user-store';import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
+import usePrivateCallService from '@/shared/hooks/usePrivateCallService';
+import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
 
 interface props {
   friendName: string;
@@ -18,8 +18,7 @@ export default function FriendProfileHeader({
   profile_img,
   isOnline,
 }: props) {
-  const { localPeer } = useUserStore((state) => state);
-
+  const { makeCall } = usePrivateCallService();
   return (
     <Box
       px={2.25}
@@ -28,17 +27,17 @@ export default function FriendProfileHeader({
       display="flex"
       alignItems="center"
       justifyContent="space-between"
-      sx={(theme) => ({ borderBottom: `1px solid ${theme.palette.divider}` })}
+      sx={theme => ({ borderBottom: `1px solid ${theme.palette.divider}` })}
     >
       <Box display="flex" alignItems="center" gap={1.25}>
         <Box sx={{ position: 'relative' }}>
           <Avatar
             src={profile_img}
-            sx={(theme) => ({ width: 34, height: 34, background: theme.gradients.avatar[0] })}
+            sx={theme => ({ width: 34, height: 34, background: theme.gradients.avatar[0] })}
           />
           {isOnline !== undefined && (
             <Box
-              sx={(theme) => ({
+              sx={theme => ({
                 position: 'absolute',
                 right: -1,
                 bottom: -1,
@@ -57,7 +56,7 @@ export default function FriendProfileHeader({
           </Typography>
           {isOnline !== undefined && (
             <Typography
-              sx={(theme) => ({
+              sx={theme => ({
                 fontSize: 11.5,
                 color: isOnline ? theme.palette.success.main : theme.palette.text.disabled,
               })}
@@ -69,7 +68,7 @@ export default function FriendProfileHeader({
       </Box>
 
       <Tooltip title="Voice call">
-        <IconButton onClick={() => makeCall(localPeer!, friendId, profile_img)}>
+        <IconButton onClick={() => makeCall(friendId, profile_img,friendName)}>
           <CallOutlinedIcon sx={{ fontSize: 19 }} />
         </IconButton>
       </Tooltip>

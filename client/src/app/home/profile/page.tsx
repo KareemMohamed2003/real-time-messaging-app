@@ -2,7 +2,8 @@
 import { updateProfilePic } from '@/shared/lib/actions/userActions';
 import { mainStyles } from '@/themes(legacy)';
 import { checkFileSize, togglePortalEffect } from '@/shared/lib/utils';
-import { useUserStore } from '@/app/store/use-user-store';import Button from '@/shared/components/UI/(legacy)/Button(legacy)';
+import { useUserStore } from '@/app/store/use-user-store';
+import Button from '@/shared/components/UI/(legacy)/Button(legacy)';
 import Portal from '@/shared/components/Portal';
 import { Avatar, Stack, Typography } from '@mui/material';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
@@ -13,8 +14,9 @@ export interface selectedFile {
   url: string;
 }
 export default function Profile() {
-  const { profile } = useUserStore((state) => state);
+  const { profile } = useUserStore(state => state);
   const { primaryRed } = mainStyles;
+  const { updateProfile } = useUserStore(state => state);
   const [selectedFile, setFile] = useState<selectedFile>({
     file: null,
     url: '',
@@ -25,13 +27,11 @@ export default function Profile() {
   const fileRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const didImgChange =
-    (selectedFile.url != profile.profile_img && profile.profile_img) ||
-    selectedFile.file;
+    (selectedFile.url != profile.profile_img && profile.profile_img) || selectedFile.file;
   useEffect(() => {
     if (profile.profile_img) setFile({ file: null, url: profile.profile_img });
     return () => {
-      selectedFile.file! &&
-        URL.revokeObjectURL(URL.createObjectURL(selectedFile.file!));
+      selectedFile.file! && URL.revokeObjectURL(URL.createObjectURL(selectedFile.file!));
     };
   }, []);
   const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +48,7 @@ export default function Profile() {
   };
   const resetImage = () => {
     fileRef.current!.value = '';
-    setFile((prevState) => ({
+    setFile(prevState => ({
       url: profile.profile_img ? profile.profile_img : prevState.url,
       file: null,
     }));
@@ -63,7 +63,7 @@ export default function Profile() {
     }
   };
   const deleteImgFromUI = () => {
-    setFile((fileState) => ({ ...fileState, url: '' }));
+    setFile(fileState => ({ ...fileState, url: '' }));
     if (fileRef.current) {
       fileRef.current.value = '';
     }
@@ -98,14 +98,15 @@ export default function Profile() {
 
       <form
         ref={formRef}
-        onSubmit={async (event) => {
+        onSubmit={async event => {
           await updateProfilePic(
             event,
             selectedFile,
             profile.uuid!,
             setError,
             setFile,
-            Boolean(profile.profile_img)
+            Boolean(profile.profile_img),
+            updateProfile
           );
           setPopup(false);
           togglePortalEffect();
