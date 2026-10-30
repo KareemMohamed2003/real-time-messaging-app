@@ -1,10 +1,5 @@
-<<<<<<< Updated upstream
-import { NextFunction, Request, Response } from "express";
-import { verifyToken } from "../lib/auth/auth.js";
-=======
 import { NextFunction, Request, Response } from 'express';
 import { verifyToken } from '../auth/auth.js';
->>>>>>> Stashed changes
 
 interface IRequest extends Request {
   token?: {};

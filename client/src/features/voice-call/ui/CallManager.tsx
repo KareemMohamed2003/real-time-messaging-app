@@ -1,40 +1,27 @@
 import FriendProfileHeader from '@/entities/friends/ui/FriendProfileHeader';
-import PrivateVoiceCall from './PrivateVoiceCall';
-import OutGoingCall from './OutGoingCall';
-import { TCallState } from '@/app/store/store.types';
+import VoiceCallHeaderState from './VoiceCallHeaderState';
+import { useCallDock } from './CallDockContext';
+import { useUserStore } from '@/app/store/use-user-store';
+
 interface props {
   friendId: string;
   friendName: string;
   profile_img: string;
-  callState: TCallState;
 }
-export default function CallManager({ friendId, friendName, profile_img, callState }: props) {
-  switch (callState) {
-    case 'ACCEPTED':
-      return <PrivateVoiceCall />;
-    case 'REJECTED':
-      return (
-        <FriendProfileHeader
-          friendId={friendId}
-          friendName={friendName}
-          profile_img={profile_img}
-        />
-      );
-    case 'OUT-GOING':
-      return (
-        <OutGoingCall
-          friendId={friendId}
-          friendName={friendName}
-          friend_profile_img={profile_img}
-        />
-      );
-    default:
-      return (
-        <FriendProfileHeader
-          friendId={friendId}
-          friendName={friendName}
-          profile_img={profile_img}
-        />
-      );
+
+export default function CallManager({ friendId, friendName, profile_img }: props) {
+  const { audioCall } = useUserStore((state) => state);
+  const { minimized } = useCallDock();
+
+  const isRinging = audioCall.callState === 'OUT-GOING';
+  const isConnected = audioCall.callState === 'ACCEPTED';
+
+  // While the call is docked (minimized, or the person navigated away and
+  // hasn't expanded it again), the header goes back to the friend's normal
+  // idle state — the mini bar is the only call UI visible until expanded.
+  if ((isRinging || isConnected)) {
+    return <VoiceCallHeaderState ringing={isRinging} />;
   }
+
+  return <FriendProfileHeader friendId={friendId} friendName={friendName} profile_img={profile_img} />;
 }

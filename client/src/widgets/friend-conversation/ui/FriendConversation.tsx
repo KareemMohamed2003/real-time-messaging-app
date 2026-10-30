@@ -1,5 +1,4 @@
 'use client';
-import { userStoreContext, useUserStore } from '@/app/store/use-user-store';
 import UseSuspenseFriendsQuery from '@/entities/friends/api/useSuspenseFriendsQuery';
 import CallManager from '@/features/voice-call/ui/CallManager';
 import PrivateChatComponent from '@/shared/components/PrivateChatComponent';
@@ -14,7 +13,6 @@ interface props {
 export default function FriendConversation({ currentUserUUID, friendUUID }: props) {
   const { friends } = UseSuspenseFriendsQuery();
   const { username, profile_img } = getFriendSocketId(friendUUID, friends?.all);
-  const { audioCall } = useUserStore(state => state);
 
   return (
     <Stack display={'flex'} height={'100%'} width={'100%'}>
@@ -22,7 +20,6 @@ export default function FriendConversation({ currentUserUUID, friendUUID }: prop
         friendName={username}
         friendId={friendUUID}
         profile_img={profile_img}
-        callState={audioCall.callState}
       />
       <Suspense fallback={<DmConversationSkeleton />}>
         <PrivateChatComponent

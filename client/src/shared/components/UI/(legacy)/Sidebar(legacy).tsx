@@ -1,4 +1,4 @@
-import PrivateVoiceCall from '@/features/voice-call/ui/PrivateVoiceCall';
+import PrivateVoiceCall from '@/features/voice-call/ui/legacy/PrivateVoiceCall';
 import { useRouter } from 'next/navigation';
 import { Avatar, Stack, Typography, Box } from '@mui/material';
 import { deepOrange } from '@mui/material/colors';

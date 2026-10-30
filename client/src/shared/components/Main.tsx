@@ -1,26 +1,18 @@
 import React, { ReactNode, useContext, useEffect } from 'react';
 import { initSocket } from '@/shared/lib/socket';
 import { Stack, Box } from '@mui/material';
-import { userStoreContext, useUserStore } from '@/app/store/use-user-store';
-import Sidebar from '@/shared/components/UI/Sidebar';
+import { useUserStore } from '@/app/store/use-user-store';import Sidebar from '@/shared/components/UI/Sidebar';
 import SessionMonitorWrapper from '@/features/authentication/ui/SessionMonitorWrapper';
 import NotificationManager from './notifications/NotificationsManager';
 import usePrivateCallService from '../hooks/usePrivateCallService';
-<<<<<<< Updated upstream
-=======
 import { CallDockProvider } from '@/features/voice-call/ui/CallDockContext';
 import GlobalMiniCallBar from '@/features/voice-call/ui/GlobalMiniCallBar';
 import IncomingCallModal from '@/features/voice-call/ui/IncomingCallModal';
->>>>>>> Stashed changes
 export default function Main({ children }: { children: ReactNode }) {
   const { profile, removePeerListeners, audioCall } = useUserStore(state => state);
   const { username, id, uuid, profile_img } = profile;
   const storeContext = useContext(userStoreContext);
-<<<<<<< Updated upstream
-  if (!storeContext) throw new Error('Main must be used within UserStoreProvider');
-=======
   if (!storeContext) throw new Error('store must be used within UserStoreProvider');
->>>>>>> Stashed changes
   const service = usePrivateCallService();
 
   useEffect(() => {

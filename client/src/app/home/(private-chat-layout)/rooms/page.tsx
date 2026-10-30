@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Box, InputAdornment, Modal, Typography } from '@mui/material';
+import { Box, InputAdornment,  Typography } from '@mui/material';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { useUserStore } from '@/app/store/use-user-store';

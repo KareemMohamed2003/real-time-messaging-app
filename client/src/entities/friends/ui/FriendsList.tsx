@@ -41,7 +41,8 @@ export default function FriendsList({ selectedList, friends, isLoading }: Friend
         console.log(friendUUID);
         return (
           <Box
-            key={friendUUID}
+
+          key={friendUUID}
             onClick={() => {
               if (friend.request_status === 'ACCEPTED' || friend?.is_online) {
                 router.push(AppRoutes.PRIVATE_CHAT_ROUTE(friendUUID));

@@ -1,6 +1,5 @@
 import { Avatar, Box, IconButton, Tooltip, Typography } from '@mui/material';
 import usePrivateCallService from '@/shared/hooks/usePrivateCallService';
-import { useUserStore } from '@/app/store/use-user-store';
 import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
 
 interface props {
@@ -69,7 +68,7 @@ export default function FriendProfileHeader({
       </Box>
 
       <Tooltip title="Voice call">
-        <IconButton onClick={() => makeCall(friendId, profile_img)}>
+        <IconButton onClick={() => makeCall(friendId, profile_img,friendName)}>
           <CallOutlinedIcon sx={{ fontSize: 19 }} />
         </IconButton>
       </Tooltip>

@@ -1,6 +1,4 @@
 'use client';
-
-import PrivateVoiceCall from '@/features/voice-call/ui/PrivateVoiceCall';
 import { useRouter } from 'next/navigation';
 import { Avatar, Stack, Typography, Box } from '@mui/material';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
@@ -12,7 +10,7 @@ import { primaryNavItems } from './nav-items';
 export default function Sidebar() {
   const { PROFILE_ROUTE } = AppRoutes;
   const router = useRouter();
-  const { profile, audioCall } = useUserStore((state) => state);
+  const { profile } = useUserStore((state) => state);
 
   return (
     <Stack
@@ -63,7 +61,6 @@ export default function Sidebar() {
         </Typography>
       )}
 
-      {audioCall.callState === 'ACCEPTED' && <PrivateVoiceCall />}
     </Stack>
   );
 }

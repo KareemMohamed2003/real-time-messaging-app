@@ -42,7 +42,7 @@ export default function ChannelsSettingsSection({ roomUUID }: ChannelsSettingsSe
               roomUUID={roomUUID}
               name={channel.channelName}
               type="TEXT"
-              canDelete
+              canDelete={textChannels?.length > 1}
             />
           ))}
         </>

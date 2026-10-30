@@ -1,6 +1,5 @@
 'use client';
 import { Avatar, Box, Typography, alpha } from '@mui/material';
-import type { Theme } from '@mui/material/styles';
 import { getAvatarGradient, getInitials } from '@/shared/lib/avatar';
 export type PresenceStatus = 'online' | 'offline' | 'away';
 

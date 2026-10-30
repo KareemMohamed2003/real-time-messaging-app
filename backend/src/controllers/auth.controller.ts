@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { signInUser, registerUser } from "../models/model.users.ts";
-import { generateEncryptedJwt } from "../lib/auth/auth.js";
+import { generateEncryptedJwt } from "../auth/auth.js";
 import { randomId } from "../lib/helpers.ts";
 <<<<<<< Updated upstream
 import { AuthRequest } from "./db.controller.ts";

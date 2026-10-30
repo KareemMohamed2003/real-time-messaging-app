@@ -1,11 +1,3 @@
-<<<<<<< Updated upstream
-import { prisma } from "../prisma/prisma.ts";
-import { ChannelType } from "@prisma/client";
-import { createChannel } from "./model.channels.ts";
-export const createRoom = async (userId: string, name: string) => {
-  const newRoom = await prisma.rooms.create({
-    data: { roomName: name, ownerId: userId },
-=======
 import { prisma } from '../prisma/prisma.ts';
 import { ChannelType } from '@prisma/client';
 import { createChannel } from './model.channels.ts';
@@ -14,20 +6,15 @@ import { createRoomPayload } from '../controllers/controllers.types.ts';
 export const createRoom = async (payload: createRoomPayload) => {
   const newRoom = await prisma.rooms.create({
     data: { ...payload},
->>>>>>> Stashed changes
   });
   await prisma.roomMember.create({
     data: {
-      userId,
-      role: "OWNER",
+      userId: payload.ownerId!,
+      role: 'OWNER',
       roomUUID: newRoom.roomUUID,
     },
   });
-  const defaultChannel = await createChannel(
-    ChannelType.TEXT,
-    "default",
-    newRoom.roomUUID,
-  );
+  const defaultChannel = await createChannel(ChannelType.TEXT, 'default', newRoom.roomUUID);
   console.log(newRoom);
   return newRoom;
 };
@@ -50,9 +37,9 @@ export const getUserJoinedRooms = async (userId: string) => {
       },
     },
   });
-  const userRooms = joinedRooms.map((joinedRoom) => ({
+  const userRooms = joinedRooms.map(({ members, ...joinedRoom }) => ({
+    role: members[0].role,
     ...joinedRoom,
-    role: joinedRoom.members[0].role,
   }));
 
   console.log(joinedRooms);
@@ -68,14 +55,10 @@ export const deleteRoom = async (uuid: string, roomUUID: string) => {
   });
 };
 
-export const updateRoomName = async (
-  uuid: string,
-  roomUUID: string,
-  newName: string,
-) => {
+export const updateRoom = async (uuid: string, roomUUID: string, payload: Partial<Rooms>) => {
   return prisma.rooms.update({
     data: {
-      roomName: newName,
+      ...payload,
     },
     where: {
       roomUUID: roomUUID,
