@@ -6,7 +6,7 @@ import {
   updateMessageContent,
   getRecentDMConversations,
 } from '../models/model.messages';
-import { AuthRequest } from './types';
+import { AuthRequest } from './controllers.types';
 import { DEFAULT_MESSAGE_INCLUDE } from '../models/model.messages';
 export const getPrivateMessagesAction = async (req: AuthRequest, res: Response) => {
   try {

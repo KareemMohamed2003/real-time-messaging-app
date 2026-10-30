@@ -8,7 +8,7 @@ import { Readable } from "stream";
 import cloudinary from "../lib/cloudinary/cloudinary.ts";
 import { deleteCloudinaryImage } from "../lib/cloudinary/cloudinary.ts";
 import { handleDbError } from "../lib/helpers.ts";
-import { AuthRequest } from "./types.ts";
+import { AuthRequest } from "./controllers.types.ts";
 
 export const getUserAction = async (req: AuthRequest, res: Response) => {
   try {

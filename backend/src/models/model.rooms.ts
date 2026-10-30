@@ -2,10 +2,10 @@ import { prisma } from '../prisma/prisma.ts';
 import { ChannelType } from '@prisma/client';
 import { createChannel } from './model.channels.ts';
 import { Rooms } from '@prisma/client';
-import { createRoomPayload } from '../controllers/types.ts';
+import { createRoomPayload } from '../controllers/controllers.types.ts';
 export const createRoom = async (payload: createRoomPayload) => {
   const newRoom = await prisma.rooms.create({
-    data: { ...payload },
+    data: { ...payload},
   });
   await prisma.roomMember.create({
     data: {

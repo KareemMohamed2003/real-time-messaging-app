@@ -8,8 +8,8 @@ import { useUserStore } from '@/app/store/use-user-store';
 
 export default function useUserLoadedStore() {
   const { setProfile } = useUserStore(state => state);
-  const [isUserStateInit, setInit] = useState<boolean>(false);
-  const query = useQuery({
+
+  const { data, isLoading } = useQuery({
     queryKey: userKeys.profile,
     queryFn: getUserQuery,
     staleTime: Infinity,
@@ -17,15 +17,13 @@ export default function useUserLoadedStore() {
   });
 
   useEffect(() => {
-    if (query.data) {
-      console.log(query.data);
-      const data = query.data;
+    if (data) {
+      console.log(data);
       setProfile(data);
-      setInit(true);
     }
-  }, [query.data]);
+  }, [data]);
 
   return {
-    isUserStateInit,
+    isLoading,
   };
 }

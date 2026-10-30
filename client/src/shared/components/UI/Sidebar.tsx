@@ -61,7 +61,27 @@ export default function Sidebar() {
         </Typography>
       )}
 
-
     </Stack>
   );
 }
+
+// -----------------------------------------------------------------------
+// NOTE — background gradient intentionally NOT painted here.
+// The reference prototype's own CSS comment explains why: rail + content
+// must share ONE gradient canvas, otherwise two adjacent panels end up
+// with two different glows and a visible seam appears between them.
+// Apply `theme.gradients.shell` once, on the layout wrapper that contains
+// BOTH <Sidebar /> and the page content, e.g.:
+//
+//   <Box sx={(theme) => ({
+//     display: 'flex', flexDirection: 'column', height: '100%',
+//   })}>
+//     <Box sx={{ display: 'flex', flex: 1, minHeight: 0 }}>
+//       <Sidebar />
+//       <Box sx={{ flex: 1, minWidth: 0 }}>{children}</Box>
+//     </Box>
+//     <BottomNav />
+//   </Box>
+//
+// with `backgroundImage: theme.gradients.shell` on the outer Box.
+// -----------------------------------------------------------------------

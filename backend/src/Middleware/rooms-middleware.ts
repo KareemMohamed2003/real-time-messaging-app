@@ -1,4 +1,6 @@
-import { AuthRequest } from '../controllers/types';
+
+import { AuthRequest } from '../controllers/controllers.types';
+
 import { NextFunction, Request, Response } from 'express';
 import { prisma } from '../prisma/prisma';
 import { AuthorizationError } from '../prisma/prismaHandlers/AppError';

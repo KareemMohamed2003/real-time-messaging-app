@@ -8,7 +8,7 @@ import {
 } from '../models/model.channels';
 
 import { Response } from 'express';
-import { AuthRequest } from './types';
+import { AuthRequest } from './controllers.types';
 import { DEFAULT_MESSAGE_INCLUDE } from '../models/model.messages';
 // channels
 export const getRoomChannelsAction = async (req: AuthRequest, res: Response) => {

@@ -1,20 +1,18 @@
 'use client';
-import {  ReactNode, useRef } from 'react';
+import { ReactNode, useState } from 'react';
 import { createUserStore } from './user-store';
 import { userStoreContext } from './use-user-store';
-export type userStoreApi = ReturnType<typeof createUserStore>;
+import { userStoreApi } from './store.types';
+
 interface props {
   children: ReactNode;
 }
 
 export default function UserStoreProvider({ children }: props) {
-  const storeRef = useRef<userStoreApi>();
-  if (!storeRef.current) {
-    storeRef.current = createUserStore();
-  }
+  const [store] = useState<userStoreApi>(() => createUserStore());
   return (
     <>
-      <userStoreContext.Provider value={storeRef.current}>{children}</userStoreContext.Provider>
+      <userStoreContext.Provider value={store}>{children}</userStoreContext.Provider>
     </>
   );
 }

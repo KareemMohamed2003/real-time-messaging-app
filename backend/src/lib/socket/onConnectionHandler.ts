@@ -1,20 +1,14 @@
-import { DefaultEventsMap, Server } from 'socket.io';
-import { createRoomMessage, DEFAULT_MESSAGE_INCLUDE } from '../../models/model.messages';
-import { updatedConnectionStatus, findOnlineFriends } from '../db';
-import { ISocket } from './socket';
-import { onPrivateMessage, onVoiceCall, onVoiceCallAnswer } from './socketHandlers';
-import { safeAckHandler } from '../helpers';
-import { SOCKET_EVENTS } from '../constants';
-const {
-  PRIVATE_MESSAGE,
-  CHANNEL_MESSAGE,
-  CHANNEL_LEAVE,
-  CHANNEL_JOIN,
-  NEW_ICE_CANDIDATE,
-  PRIVATE_VOICE_CALL,
-  PRIVATE_VOICE_CALL_ANSWER,
-  ONLINE_FRIENDS,
-} = SOCKET_EVENTS;
+import { DefaultEventsMap, Server } from "socket.io";
+import { createRoomMessage } from "../../models/model.messages";
+import { updatedConnectionStatus, findOnlineFriends } from "../db";
+import { ISocket } from "./socket";
+import {
+  onPrivateMessage,
+  onVoiceCall,
+  onVoiceCallAnswer,
+} from "./socketHandlers";
+import { safeAckHandler } from "../helpers";
+
 export const onConnection = async (
   io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
   socket: ISocket,
@@ -22,15 +16,12 @@ export const onConnection = async (
 ) => {
   const socketId = socket.socketId!;
   socket.join(socketId);
-  socket.on('disconnect', async reason => {
-    console.log('disconnected event', reason);
+  socket.on("disconnect", async (reason) => {
+    console.log("disconnected event", reason);
     updatedConnectionStatus(socket.sessionId!, false);
-    // const matchingSockets = await io.in(socket.socketId!).fetchSockets();
-    // console.log("disconnect event ,  matchingSockets", matchingSockets);
   });
   updatedConnectionStatus(socket.sessionId!, true);
   socket.on(PRIVATE_MESSAGE, (message, callback) => onPrivateMessage(socket, message, callback));
- 
 
   socket.on(ONLINE_FRIENDS, async friends => {
     const onlineFriends = await findOnlineFriends(friends);
@@ -55,7 +46,7 @@ export const onConnection = async (
 
   socket.on(
     CHANNEL_MESSAGE,
-    safeAckHandler(async (message, senderUUID, channelId, callback) => {
+    safeAsyncAckHandler(async (message, senderUUID, channelId, callback) => {
       if (!channelId || !message) {
         if (callback) callback({ sent: false, error: 'Bad Request' });
         return;
@@ -76,12 +67,19 @@ export const onConnection = async (
 
   //------------------------------------------------ audio call via plainWebRtc-----------------------
 
-  socket.on(PRIVATE_VOICE_CALL, message => {
-    onVoiceCall(message, socket, io, pendingCalls);
-  });
-  socket.on(PRIVATE_VOICE_CALL_ANSWER, message => {
-    onVoiceCallAnswer(message, socket, pendingCalls);
-  });
+
+  socket.on(PRIVATE_VOICE_CALL, m => onVoiceCall(m, socket, calls));
+  socket.on(PRIVATE_VOICE_CALL_ANSWER, m => onVoiceCallAnswer(m, socket, calls));
+
+  // old code handlers
+
+  // socket.on(PRIVATE_VOICE_CALL, message => {
+  //   onVoiceCall(message, socket, io, pendingCalls);
+  // });
+
+  // socket.on(PRIVATE_VOICE_CALL_ANSWER, message => {
+  //   onVoiceCallAnswer(message, socket, pendingCalls);
+  // });
 
   socket.on(NEW_ICE_CANDIDATE, ({ to, candidate }) => {
     console.log('new-icecandidate event', { to, candidate });

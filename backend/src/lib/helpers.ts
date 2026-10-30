@@ -1,14 +1,11 @@
 import crypto from 'crypto';
 import { deleteExpiredUsersSessions } from './db';
-import { Server } from 'socket.io';
-import { ISocket } from './sockets/socket';
 import { AppError } from '../prisma/prismaHandlers/AppError';
 import { handlePrismaError } from '../prisma/prismaHandlers/PrismaErrorHandlers';
 import { Response } from 'express';
-import { Prisma, Rooms } from '@prisma/client';
-import { SOCKET_EVENTS } from './constants';
+import { Prisma } from '@prisma/client';
 import { uploadImageToCloudinary } from './cloudinary/cloudinary';
-import { createRoomPayload } from '../controllers/types';
+import { createRoomPayload } from '../controllers/controllers.types';
 
 export interface FlattenedMessage {
   id: number;
@@ -23,65 +20,13 @@ export interface FlattenedMessage {
 type MessageWithUser = Prisma.MessagesGetPayload<{
   include: { user: { select: { profile_img: true; username: true } } };
 }>;
-const { PRIVATE_VOICE_CALL_ANSWER, PRIVATE_VOICE_CALL } = SOCKET_EVENTS;
+
 export const randomId = () => crypto.randomBytes(8).toString('hex');
 export const checkSessionExpiry = () => {
   const interval = setInterval(() => {
     deleteExpiredUsersSessions();
   }, 1000);
   return interval;
-};
-export const resendPendingCall = (
-  pendingCalls: Map<string, { to: string }>,
-  io: Server,
-  message: any,
-  socketId: string,
-  socket: ISocket
-) => {
-  const { to, profile_img, name } = message;
-  let pendingCallInterval: NodeJS.Timeout;
-  let activeCallTimer = setTimeout(() => {
-    const pendingCall = pendingCalls.get(socketId);
-    if (pendingCall) {
-      socket.to(to).emit(PRIVATE_VOICE_CALL_ANSWER, {
-        to: to,
-        type: 'cancelled',
-        callerID: socketId,
-      });
-      io.to(socketId).emit(PRIVATE_VOICE_CALL_ANSWER, {
-        type: 'rejected',
-      });
-      pendingCalls.delete(socketId);
-      clearInterval(pendingCallInterval);
-    }
-  }, 20000);
-  pendingCallInterval = setInterval(() => {
-    if (!pendingCalls.get(socketId)) return clearTimeout(activeCallTimer);
-    const calleeSocket = Array.from(io.sockets.sockets.values()).find(
-      (socket: ISocket) => socket.socketId == to
-    );
-    calleeSocket?.emit(PRIVATE_VOICE_CALL, {
-      callerInfo: { profile_img, callerName: name, callerID: socketId },
-    });
-  }, 3500);
-};
-type AckCallback = (response: any) => void;
-type SocketHandler<Args extends any[]> = (...args: [...Args, AckCallback?]) => Promise<void> | void;
-export const safeAckHandler = (handler: SocketHandler<any>) => {
-  return async (...args: unknown[]) => {
-    const callback = args[args.length - 1];
-    const hasCallback = typeof callback === 'function';
-    const actualArgs = hasCallback ? args.slice(0, -1) : args;
-
-    try {
-      handler(...actualArgs, callback);
-    } catch (error) {
-      console.error('socket Error captured', error);
-      if (hasCallback) {
-        callback({ sent: false, error: 'internal error' });
-      }
-    }
-  };
 };
 
 export function sendApiError(res: Response, appError: AppError) {

@@ -1,22 +1,23 @@
 import { io } from 'socket.io-client';
 import { serverURL, SOCKET_EVENTS } from './constants';
-import { zustandStore } from '@/app/store/user-store';
+import { userStoreApi } from '@/app/store/store.types';
 export const socketClient = io(serverURL, {
   autoConnect: false,
   reconnection: true,
   withCredentials: true,
 });
-const {
-  PRIVATE_VOICE_CALL_ANSWER,
-  PRIVATE_VOICE_CALL,
-  PRIVATE_MESSAGE,
-  CHANNEL_LEAVE,
-  CHANNEL_JOIN,
-  ONLINE_FRIENDS,
-} = SOCKET_EVENTS;
+const { CHANNEL_LEAVE, CHANNEL_JOIN, ONLINE_FRIENDS } = SOCKET_EVENTS;
 
-export const initSocket = (username: string, userId: number, uuid: string, profile_img: string) => {
+export const initSocket = (
+  username: string,
+  userId: number,
+  uuid: string,
+  profile_img: string,
+  userStore: userStoreApi
+) => {
+  console.log(`uuid${uuid}`);
   const socket_session = JSON.parse(localStorage.getItem('user_socket_session')!);
+  const userStoreState = () => userStore.getState();
   socketClient.auth = {
     username,
     userId,
@@ -26,23 +27,23 @@ export const initSocket = (username: string, userId: number, uuid: string, profi
     uuid,
   };
   socketClient.connect();
-  // socketClient.on(PRIVATE_MESSAGE, (message, ack) => {
-  //   console.log('on private message handler message', message);
-  //   ack({ status: 'delieverd' });
-  //   // update tanstack cache
-  //   zustandStore.getState().updateMessages(message);
-  // });
+
   socketClient.on('connect', () => {
-    // console.log('socketClient is connected UUID : ', socketClient);
+    console.log('socketClient is connected UUID : ', socketClient);
   });
+
+  socketClient.onAny((eventName, ...args) => {
+    console.log(`Incoming [${eventName}]:`, args);
+  });
+
   socketClient.on('disconnect', reason => {
+    // if (reason === 'io server disconnect') {
+    //   removeSocketListeners();
+    // }
     // we  may need to delete user sessions when the user disconnects
     // idk if that is necessary we need to research that later on .
-    console.log(socketClient.id); //  prints undefined when socket disconnects
     console.log('disconnect handler');
     console.log(reason);
-    // const store = zustandStore.getState();
-    // cancelCall(store.audioCall.friendId, store.profile.uuid!);
   });
 
   socketClient.on('connect_error', err => {
@@ -53,13 +54,7 @@ export const initSocket = (username: string, userId: number, uuid: string, profi
   // maybe this shouldbe somewhere else somewhere we can use the useUserStore hook
   socketClient.on(ONLINE_FRIENDS, onlineFriends => {
     console.log('online frieds : ', onlineFriends);
-    zustandStore.getState().setOnlineFriends(onlineFriends);
-
-    // we may need mutliple events when it comes to user friends a
-    //  user can get connected or disconnected we need to handle that in our state
-    // we will either create a user:connected , user:disconnected events + a friend disocnnected ,
-    // connected events  or just create the events for the user
-    //we may not need this event anyways
+    userStoreState().setOnlineFriends(onlineFriends);
   });
 
   // rooms channel events
@@ -71,3 +66,5 @@ export const leaveChannel = (channelId: number) => {
 export const joinChannel = (channelId: number) => {
   socketClient.emit(CHANNEL_JOIN, channelId);
 };
+
+export const removeSocketListeners = () => socketClient.removeAllListeners();

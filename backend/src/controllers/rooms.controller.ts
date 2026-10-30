@@ -1,14 +1,15 @@
 import { handleDbError, handleRoomFileUpload } from '../lib/helpers';
 import { addNewRoomMembers, deleteRoomMember, getRoomMembers } from '../models/model.RoomMember';
 import { createRoom, deleteRoom, getUserJoinedRooms, updateRoom } from '../models/model.rooms';
-import { AuthRequest } from './types';
+import { AuthRequest } from './controllers.types';
 import { Response } from 'express';
 
 export const createRoomAction = async (req: AuthRequest, res: Response) => {
   try {
     const imageFile = req?.file!;
-    const { name, userId } = req.body;
-    console.log(name, userId);
+    const { name, } = req.body;
+    const userId=req.token?.uuid!
+    console.log(name);
     const roomPayload = await handleRoomFileUpload(imageFile, name, userId);
     const newRoom = await createRoom(roomPayload);
     console.log('new room name ', name);

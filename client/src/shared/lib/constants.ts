@@ -38,3 +38,8 @@ export const SOCKET_EVENTS = {
   PRIVATE_VOICE_CALL_ANSWER: 'VoiceCall:answer',
   ONLINE_FRIENDS: 'friends:online',
 } as const;
+
+
+export const RTCConfiguration = {
+  iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }],
+};

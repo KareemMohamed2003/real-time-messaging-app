@@ -21,7 +21,6 @@ export default function FriendConversation({ currentUserUUID, friendUUID }: prop
         friendId={friendUUID}
         profile_img={profile_img}
       />
-
       <Suspense fallback={<DmConversationSkeleton />}>
         <PrivateChatComponent
           friendName={username}

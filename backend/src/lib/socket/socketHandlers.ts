@@ -1,11 +1,14 @@
 import { DefaultEventsMap, Server } from 'socket.io';
 import { createMessage, DEFAULT_MESSAGE_INCLUDE } from '../../models/model.messages';
-import { resendPendingCall, safeAckHandler } from '../helpers';
 import { ISocket } from './socket';
 import { SOCKET_EVENTS } from '../constants';
+import { safeAsyncAckHandler, resendPendingCall } from './socket.helpers';
 
-const { PRIVATE_MESSAGE, PRIVATE_VOICE_CALL, PRIVATE_VOICE_CALL_ANSWER } = SOCKET_EVENTS;
-export const onVoiceCallAnswer = (message: any, socket: ISocket, pendingCalls: Map<any, any>) => {
+export const onVoiceCallAnswer = (
+  message: any,
+  socket: ISocket,
+  pendingCalls: Map<any, any>,
+) => {
   try {
     pendingCalls.delete(message.callerID);
     if (message.type == 'offer') {
@@ -38,7 +41,7 @@ export const onVoiceCallAnswer = (message: any, socket: ISocket, pendingCalls: M
   }
 };
 
-export const onPrivateMessage = safeAckHandler(async (socket: ISocket, message: any, callback) => {
+export const onPrivateMessage = safeAsyncAckHandler(async (socket: ISocket, message: any, callback) => {
   const to = message.to;
   const content = message.content;
   const from = message.from;
@@ -59,8 +62,10 @@ export const onVoiceCall = async (
   pendingCalls.set(socket.socketId, { to, profile_img, name });
   const calleeSocket = connectedSocketsArr.find((el: any) => el.socketId === to);
   if (!calleeSocket) {
+    console.log('callSocket not found resorting to resendPendingCall()');
     return resendPendingCall(pendingCalls, io, message, socket.socketId!, socket);
   }
+  // is this necessary  think it should deleted becuase we are invoking the resendPendingCall already so no need to calleeSocket.emit .. 
   calleeSocket!.emit(PRIVATE_VOICE_CALL, {
     callerInfo: { profile_img, callerName: name, callerID: socket.socketId },
   });
