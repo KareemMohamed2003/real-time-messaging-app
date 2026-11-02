@@ -8,6 +8,7 @@ import {
   delete_message_URL,
   get_channels_messages_URL,
   get_channels_URL,
+  get_recent_conversations_URL,
   get_roomMembers_URL,
   get_user_rooms_url,
   serverURL,
@@ -15,19 +16,9 @@ import {
   user_friends_URL,
   userProfileURL,
 } from '@/shared/lib/constants';
-import { requestAborter } from '@/shared/lib/utils';
 import { IRoomMember } from '@/shared/types/api.types';
+import { requestAborter } from './client';
 
-
-export const queryHandler =()=>{
-  //method ,
-  // default headers ,custom headers if required 
-  // url
-  /// should use custom error classes .
-  // cookie header if required for server side fetching 
-  // aborter property if required 
-
-} 
 const jsonHeaders = {
   'Content-Type': 'application/json',
 };
@@ -44,13 +35,13 @@ export const getUserQuery = async () => {
   return userData;
 };
 
-export const getFriendsQuery = async (cookieHeader?: string) => {
+export const getFriendsQuery = async (serverCookieHeader?: string) => {
   const req = await fetch(user_friends_URL, {
     method: 'GET',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+      ...(serverCookieHeader ? { Cookie: serverCookieHeader } : {}),
     },
   });
   const userFriends = await req.json();
@@ -61,16 +52,11 @@ export const getFriendsQuery = async (cookieHeader?: string) => {
   return userFriends;
 };
 
-export const getPrivateMessages = async (
-  uuid: string,
-  friendId: string,
-  messageId: number
-) => {
+export const getPrivateMessages = async (uuid: string, friendId: string, messageId: number) => {
   const req = await fetch(
     `${serverURL}/user/private-messages/${uuid}/${friendId}?messageId=${messageId}`,
-    
+
     {
-      
       credentials: 'include',
       headers: jsonHeaders,
     }
@@ -85,12 +71,11 @@ export const deleteMessageQuery = async (messageId: number) => {
     credentials: 'include',
   });
   if (!req.ok) throw new Error('failed to delete message');
+  const res = await req.json();
+  return res;
 };
 
-export const updateMessageQuery = async (
-  messageId: number,
-  newContent: string
-) => {
+export const updateMessageQuery = async (messageId: number, newContent: string) => {
   console.log(messageId, newContent);
   const req = await fetch(update_message_URL, {
     method: 'POST',
@@ -99,6 +84,8 @@ export const updateMessageQuery = async (
     headers: jsonHeaders,
   });
   if (!req.ok) throw new Error('failed to update Message');
+  const res = await req.json();
+  return res;
 };
 
 export const createRoomQuery = async (name: string, userId: string) => {
@@ -110,7 +97,6 @@ export const createRoomQuery = async (name: string, userId: string) => {
   });
   if (!req.ok) throw new Error(await req.json());
   const res = await req.json();
-  console.log(res);
   return res;
 };
 
@@ -126,11 +112,7 @@ export const getUserJoinedRoomsQuery = async (userId: string) => {
   if (!req.ok) throw new Error(res);
   return res;
 };
-export const createChannelQuery = async (
-  roomUUID: string,
-  type: string,
-  channelName: string
-) => {
+export const createChannelQuery = async (roomUUID: string, type: string, channelName: string) => {
   const req = await fetch(add_Channel_URL, {
     method: 'POST',
     body: JSON.stringify({ roomUUID, type, channelName }),
@@ -174,10 +156,7 @@ export const getChannelMessagesQuery = async (channelId: number) => {
 // Isolated Fetch Query Functions (camelCase)
 // ==========================================
 
-export const sendFriendRequestQuery = async (
-  userId: number,
-  friendName: string
-) => {
+export const sendFriendRequestQuery = async (userId: number, friendName: string) => {
   const req = await fetch(addFriendURL, {
     method: 'POST',
     credentials: 'include',
@@ -196,10 +175,7 @@ export const sendFriendRequestQuery = async (
   return req;
 };
 
-export const acceptFriendRequestPostQuery = async ({
-  senderId,
-  receiverId,
-}: AcceptedRequest) => {
+export const acceptFriendRequestPostQuery = async ({ senderId, receiverId }: AcceptedRequest) => {
   const acceptFriendRequest = await fetch(accept_friend_request_URL, {
     method: 'POST',
     credentials: 'include',
@@ -214,10 +190,7 @@ export const acceptFriendRequestPostQuery = async ({
   }
 };
 
-export const updateProfilePicPostQuery = async (
-  uuid: string,
-  formData: FormData
-) => {
+export const updateProfilePicPostQuery = async (uuid: string, formData: FormData) => {
   return await fetch(`${serverURL}/user/upload_profile_pic/${uuid}`, {
     method: 'POST',
     body: formData,
@@ -255,5 +228,17 @@ export const getRoomMembersQuery = async (roomUUID: string) => {
   const res = await req.json();
   if (!req.ok) throw new Error(res);
   console.log('getRoomMembersQuery', res);
+  return res;
+};
+
+export const getRecentConversations = async () => {
+  const req = await fetch(get_recent_conversations_URL, {
+    method:"GET",
+    credentials: 'include',
+    headers: jsonHeaders,
+  });
+
+  const res = await req.json();
+  if (!req.ok) throw new Error(res);
   return res;
 };

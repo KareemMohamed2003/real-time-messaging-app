@@ -1,46 +1,66 @@
-import { io } from 'socket.io-client';
-import { serverURL } from './constants';
-import { zustandStore } from '@/app/store/user-store';
+import { io, Socket } from 'socket.io-client';
+import { serverURL, SOCKET_EVENTS } from './constants';
+import { TOnlineFriend, userStore, userStoreApi } from '@/app/store/store.types';
+import { privateCallService } from './webrtc/webrtc.types';
+
 export const socketClient = io(serverURL, {
   autoConnect: false,
   reconnection: true,
   withCredentials: true,
 });
-
-export const sendMessage = (
-  content: string,
-  from: string,
-  to?: string,
-  channelId?: number
-) => {
-  socketClient.emit('private message', {
-    to,
-    content,
-    from,
-  });
-  const newMessage = {
-    id: null,
-    message: content,
-    receiverUUID: to,
-    senderUUID: from,
-    isEditing: false,
-    channelId: channelId!,
+const { CHANNEL_LEAVE, CHANNEL_JOIN, ONLINE_FRIENDS } = SOCKET_EVENTS;
+type Listener = { event: string; handler: (...arge: any[]) => void };
+let activeListeners: Listener[] = [];
+const addListener = (event: string, handler: Listener['handler']) => {
+  socketClient.on(event, handler);
+  activeListeners.push({ event, handler });
+};
+let tabId: string | undefined;
+export const getTabId = () => (tabId ??= crypto.randomUUID());
+const onConnect = () => console.log('socket connected', socketClient.id);
+const onDisconnect =
+  (state: () => userStore, callService: privateCallService) =>
+  (reason: Socket.DisconnectReason) => {
+    console.error(reason);
+    if (reason == 'io server disconnect') {
+      const call = state().audioCall;
+      const callId = call.callState ? call.callId : state().callSnapshot?.callId;
+      if (!callId) return;
+      callService.destroyPeerConnection();
+      state().setNotification({ type: 'error', message: 'server timeout' });
+    }
   };
-  // update using tanstack later instead
-  zustandStore.getState().updateMessages(newMessage);
+const onlineFriendsHandler =
+  (userStoreState: () => userStore) => (onlineFriends: TOnlineFriend[]) => {
+    console.log('online friends : ', onlineFriends);
+    userStoreState().setOnlineFriends(onlineFriends);
+  };
+// const
+const onConnectErrorHandler = (err: Error) => console.log('connection error', err);
+const onAnyDev = (eventName: string, ...args: any) => {
+  console.log(`Incoming [${eventName}]:`, args);
 };
 
+const detachBaseHandlers = () => {
+  for (const { event, handler } of activeListeners) {
+    console.log(event, handler);
+    socketClient.off(event, handler);
+  }
+  activeListeners = [];
+  socketClient.offAny(onAnyDev);
+};
 export const initSocket = (
   username: string,
   userId: number,
   uuid: string,
-  profile_img: string
+  profile_img: string,
+  userStore: userStoreApi,
+  callService: privateCallService
 ) => {
-  const store = zustandStore.getState();
-
-  const socket_session = JSON.parse(
-    localStorage.getItem('user_socket_session')!
-  );
+  console.log(`uuid${uuid}`);
+  console.log(`tab Id: ${getTabId()}`);
+  const socket_session = JSON.parse(localStorage.getItem('user_socket_session')!);
+  const userStoreState = () => userStore.getState();
   socketClient.auth = {
     username,
     userId,
@@ -48,59 +68,24 @@ export const initSocket = (
     sessionId: socket_session?.sessionId,
     profile_img: profile_img,
     uuid,
+    tabId: getTabId(),
   };
-  socketClient.connect();
-  socketClient.on('private message', (message, ack) => {
-    console.log('on private message handler message', message);
-    ack({ status: 'delieverd' });
-    zustandStore.getState().updateMessages(message);
-  });
-  socketClient.on('connect', () => {
-    // console.log('socketClient is connected UUID : ', socketClient);
-  });
-  socketClient.on('disconnect', (reason) => {
-    // we  may need to delete user sessions when the user disconnects
-    // idk if that is necessary we need to research that later on .
-    console.log(socketClient.id); //  prints undefined when socket disconnects
-    console.log('disconnect handler');
-    console.log(reason);
-    // const store = zustandStore.getState();
-    // cancelCall(store.audioCall.friendId, store.profile.uuid!);
-  });
 
-  socketClient.on('connect_error', (err) => {
-    if (err) {
-      console.log('socket  Error occured while connecting  : ', err);
-    }
-  });
-  // maybe this shouldbe somewhere else somewhere we can use the useUserStore hook 
-  socketClient.on('friendsSessions', (onlineFriends) => {
-    console.log('friendsSessions : ', onlineFriends);
-    zustandStore.getState().setOnlineFriends(onlineFriends);
- 
-    // we may need mutliple events when it comes to user friends a
-    //  user can get connected or disconnected we need to handle that in our state
-    // we will either create a user:connected , user:disconnected events + a friend disocnnected ,
-    // connected events  or just create the events for the user
-    //we may not need this event anyways
-  });
+  detachBaseHandlers();
+  if (!socketClient.connected) socketClient.connect();
 
-  // rooms channel events
+  addListener('connect', onConnect);
+  addListener('disconnect', onDisconnect(userStoreState, callService));
+  addListener('connect_error', onConnectErrorHandler);
+  addListener(ONLINE_FRIENDS, onlineFriendsHandler(userStoreState));
+  if (process.env.NODE_ENV === 'development') socketClient.onAny(onAnyDev);
+  socketClient.on(ONLINE_FRIENDS, onlineFriendsHandler);
 };
 export const leaveChannel = (channelId: number) => {
-  socketClient.emit('channel:leave', channelId);
+  socketClient.emit(CHANNEL_LEAVE, channelId);
 };
 
 export const joinChannel = (channelId: number) => {
-  socketClient.emit('channel:join', channelId);
+  socketClient.emit(CHANNEL_JOIN, channelId);
 };
-
-// socketClient.on('channel-join:', ({ channelId }) => {
-//   // socket.join(channelId);
-//   // socket.to(socket?.socketId!).emit("channel:join");
-//   // we require an acknowledgement here that the user joined the channel something like `user entered the chat `
-// });
-// socketClient.on('channel:leave', (channelId) => {
-//   // socket.leave(channelId);
-//   // socket.to(socket?.socketId!).emit("channel:leave");
-// });
+export const removeSocketListeners = () => detachBaseHandlers();

@@ -1,6 +1,7 @@
 'use client';
-import Button from '@/shared/components/UI/Button';
-import { Stack } from '@mui/material';
+
+import ErrorState from '@/shared/components/UI/ErrorState';
+import {Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { startTransition } from 'react';
 export default function Error({
@@ -18,9 +19,16 @@ export default function Error({
     });
   };
   return (
-    <Stack alignItems={'center'}>
-      <h2>something went wrong </h2>
-      <Button onClick={handleRetry}>Try again</Button>
-    </Stack>
+    <ErrorState
+      icon={
+        <Typography fontSize={42} lineHeight={1}>
+          🛠️
+
+        </Typography>
+      }
+      title="something went wrong"
+      description="This isn't something on your end."
+      primaryAction={{ label: 'Try again', onClick: handleRetry }}
+    />
   );
 }

@@ -21,9 +21,10 @@ export default function SearchResult({ results, component }: any) {
       bgcolor={'rgb(255,235,235,0.07)'}
       borderRadius={4}
     >
-      <User avatarCss={{ height: 30, width: 30 }} css={{ fontSize: '1rem' }} />
-      <User avatarCss={{ height: 30, width: 30 }} css={{ fontSize: '1rem' }} />
-      <User avatarCss={{ height: 30, width: 30 }} css={{ fontSize: '1rem' }} />
+      <User name='' profilePic=''/>
+      <User name='' profilePic=''/>
+      <User name='' profilePic=''/>
+
     </Stack>
   );
 }

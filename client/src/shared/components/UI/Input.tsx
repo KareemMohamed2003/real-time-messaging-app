@@ -1,49 +1,93 @@
 'use client';
-import { Typography } from '@mui/material';
-import { useRef, forwardRef, SetStateAction, Dispatch, useState } from 'react';
-import { InputHTMLAttributes } from 'react';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  setShowpassword?: Dispatch<SetStateAction<boolean>>;
-  showPassword?: boolean;
+import { forwardRef, useId, useState, InputHTMLAttributes } from 'react';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import ButtonBase from '@mui/material/ButtonBase';
+import Typography from '@mui/material/Typography';
+
+export interface InputProps extends Omit<TextFieldProps, 'ref' | 'variant' | 'type' | 'label'> {
+  label?: string;
+  type?: InputHTMLAttributes<HTMLInputElement>['type'];
+  maxLength?: number;
+  minLength?: number;
 }
+
 const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { showPassword, setShowpassword, ...InputProps },
+  {
+    type = 'text',
+    label,
+    helperText,
+    error,
+    required,
+    maxLength,
+    minLength,
+    id,
+    inputProps,
+    InputProps: inputPropsOverride,
+    ...rest
+  },
   ref
 ) {
-  const [hasPassword, setPassword] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const finalRef = ref ? ref : inputRef;
+  const isPassword = type === 'password';
+  const [visible, setVisible] = useState(false);
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+
+  const passwordToggle = isPassword ? (
+    <InputAdornment position="start">
+      <ButtonBase
+        disableRipple
+        onClick={() => setVisible(v => !v)}
+        sx={{
+          fontSize: 12,
+          fontWeight: 600,
+          color: 'text.secondary',
+          px: 0.5,
+          '&:hover': { color: 'text.primary' },
+        }}
+      >
+        {visible ? 'Hide' : 'Show'}
+      </ButtonBase>
+    </InputAdornment>
+  ) : undefined;
+
   return (
-    <div className="inputWrapper">
-      <input
-        {...InputProps}
-        ref={finalRef}
-        onFocus={(e) =>
-          (e.currentTarget.style.boxShadow = 'rgb(0,114,229) 0px 0px 0px 3px')
-        }
-        onChange={(e) => {
-          setPassword(e.currentTarget.value.length > 0);
-          InputProps.onChange?.(e); // notify React Hook Form
-        }}
-        onBlur={(e) => {
-          e.currentTarget.style.boxShadow = 'none';
-          InputProps.onBlur?.(e); // notify React Hook Form
-        }}
-        type={showPassword ? 'text' : InputProps.type}
-      />
-      {InputProps.type == 'password' && setShowpassword && (
+    <>
+      {label && (
         <Typography
-          style={{ cursor: 'pointer' }}
-          onClick={() => {
-            setShowpassword(!showPassword);
-          }}
-          component="span"
+          component="label"
+          htmlFor={inputId}
+          sx={theme => ({
+            display: 'block',
+            fontSize: 12.5,
+            fontWeight: 600,
+            color: theme.palette.text.secondary,
+            mb: 0.75,
+          })}
         >
-          {showPassword && hasPassword ? 'hide' : 'show'}
+          {label}
+          {required && ' *'}
         </Typography>
       )}
-    </div>
+
+      <TextField
+        {...rest}
+        id={inputId}
+        inputRef={ref}
+        required={required}
+        type={isPassword && visible ? 'text' : type}
+        error={!!error}
+        helperText={helperText}
+        variant="outlined"
+        fullWidth
+        inputProps={{ maxLength, minLength, ...inputProps }}
+        InputProps={{
+          ...inputPropsOverride,
+          endAdornment: passwordToggle ?? inputPropsOverride?.endAdornment,
+        }}
+      />
+    </>
   );
 });
 

@@ -1,16 +1,15 @@
 'use client';
-import { Modal } from '@mui/base';
 import { Box, Stack } from '@mui/material';
 import ChannelChat from './ChannelChat';
 import CreateChannelForm from './CreateChannelForm';
-import ChannelsNav from './ChannelsNav';
+import ChannelsNav from '../../../widgets/channel-nav/ui/ChannelsNav';
+import MessageForm from '../../messages/ui/MessageForm';
+import UseSendChannelMessage from '../api/UseSendChannelMessage';
 import { getRoomChannelsQuery } from '@/shared/api/queries';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import MessageForm from '../../messages/ui/MessageForm';
-import UseSendChannelMessage from '../api/UseSendChannelMessage';
-import Loading from '@/shared/components/UI/loading';
 import { channelKeys } from '@/shared/api/QueryKeys';
+import { ChannelRowSkeleton, RoomConversationSkeleton } from '@/shared/components/UI/Skeletons';
 
 interface props {
   roomUUID: string;
@@ -18,7 +17,6 @@ interface props {
 }
 
 export default function ChannelsSection({ roomUUID, uuid }: props) {
-  console.log('roomUUID', roomUUID);
   const { data, isSuccess, isLoading } = useQuery({
     queryKey: channelKeys.all(roomUUID),
     queryFn: () => getRoomChannelsQuery(roomUUID),
@@ -32,42 +30,50 @@ export default function ChannelsSection({ roomUUID, uuid }: props) {
   const channelId = selectedChannel ? selectedChannel : activeChannel;
   const closeChannelForm = () => toggleChannelForm(false);
   const openChannelForm = () => toggleChannelForm(true);
-  // console.log('isCha')
-  console.log(uuid);
-  console.log(channelId);
-  if (isLoading) return <Loading />;
+
+  if (isLoading) {
+    return (
+      <Box display="flex" height="100%" width="100%" sx={{ overflowY: 'hidden' }}>
+        <Stack
+          flexShrink={0}
+          width={220}
+          height="100%"
+          sx={theme => ({
+            borderRight: `1px solid ${theme.palette.divider}`,
+          })}
+        >
+          <Box
+            height={60}
+            flexShrink={0}
+            sx={theme => ({
+              borderBottom: `1px solid ${theme.palette.divider}`,
+            })}
+          />
+          <Box px={1} py={1.5}>
+            <ChannelRowSkeleton count={3} />
+          </Box>
+        </Stack>
+        <Box flex={1}>
+          <RoomConversationSkeleton />
+        </Box>
+      </Box>
+    );
+  }
+
   return (
-    <Box
-      display={'flex'}
-      height={'100%'}
-      width={'100%'}
-      sx={{ overflowY: 'hidden' }}
-    >
+    <Box display="flex" height="100%" width="100%" sx={{ overflowY: 'hidden' }}>
       <ChannelsNav
         openChannelForm={openChannelForm}
         setChannel={setChannel}
         channels={data}
+        selectedChannelId={channelId}
       />
-
-      <Modal open={isChannelFormOpen} onClose={closeChannelForm}       aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description">
-        <CreateChannelForm
-          roomUUID={roomUUID}
-          closeChannelForm={closeChannelForm}
-        />
-      </Modal>
-      {/* // <Modal open={isChannelFormOpen} onClose={closeChannelForm}>
-        
-      // </Modal> */}
-      {/* Messages container */}
-
-      <Stack maxHeight={'100%'} width={'100%'}>
+      {isChannelFormOpen && (
+        <CreateChannelForm roomUUID={roomUUID} closeChannelForm={closeChannelForm} />
+      )}
+      <Stack maxHeight="100%" width="100%">
         <ChannelChat channelId={channelId} roomUUID={roomUUID} />
-        <MessageForm
-          onSubmit={({ message }) =>
-            sendChannelMessage(message, channelId, uuid)
-          }
-        />
+        <MessageForm onSubmit={({ message }) => sendChannelMessage(message, channelId, uuid)} />
       </Stack>
     </Box>
   );

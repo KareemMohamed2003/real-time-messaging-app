@@ -1,48 +1,66 @@
-import { Box, Stack, Typography } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Box, Drawer, Stack, Typography, IconButton } from '@mui/material';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import User from '@/shared/components/User';
+import useRoomMembers from '../api/useRoomMembers';
+import UseFriendsQuery from '@/entities/friends/api/useSuspenseFriendsQuery';
+import { IRoomMember } from '@/shared/types/api.types';
 
-export default function RoomMembers({ setOpen }: any) {
+interface props {
+  isOpen: boolean;
+  setOpen: (open: boolean) => void;
+  roomUUID: string;
+}
+
+/**
+ * Rebuilt on MUI's Drawer rather than a hand-positioned, blurred Box.
+ * The old version had no backdrop click-to-close, no Escape-key handling,
+ * and no focus trap — Drawer gets all three for free,.
+ */
+export default function RoomMembers({ isOpen, setOpen, roomUUID }: props) {
+  const { friends } = UseFriendsQuery();
+  const { roomMembers } = useRoomMembers(roomUUID, friends?.all);
+  console.log(roomMembers);
+  console.log(friends);
   return (
-    <Stack
-      boxShadow={'6px 25px 27px -25px #000000'}
-      alignSelf={'flex-end'}
-      position={'absolute'}
-      zIndex={10}
-      top={60}
-      right={10}
-      height={'50%'}
-      width={'25%'}
-      p={3}
-      borderRadius={8}
-      sx={{
-        background:
-          'linear-gradient(0deg,rgba(32,35,43,0.17) 0%,rgba(92,104,135,0.17) 100%);',
-        backdropFilter: 'blur(15px)',
-        position: 'absolute',
-      }}
-    >
+    <Drawer anchor="right" open={isOpen} onClose={() => setOpen(false)}>
       <Box
-        alignItems={'center'}
-        justifyContent={'space-between'}
-        display={'flex'}
-        mb={4}
-        flexDirection={'row'}
+        sx={theme => ({
+          width: 320,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: theme.palette.surface.paper,
+        })}
       >
-        <Typography variant="h5" textAlign={'center'} fontWeight={600}>
-          {' '}
-          members
-        </Typography>
+        <Box
+          px={2.5}
+          py={2.25}
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={theme => ({
+            borderBottom: `1px solid ${theme.palette.divider}`,
+          })}
+        >
+          <Typography fontWeight={700} fontSize={15.5}>
+            Members
+          </Typography>
+          <IconButton size="small" onClick={() => setOpen(false)}>
+            <CloseRoundedIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+        </Box>
 
-        <CloseIcon onClick={() => setOpen(false)} sx={{ color: 'white' }} />
+        <Stack px={1.75} py={1.25} gap={3} sx={{ overflowY: 'auto' }} mt={1}>
+          {roomMembers?.map((member: IRoomMember) => (
+            <User
+              key={member.user?.uuid}
+              name={member.user?.username!}
+              profilePic={member.user?.profile_img!}
+              status="away"
+            />
+          ))}
+        </Stack>
       </Box>
-
-      <Stack spacing={4} overflow="auto">
-        <User name="john1" profilePic="" />
-        <User name="john2" profilePic="" />
-        <User name="john3" profilePic="" />
-        <User name="john4" profilePic="" />
-      </Stack>
-    </Stack>
+    </Drawer>
   );
 }

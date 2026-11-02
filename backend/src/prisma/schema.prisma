@@ -8,18 +8,19 @@ datasource db {
 }
 
 model Users {
-  id              Int          @id @default(autoincrement())
-  createdAt       DateTime     @default(now())
-  username        String       @unique
-  email           String       @unique
-  password        String
-  uuid            String       @unique @default(uuid())
-  profile_img     String?
-  status          Int          @default(1) @db.TinyInt // 0 offline // 1 online 
-  messages        Messages[]
-  friendBy        Friends[]    @relation("userAsFriend")
-  friends         Friends[]    @relation("userAsSender")
-  roomMemberships RoomMember[]
+  id               Int          @id @default(autoincrement())
+  createdAt        DateTime     @default(now())
+  username         String       @unique
+  email            String       @unique
+  password         String
+  uuid             String       @unique @default(uuid())
+  profile_img      String?
+  status           Int          @default(1) @db.TinyInt // 0 offline // 1 online 
+  messages         Messages[]   @relation("MessageSender") //  message sender 
+  receivedMessages Messages[]   @relation("MessageReceiver")
+  friendBy         Friends[]    @relation("userAsFriend")
+  friends          Friends[]    @relation("userAsSender")
+  roomMemberships  RoomMember[]
 }
 
 // we can add this model later when we decide if there will be restrications on who can view channels in rooms. 
@@ -85,7 +86,8 @@ model Messages {
   receiverUUID String?
   createdAt    DateTime @default(now())
   message      String
-  user         Users    @relation(fields: [senderUUID], references: [uuid])
+  user         Users    @relation("MessageSender", fields: [senderUUID], references: [uuid]) // message sender field 
+  receiver     Users?   @relation("MessageReceiver", fields: [receiverUUID], references: [uuid]) // receiver field for friend-> friend conversation
   channel      Channel  @relation(fields: [channelId], references: [channelId], onDelete: Cascade)
 }
 
@@ -107,7 +109,7 @@ model Channel {
   type                ChannelType          @default(DIRECT_MESSAGE)
   room                Rooms?               @relation(fields: [roomUUID], references: [roomUUID], onDelete: Cascade)
   messages            Messages[]
-  channelParticipants ChannelParticipant[]
+  channelParticipants ChannelParticipant[] 
 
   // in the future  only specific users will have access to certain channels  
   @@index([type]) // helps when filtering DMs vs room channels(better performance)
@@ -116,7 +118,7 @@ model Channel {
 model Rooms {
   roomName String
   roomUUID String       @unique @default(uuid())
-  icon     Bytes?
+  icon     String?
   ownerId  String
   members  RoomMember[]
   channels Channel[]
@@ -124,6 +126,7 @@ model Rooms {
   @@id([roomName, ownerId])
 }
 
+// consider not storing the `owner` in RoomMember not have to worry about deleting him
 model RoomMember {
   roomUUID String
   userId   String

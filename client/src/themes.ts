@@ -1,148 +1,232 @@
 'use client';
-import { Roboto } from 'next/font/google';
-import { createTheme } from '@mui/material/styles';
 
-const roboto = Roboto({
-  weight: ['300', '400', '500', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-});
+import { createTheme, alpha, type ThemeOptions } from '@mui/material/styles';
 
-export const SURFACE = '#1c1c1f';
-export const SURFACE_RAISED = 'rgba(255,255,255,0.06)';
-export const surfaceHeader = '#21242c';
-export const ACCENT = '#3b7cf6';
-export const ACCENT_HOVER = '#2f66d0';
-export const BORDER = 'rgba(255,255,255,0.12)';
-export const surfaceDialog = '#1a1d24';
-export const mainStyles = {
-  mainGradient:
-    'linear-gradient(360deg, rgba(17,21,25,1) 0%, rgba(35,39,46,1) 100%)',
-  primaryBg:
-    'linear-gradient(360deg, rgba(17,21,25,1) 0%, rgba(35,39,46,1) 100%)',
-  primaryGreen: '#13CB7E',
-  primaryRed: '#A40B0B',
-  // glassBg:"rgba(255,232,232,0.10)",
-  grey: 'rgba(255,255,255,0.07)',
-  mainGrey: '#232323',
-  primaryLight: '  linear-gradient(180deg, #151A1F 0%, #23272e5f 100%);',
-  darkGrey: 'rgba(255, 255, 255, 0.16)',
-  mainBlue:
-    'linear-gradient(0deg, rgba(5,87,163,1) 0%, rgba(47,149,245,1) 100%);',
-};
 
-export const styles = (theme: any) => ({
-  // root: {
-  //     fontSize: 10,
-  //     padding: themes.spacing(1),
-  //     [themes.breakpoints.down('md')]: {
-  //         backgroundColor: themes.palette.secondary.main,
-  //     },
-  //     [themes.breakpoints.up('md')]: {
-  //         backgroundColor: themes.palette.primary.main,
-  //     },
-  // },
+export const tokens = {
+  bg: '#0A0D16',
+  surface: '#141a29',
+  surface2: '#1c2436',
+  surface3: '#262f47',
+  border: '#2b3550',
+  text: '#EDEFF4',
+  textMuted: '#8B93A7',
+  textFaint: '#5B6272',
+  accent: '#3E6FF2',
+  accentHover: '#5A85FF',
+  success: '#34C77B',
+  warning: '#E8A73B',
+  danger: '#EF5350',
+  dangerHover: '#ff6a66',
+  glow: '#131a2e',
+  radius: { sm: 8, md: 12, lg: 18 },
+  fontDisplay: 'var(--font-space-grotesk), "Space Grotesk", sans-serif',
+  fontBody: 'var(--font-inter), "Inter", sans-serif',
+  avatarGradients: [
+    'linear-gradient(135deg,#5C89FF,#7B5CF0)',
+    'linear-gradient(135deg,#06B6D4,#3B82F6)',
+    'linear-gradient(135deg,#8B5CF6,#D946EF)',
+    'linear-gradient(135deg,#6366F1,#06B6D4)',
+  ],
+  // single shared gradient — apply this ONCE on the container that wraps
+  // Sidebar + page content, never per-panel (see Sidebar.tsx comment).
+  shellGlow: 'radial-gradient(circle at 8% 0%, #131a2e, #0A0D16 55%)',
+  // used behind the auth card (login/register)
+  authGlow: 'radial-gradient(circle at 30% 20%, #131a2e, #0A0D16 60%)',
+} as const;
 
-  MuiTypography: {
-    [theme.breakpoints.down('lg')]: {
-      fontSize: 30,
+// ---------------------------------------------------------------------------
+// Module augmentation: makes theme.radius.md, theme.palette.surface.elevated
+// and theme.gradients.* first-class, type-checked, autocompletable members
+// of the Theme object — instead of grabbing untyped values off a plain
+// export like the old `mainStyles`.
+// ---------------------------------------------------------------------------
+declare module '@mui/material/styles' {
+  interface Theme {
+    radius: typeof tokens.radius;
+    gradients: { avatar: readonly string[]; shell: string; auth: string };
+  }
+  interface ThemeOptions {
+    radius?: typeof tokens.radius;
+    gradients?: { avatar?: readonly string[]; shell?: string; auth?: string };
+  }
+  interface Palette {
+    surface: { paper: string; elevated: string; high: string };
+  }
+  interface PaletteOptions {
+    surface?: { paper: string; elevated: string; high: string };
+  }
+}
+
+const themeOptions: ThemeOptions = {
+  palette: {
+    mode: 'dark',
+    background: { default: tokens.bg, paper: tokens.surface },
+    surface: {
+      paper: tokens.surface,
+      elevated: tokens.surface2,
+      high: tokens.surface3,
     },
-    fontSize: 30,
-    h5: {
-      [theme.breakpoints.down('lg')]: {
-        backgroundColor: 'black',
+    divider: tokens.border,
+    text: {
+      primary: tokens.text,
+      secondary: tokens.textMuted,
+      disabled: tokens.textFaint,
+    },
+    primary: {
+      main: tokens.accent,
+      light: tokens.accentHover,
+      contrastText: '#fff',
+    },
+    success: { main: tokens.success, contrastText: '#fff' },
+    warning: { main: tokens.warning, contrastText: '#1a1300' },
+    // the prototype's `--danger` maps onto MUI's built-in `error` palette
+    // slot — there's no separate "danger" concept in MUI, `error` is it.
+    error: {
+      main: tokens.danger,
+      light: tokens.dangerHover,
+      contrastText: '#fff',
+    },
+  },
+  radius: tokens.radius,
+  gradients: {
+    avatar: tokens.avatarGradients,
+    shell: tokens.shellGlow,
+    auth: tokens.authGlow,
+  },
+  shape: { borderRadius: tokens.radius.sm },
+  typography: {
+    fontFamily: tokens.fontBody,
+    h1: { fontFamily: tokens.fontDisplay, fontWeight: 700 },
+    h2: { fontFamily: tokens.fontDisplay, fontWeight: 700 },
+    h3: { fontFamily: tokens.fontDisplay, fontWeight: 700 },
+    h4: { fontFamily: tokens.fontDisplay, fontWeight: 600 },
+    h5: { fontFamily: tokens.fontDisplay, fontWeight: 600 },
+    h6: { fontFamily: tokens.fontDisplay, fontWeight: 600 },
+    button: { fontWeight: 600, textTransform: 'none' },
+    body1: { fontSize: '0.875rem' }, // 14px — prototype's base font-size
+    body2: { fontSize: '0.8125rem' },
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: { backgroundColor: tokens.bg, colorScheme: 'dark' },
+        '::selection': { backgroundColor: tokens.accent, color: '#fff' },
       },
     },
-    background: 'rgba(255,255,255,0.07)',
-  },
-});
-
-const defaultTheme = createTheme({
-  components: {
-    MuiInputBase: {
+    MuiPaper: {
+      defaultProps: { elevation: 0 },
       styleOverrides: {
-        input: {
-          color: 'white',
-          '&::placeholder': {
-            color: '#ffffff',
-            opacity: 0.55,
-          },
+        // MUI's dark mode applies a translucent white overlay per elevation
+        // level by default — the prototype's surfaces are flat solid colors,
+        // so that overlay is switched off here rather than fought per-component.
+        root: {
+          backgroundImage: 'none',
+          border: `1px solid ${tokens.border}`,
         },
       },
     },
-
-    // 2. Global background, borders, and interaction states for Outlined fields
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 600,
+          borderRadius: tokens.radius.sm,
+          boxShadow: 'none',
+          transition: 'background-color .15s, border-color .15s, color .15s',
+          '&:hover': { boxShadow: 'none' },
+          '&:active': { boxShadow: 'none' },
+        },
+        sizeMedium: { padding: '6px 13px', fontSize: 13 },
+        sizeSmall: { padding: '5px 10px', fontSize: 11 },
+      },
+    },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          backgroundColor: SURFACE_RAISED, // Global fallback background color
-          borderRadius: '12px', // Matches your 1.5 multiplier rule layout grid
-
-          // Targets the default static border slot
-          '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: BORDER,
+          backgroundColor: tokens.surface2,
+          borderRadius: tokens.radius.sm,
+          '& fieldset': { borderColor: tokens.border },
+          '&:hover fieldset': { borderColor: tokens.textFaint },
+          '&.Mui-focused fieldset': {
+            borderColor: tokens.accent,
+            borderWidth: 1,
+            boxShadow: `0 0 0 3px ${alpha(tokens.accent, 0.15)}`,
           },
-
-          // Targets the component state on hover interaction layers
-          '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'rgba(255,255,255,0.24)',
-          },
-
-          // Targets active focus tracking states explicitly
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: ACCENT,
-          },
+          '&.Mui-error fieldset': { borderColor: tokens.danger },
+        },
+        input: {
+          padding: '9px 11px',
+          fontSize: 14,
+          // Chrome paints its own background on autofilled/previewed
+          // inputs and ignores a plain `background-color` override — the
+          // only reliable way to stop it is to give it a transition long
+          // enough that the color-swap never visibly completes.
+          '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active':
+            {
+              WebkitBoxShadow: `0 0 0 1000px ${tokens.surface2} inset`,
+              WebkitTextFillColor: tokens.text,
+              caretColor: tokens.text,
+              transition: 'background-color 600000s ease-in-out 0s',
+            },
         },
       },
     },
-    MuiStack: {
+    MuiInputLabel: {
       styleOverrides: {
         root: {
-          // background: "linear-gradient(360deg, rgba(17,21,25,1) 0%, rgba(35,39,46,1) 100%)",
-          '@media (min-width:600px)': {
-            // fontSize: '1.5rem',
-          },
+          fontSize: 12.5,
+          fontWeight: 600,
+          color: tokens.textMuted,
+          position: 'relative',
+          transform: 'none',
+          marginBottom: 6,
+        },
+      },
+    },
+    MuiFormHelperText: {
+      styleOverrides: { root: { fontSize: 12, marginLeft: 0, marginTop: 5 } },
+    },
+    MuiAvatar: {
+      styleOverrides: {
+        root: {
+          background: tokens.avatarGradients[0],
+          fontWeight: 700,
+          fontSize: 13,
+          color:"white"
+        },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          backgroundColor: '#000',
+          color: '#fff',
+          fontSize: 11,
+          padding: '5px 9px',
+          borderRadius: 6,
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: tokens.radius.sm,
+          color: tokens.textMuted,
+          '&:hover': { backgroundColor: tokens.surface2, color: tokens.text },
         },
       },
     },
   },
-  palette: {
-    primary: {
-      main: '#17191C',
-    },
-    error: {
-      main: mainStyles.primaryRed,
-    },
-    text: {
-      // primary: ,
-      secondary: '#1794BB',
-    },
-  },
-  // MuiOutlinedInput: {
-  //   styleOverrides: {
-  //     root: {
-  //       '& .MuiInputBase-input::placeholder': {
-  //         color: '#ffffff',
-  //         opacity: 0.55,
-  //       },
-  //       '& .MuiOutlinedInput-root': {
-  //         bgcolor: SURFACE_RAISED,
-  //         borderRadius: 1.5,
-  //         '& fieldset': { borderColor: BORDER },
-  //         '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.24)' },
-  //         '&.Mui-focused fieldset': { borderColor: ACCENT },
-  //       },
-  //     },
-  //   },
-  // },
-});
-// defaultTheme.typography
-// default breakpoints values
-// xs: 0,
-// sm: 600,
-// md: 900,
-// lg: 1200,
-// xl: 1536
-const createRoomStyles = console.log(styles(defaultTheme));
+};
 
-export default defaultTheme;
+const theme = createTheme(themeOptions);
+export default theme;
+
+/**
+ * @deprecated Kept only so any screen that hasn't been migrated yet doesn't
+ * break on import. New/refactored components should read `theme.palette`,
+ * `theme.radius`, `theme.gradients` via `useTheme()` or an `sx` callback —
+ * not this object. Delete once every `mainStyles` usage is migrated.
+ */
+export const mainStyles = { primaryBg: tokens.shellGlow };

@@ -107,7 +107,12 @@ export const handlePrismaError = (
   ) {
     return new DatabaseError();
   } else if (error instanceof PrismaClientValidationError) {
-    return new BadRequestError(modelName);
+    console.log(error);
+    // we need to have a separate validtion error for missing fields /
+    return new BadRequestError(
+      modelName,
+      "Invalid request data: type mismatch or missing required fields",
+    );
   }
   return new AppError(
     "an expected internal  error occured with our service",
