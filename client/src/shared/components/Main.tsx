@@ -1,7 +1,8 @@
 import React, { ReactNode, useContext, useEffect } from 'react';
 import { initSocket } from '@/shared/lib/socket';
 import { Stack, Box } from '@mui/material';
-import { useUserStore } from '@/app/store/use-user-store';import Sidebar from '@/shared/components/UI/Sidebar';
+import { userStoreContext, useUserStore } from '@/app/store/use-user-store';
+import Sidebar from '@/shared/components/UI/Sidebar';
 import SessionMonitorWrapper from '@/features/authentication/ui/SessionMonitorWrapper';
 import NotificationManager from './notifications/NotificationsManager';
 import usePrivateCallService from '../hooks/usePrivateCallService';
@@ -13,15 +14,24 @@ export default function Main({ children }: { children: ReactNode }) {
   const { username, id, uuid, profile_img } = profile;
   const storeContext = useContext(userStoreContext);
   if (!storeContext) throw new Error('store must be used within UserStoreProvider');
-  const service = usePrivateCallService();
+  const callService = usePrivateCallService();
 
+  const onPageHide = () => {
+    if (audioCall.callState && audioCall.friendId) {
+      callService.cancelCall(audioCall.friendId, profile.uuid!);
+    }
+  };
+
+  
   useEffect(() => {
     if (!profile.uuid) return;
-    initSocket(username, id, uuid, profile_img!, storeContext);
-    const cleanupListeners = service.initWebRtc();
+    initSocket(username, id, uuid, profile_img!, storeContext, callService);
+    const cleanupListeners = callService.initWebRtc();
+    window.addEventListener('pagehide', onPageHide);
     return () => {
       console.log('main unmounts');
       if (audioCall.localPeer) removePeerListeners(audioCall.localPeer);
+      window.removeEventListener('pagehide', onPageHide);
       cleanupListeners();
     };
   }, [profile.uuid]);

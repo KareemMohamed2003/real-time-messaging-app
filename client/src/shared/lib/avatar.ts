@@ -18,9 +18,7 @@ export function getAvatarGradient(seed: string | undefined, theme: Theme): strin
 }
 
 /**
- * "sara" -> "SA", "sara wilson" -> "SW" — matches the reference's two-
- * letter avatar-fallback convention (e.g. "J1" for a single-word name
- * with a trailing character).
+ *  returns "sara" -> "SA", "sara wilson" -> "SW"
  */
 export function getInitials(name: string | undefined): string {
   if (!name) return '';

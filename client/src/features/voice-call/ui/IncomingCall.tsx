@@ -17,7 +17,10 @@ interface IncomingCallProps {
 }
 
 /**
- * A blocking modal — someone calling you warrants full attention 
+ * A real blocking modal now (previously a card scoped inside the
+ * conversation screen) — someone calling you warrants full attention per
+ * the reference, but Minimize is the escape hatch, so it's never a hard
+ * trap. Rendered inside IncomingCallModal's <Modal>.
  */
 export default function IncomingCall({
   caller,

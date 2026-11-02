@@ -8,7 +8,7 @@ import Modal from '@mui/material/Modal';
 
 /**
  * Global overlay (not scoped to any one screen) so it can interrupt you
- * regardless of where you are in the app.
+ * regardless of where you are in the app. No onClose/backdrop-dismiss —
  * Decline, Accept, or Minimize are the only ways out
  */
 export default function IncomingCallModal() {

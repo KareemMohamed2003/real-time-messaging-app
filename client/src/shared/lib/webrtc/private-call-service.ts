@@ -1,98 +1,130 @@
 'use client';
 import { socketClient } from '../socket';
 import { SOCKET_EVENTS } from '../constants';
-import { userStoreApi } from '@/app/store/store.types';
+import { TCallSnapshot, userStoreApi } from '@/app/store/store.types';
 import { handleGetUserMediaError, selectInputMedia } from './media-devices';
+import { scheduleCallTimer } from '../call-timers';
 import webRtcPeer from './peer-connection';
 import createSignaling from './webrtc-signaling';
+import { TCallerInfo } from './webrtc.types';
 
-export type TCallerInfo = {
-  callerName: string;
-  profile_img: string;
-  callerID: string;
-<<<<<<< Updated upstream
-=======
-  callId: string;
-  ttlMs: number;
->>>>>>> Stashed changes
-};
 
-const { PRIVATE_VOICE_CALL_ANSWER, PRIVATE_VOICE_CALL } = SOCKET_EVENTS;
+const { PRIVATE_VOICE_CALL_ANSWER, PRIVATE_VOICE_CALL, CALL_SYNC } = SOCKET_EVENTS;
 const signalingChannel = socketClient;
-
+const OUTGOING_FAILSAFE_MS = 22_000;
 export function createPrivateCallService(userStore: userStoreApi) {
   const userStoreState = () => userStore.getState();
+  // pls Note: current notifications implemented are only error notifications
+  const notify = (message: string) => userStoreState().setNotification({ type: 'error', message });
 
   const handlePrivateCall = async ({ callerInfo }: { callerInfo: TCallerInfo }) => {
-<<<<<<< Updated upstream
-    const { callerName, profile_img, callerID } = callerInfo;
-    userStoreState().setIncomingCall(callerName, callerID, profile_img);
-=======
     const { callerName, profile_img, callerID, callId, ttlMs } = callerInfo;
     userStoreState().setIncomingCall(callerName, callerID, profile_img, callId, ttlMs);
->>>>>>> Stashed changes
     console.log('incomingCall() : callerId:', callerID);
-    console.log(profile_img);
   };
-
+  /** Tells the user WHERE the existing call is, so "another tab" is never a mystery. */
+  const busyMessage = () => {
+    const { audioCall, callSnapshot } = userStoreState();
+    if (audioCall.callState) return 'You are already in a call.';
+    if (callSnapshot) {
+      const peer = callSnapshot.peerName ? ` ${callSnapshot.peerName}` : '';
+      return callSnapshot.status === 'ringing'
+        ? `You are already calling${peer} in another tab or device.`
+        : `You are already in a call${peer ? ' with' + peer : ''} in another tab or device.`;
+    }
+    return 'You are already in a call.';
+  };
   const cancelCall = async (friendId: string, uuid: string) => {
+    const { callState, callId } = userStoreState().audioCall;
+    if (!callState) return;
     signalingChannel.emit(PRIVATE_VOICE_CALL_ANSWER, {
       to: friendId,
       callerID: uuid,
       type: 'cancelled',
-<<<<<<< Updated upstream
-=======
-      callId: userStoreState().audioCall.callId,
->>>>>>> Stashed changes
+      callId: callId,
     });
     destroyPeerConnection();
   };
+
+  /**
+   * "End call" for ANY tab. The owner tears down locally; an observer asks the server, which ends the
+   * call and tells the owner tab to tear down (it cannot reach another tab's peer connection itself).
+   */
+  // what happens if the server is stopped , shutdown , failed
+  // the call would just hang up and you won't see any feedback
+  //and you also have no way to cancel the call for the users/
+  const hangUp = () => {
+    const { audioCall, callSnapshot, profile, deleteCallSnapShot } = userStoreState();
+    if (audioCall.callState) return cancelCall(audioCall.friendId, profile.uuid!);
+    if (callSnapshot) {
+      signalingChannel.emit(PRIVATE_VOICE_CALL_ANSWER, {
+        type: 'cancelled',
+        callId: callSnapshot.callId,
+        to: callSnapshot.peerId,
+        callerID: profile.uuid,
+      });
+      deleteCallSnapShot();
+    }
+  };
+
   const { createPeerConnection, destroyPeerConnection } = webRtcPeer({
     userStore,
-    cancelCall,
+    hangUp,
   });
-
+  /**
+   * Ask the server (source of truth) for this user's call and adopt it. The server identifies this tab
+   * by its handshake tabId, so no payload is needed. If this tab holds a peer for a call the server no
+   * longer knows (restart, grace expired), the local call is a zombie and is torn down.
+   */
+  const syncCallState = () => {
+    signalingChannel.emit(CALL_SYNC, (snapshot: TCallSnapshot | null) => {
+      const { setCallSnapshot } = userStoreState();
+      setCallSnapshot(snapshot ?? null);
+      const local = userStoreState().audioCall;
+      if (local.callState && local.localPeer && snapshot?.callId !== local.callId) {
+        destroyPeerConnection();
+        // should proabbly delete the call call coming from the server as it's no longer known
+      }
+    });
+  };
   const { createOffer, initWebRtc } = createSignaling({
     userStore,
     socketClient,
     handlePrivateCall,
     destroyPeerConnection,
+    syncCallState,
   });
-<<<<<<< Updated upstream
-  const makeCall = async (to: string, friend_profile_img: string) => {
-=======
+
+  /** Busy if THIS tab has a call, or the server says another tab/device of this user does. */
+  const isBusyLocally = () => {
+    const s = userStoreState();
+    return !!s.audioCall.callState || !!s.callSnapshot;
+  };
+
   const makeCall = async (to: string, friend_profile_img: string, friendName: string) => {
->>>>>>> Stashed changes
+    if (isBusyLocally()) return notify(busyMessage());
     userStoreState().flushIceCandidates();
     let localStream: MediaStream | undefined;
     let peer: RTCPeerConnection | undefined;
     try {
       localStream = await selectInputMedia();
+      // the permission prompt can take seconds: another tab may have started a call meanwhile
+      // question :  won't this be a  source of conflict , also shouldn't be notify the user
+      // that another tab
+      if (isBusyLocally()) {
+        // does this stop the localStream peer tab
+        console.log('isBusyLocally condition satsifed');
+        localStream.getTracks().forEach(t => t.stop());
+        return notify(busyMessage());
+      }
+
       peer = createPeerConnection();
       localStream!.getTracks().forEach(track => {
         console.log('tracks', track);
         peer!.addTrack(track, localStream!);
       });
-      console.log('rtcPeer', peer);
       const { username, profile_img } = userStoreState().profile;
-<<<<<<< Updated upstream
-=======
       const callId = crypto.randomUUID();
-
->>>>>>> Stashed changes
-      const message = {
-        to: to,
-        profile_img,
-        name: username,
-<<<<<<< Updated upstream
-      };
-      signalingChannel.emit(PRIVATE_VOICE_CALL, message);
-      userStoreState().setOutgoingCall(to, friend_profile_img, localStream, peer);
-=======
-        callId,
-      };
-      signalingChannel.emit(PRIVATE_VOICE_CALL, message);
-
       userStoreState().setOutgoingCall(
         to,
         friend_profile_img,
@@ -101,14 +133,33 @@ export function createPrivateCallService(userStore: userStoreApi) {
         friendName,
         callId
       );
->>>>>>> Stashed changes
+      signalingChannel.emit(PRIVATE_VOICE_CALL, {
+        to,
+        profile_img,
+        name: username,
+        callId,
+        calleeName: friendName,
+        calleeImg: friend_profile_img,
+      });
+      scheduleCallTimer(`out:${callId}`, OUTGOING_FAILSAFE_MS, () => {
+        const { audioCall } = userStoreState();
+        // only THIS call, only while still ringing and the handshake never started
+        if (
+          audioCall.callId === callId &&
+          audioCall.callState === 'OUT-GOING' &&
+          !audioCall.localPeer?.remoteDescription // not sure we should be checking this one here
+        ) {
+          destroyPeerConnection(); // releases the mic and the peer, unlike a bare state reset
+        }
+      });
     } catch (e) {
       console.error(e);
-      if (e instanceof Error) {
-        console.log(typeof e.message);
-        handleGetUserMediaError(e.name, userStoreState);
+      if (e instanceof Error) handleGetUserMediaError(e.name, userStoreState);
+      if (peer && userStoreState().audioCall.localPeer === peer) {
+        destroyPeerConnection(); // failure happened after the store took ownership
+        return;
       }
-      // this is necessary (can't use destroyPeerConnection()) as the new peer created is not in the store yet
+      // the new peer is not in the store yet, so destroyPeerConnection() can't be used here
       localStream?.getTracks().forEach(t => t.stop());
       if (peer) {
         peer.onconnectionstatechange = null;
@@ -118,67 +169,68 @@ export function createPrivateCallService(userStore: userStoreApi) {
   };
 
   const answerCall = async (callerID: string) => {
+    const s = userStoreState();
+    if (s.audioCall.callState || s.callSnapshot?.status === 'active') {
+      return notify('You are already in a call.');
+      // if the user is notified here that there is an active call
+      // that means there is an incoming modal ,
+      // the state isn't handled here to reflect that
+    }
     let localStream: MediaStream | undefined;
     let peer: RTCPeerConnection | undefined;
+    let committedToStore = false; // true once the store says "ACCEPTED"
     try {
-      localStream = await selectInputMedia();
-<<<<<<< Updated upstream
-=======
       const incoming = userStoreState().incomingCalls.get(callerID);
-
       if (!incoming) {
-        // call cancelled/expired during the permission prompt
-        localStream.getTracks().forEach(t => t.stop());
+        // cancelled / answered in another tab during the permission prompt
         return;
       }
->>>>>>> Stashed changes
+      localStream = await selectInputMedia();
       peer = createPeerConnection();
       const uuid = userStoreState().profile.uuid;
-      localStream!.getTracks().map(track => {
-        peer!.addTrack(track, localStream!);
-      });
+      localStream.getTracks().forEach(track => peer!.addTrack(track, localStream!));
       userStoreState().answerCall(callerID, localStream, peer);
+      committedToStore = true;
       const offer = await createOffer(peer);
       await peer.setLocalDescription(offer);
-<<<<<<< Updated upstream
-=======
-      //BTW : no callId is passed to this emit 
-
->>>>>>> Stashed changes
       signalingChannel.emit(PRIVATE_VOICE_CALL_ANSWER, {
         callerID,
         type: 'offer',
         offer,
         calleeID: uuid,
-<<<<<<< Updated upstream
-=======
-        callId:incoming.callId
-     
->>>>>>> Stashed changes
+        callId: incoming.callId,
       });
     } catch (e) {
-      console.log(e);
-      localStream?.getTracks().forEach(t => t.stop());
-      if (peer) {
-        peer.onconnectionstatechange = null;
-        peer.close();
+      console.error(e);
+      if (committedToStore) {
+        // the store already says ACCEPTED: unwind it and release the caller instead of leaving a zombie
+        const callId = userStoreState().audioCall.callId;
+        destroyPeerConnection();
+        signalingChannel.emit(PRIVATE_VOICE_CALL_ANSWER, { callerID, callId, type: 'rejected' });
+      } else {
+        localStream?.getTracks().forEach(t => t.stop());
+        if (peer) {
+          peer.onconnectionstatechange = null;
+          peer.close();
+        }
       }
     }
-<<<<<<< Updated upstream
     // remote user answers the call
-  };
-
-  const rejectCall = async (callerID: string) => {
-    signalingChannel.emit(PRIVATE_VOICE_CALL_ANSWER, { callerID, type: 'rejected' });
-=======
   };
 
   const rejectCall = async (callerID: string) => {
     const callId = userStoreState().incomingCalls.get(callerID)?.callId;
     signalingChannel.emit(PRIVATE_VOICE_CALL_ANSWER, { callerID, callId, type: 'rejected' });
->>>>>>> Stashed changes
     userStoreState().rejectCall(callerID);
   };
 
-  return { makeCall, cancelCall, initWebRtc, answerCall, rejectCall };
+  return {
+    makeCall,
+    cancelCall,
+    initWebRtc,
+    answerCall,
+    rejectCall,
+    hangUp,
+    destroyPeerConnection,
+  };
 }

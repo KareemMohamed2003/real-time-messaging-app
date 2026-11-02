@@ -1,10 +1,7 @@
 // In Next.js, this file would be called: app/providers.tsx
 'use client';
 import theme from '@/themes';
-import {
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import UserStoreProvider from './store/StoreContextProvider';
@@ -21,7 +18,6 @@ export function makeQueryClient() {
   });
 }
 
-
 export default function Providers({ children }: { children: React.ReactNode }) {
   // NOTE: Avoid useState when initializing the query client if you don't
   //       have a suspense boundary between this and the code that may
@@ -30,13 +26,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AppRouterCacheProvider>
+    <AppRouterCacheProvider>
+      <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
           <UserStoreProvider>{children}</UserStoreProvider>
         </ThemeProvider>
-      </AppRouterCacheProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </AppRouterCacheProvider>
   );
 }
-

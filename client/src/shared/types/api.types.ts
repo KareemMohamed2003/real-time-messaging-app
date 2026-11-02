@@ -64,6 +64,7 @@ export interface IRoom {
   roomUUID: string;
   ownerId?: string;
   icon?: string;
+  membersCount?:number;
 }
 export interface IJoinedRoom extends IRoom {
   role: UserRole;

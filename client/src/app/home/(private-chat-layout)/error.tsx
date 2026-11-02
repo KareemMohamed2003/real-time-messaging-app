@@ -1,8 +1,5 @@
 'use client';
-import Button from '@/shared/components/UI/(legacy)/Button(legacy)';
-import { AppRoutes } from '@/shared/lib/utils';
-import { Box, Typography } from '@mui/material';
-import Link from 'next/link';
+import ServerErrorState from '@/shared/components/UI/ServerErrorState';
 export default function Error({
   error,
   reset,
@@ -11,13 +8,5 @@ export default function Error({
   reset: () => void;
 }) {
   console.log(error);
-  return (
-    <Box justifyContent={'center'} gap={1} display={'flex'}>
-      <Typography variant="h2">Failed to load data</Typography>
-      <Button onClick={() => reset()}>Try again</Button>
-      <Link href={AppRoutes.HOME_ROUTE}>
-        <Button>Return Home</Button>
-      </Link>
-    </Box>
-  );
+  return <ServerErrorState onRetry={() => reset()} />;
 }

@@ -37,6 +37,7 @@ export const convertToMap = (array: [], key: any) => {
 export const AppRoutes = {
   HOME_ROUTE: '/home/chats',
   ROOM_ROUTE: (roomUUID: string) => `/home/rooms/${roomUUID}`,
+  HOME_CHAT:(friendUUID:string)=>`/home/chats/${friendUUID}`,
   ROOM_SETTINGS_ROUTE: (roomUUID: string) => `/home/rooms/${roomUUID}/settings`, 
   FRIENDS_ROUTE: `/home/friends`,
   PRIVATE_CHAT_ROUTE: (friendUUID: string) => `friends/${friendUUID}`,

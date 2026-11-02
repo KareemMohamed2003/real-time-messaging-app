@@ -28,13 +28,24 @@ export interface VideoCallStageProps {
   onToggleMic: () => void;
   isCamOff: boolean;
   onToggleCam: () => void;
-
+  /** Not wired to real screen sharing — the reference itself only simulates
+   *  this with a toast, there's no store logic for it anywhere to hook into.
+   *  Omit this prop to drop the button entirely. */
   onShareScreen?: () => void;
   onMinimize: () => void;
   onEnd: () => void;
 }
 
-
+/**
+ * Embedded video call view — replaces the message thread for the duration
+ * of the call, the same way the voice call replaces the header (matches
+ * the reference's `.conv-video-call-view` / `.call-stage`). The "not
+ * connected" pulsing placeholder IS the ringing indicator here — there's
+ * no separate outgoing-call state for video, same as voice.
+ *
+ * Purely presentational — see PrivateVideoCall for the store-connected
+ * wrapper, and the store-shape assumptions that one depends on.
+ */
 export default function VideoCallStage({
   connected,
   friendInitials,

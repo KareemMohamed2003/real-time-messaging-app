@@ -24,7 +24,6 @@ export default function PrivateChatComponent({ friendUUID, uuid }: IPrivateChat)
   const { sendPrivateMessage } = UseSendPrivateMessage(friendUUID);
   const groupedChat = groupMessagesBySender(privateMessages, uuid);
 
-
   return (
     <Box
       maxHeight={'100%'}
@@ -32,8 +31,9 @@ export default function PrivateChatComponent({ friendUUID, uuid }: IPrivateChat)
       flex={1}
       flexDirection={'column'}
       justifyContent={'space-between'}
+      overflow="hidden"
     >
-      <Stack py={2} px={4} gap={1} flex={1} sx={{ overflowY: 'auto' }}>
+      <Stack py={2} px={4} gap={1} flex={1} height={'100%'} sx={{ overflowY: 'auto' }}>
         {groupedChat.map((group, i) => (
           <MessageGroup
             key={i}

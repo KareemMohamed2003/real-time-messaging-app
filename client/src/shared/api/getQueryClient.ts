@@ -7,7 +7,6 @@ declare global {
   }
 }
 
-
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
@@ -35,6 +34,7 @@ export function getQueryClient() {
       browserQueryClient = makeQueryClient();
       window.__TANSTACK_QUERY_CLIENT__ = browserQueryClient;
     }
+    console.log('browserQueryClient',browserQueryClient);
     return browserQueryClient;
   }
 }

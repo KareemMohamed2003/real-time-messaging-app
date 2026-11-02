@@ -1,5 +1,5 @@
-import SocketSession from '../socketSession';
-import { ISocket } from './socket';
+import { ISocket } from './socket.types';
+import SocketSession from './socketSession';
 
 export const socketMiddleware = async (socket: ISocket, next: (err?: any) => void) => {
   const sessionStore = new SocketSession();
@@ -7,6 +7,8 @@ export const socketMiddleware = async (socket: ISocket, next: (err?: any) => voi
   console.log('incoming socket Session ', incomingSession);
   const incomingSessionId = incomingSession?.sessionId;
   const uuid = incomingSession.uuid;
+  const rawTab = incomingSession.tabId; // new tabId on every reconnection,
+  socket.tabId = typeof rawTab === 'string' && rawTab.length > 0 ? rawTab : socket.id;
   const userSocketSession = await sessionStore.findSession(incomingSessionId);
   if (!userSocketSession) {
     const newSession = {
@@ -25,9 +27,11 @@ export const socketMiddleware = async (socket: ISocket, next: (err?: any) => voi
     await sessionStore.saveSession(newSession);
     socket.sessionId = incomingSessionId;
     socket.socketId = uuid;
+
     return next();
   }
   socket.socketId = userSocketSession.socketId;
   socket.sessionId = userSocketSession.sessionId;
+
   return next();
 };

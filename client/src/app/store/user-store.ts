@@ -1,34 +1,14 @@
 'use client';
 import { createStore } from 'zustand/vanilla';
-import { createDefaultUserState, userStore } from './store.types';
+import { createDefaultAudioCall, createDefaultUserState, userStore } from './store.types';
 import { socketClient } from '@/shared/lib/socket';
 import { SOCKET_EVENTS } from '@/shared/lib/constants';
-<<<<<<< Updated upstream
+import { clearCallTimer, scheduleCallTimer } from '@/shared/lib/call-timers';
 
 export const createUserStore = () => {
   console.log('createUserStore');
   return createStore<userStore>()((set, get) => ({
     ...createDefaultUserState(),
-
-    setRooms: (rooms: []) => set(() => ({ rooms })), //  these functions may change later
-=======
-// const MAX_CLOSED = 50;
-const callsExpiryTimers = new Map<string, ReturnType<typeof setTimeout>>(); // key: callerID, calleeID
-// we haven't handled  the outgoing call timeout yet
-const clearExpiry = (callerID: string) => { // maybe just use callId instead of callerId as this is used in outgoing,incoming calls expiration timers
-  const t = callsExpiryTimers.get(callerID);
-  if (t) {
-    clearTimeout(t);
-    callsExpiryTimers.delete(callerID);
-  }
-};
-
-// const tombstone = (ids: string[], id?: string) => (id ? [...ids, id].slice(-MAX_CLOSED) : ids);
-export const createUserStore = () => {
-  console.log('createUserStore');
-  return createStore<userStore>()((set, get) => ({
-    ...createDefaultUserState(),
->>>>>>> Stashed changes
     setProfile: profile => {
       set(() => ({
         profile: {
@@ -74,108 +54,59 @@ export const createUserStore = () => {
         onlineFriends: data,
       }));
     },
-
-<<<<<<< Updated upstream
-    setIncomingCall: (caller, callerID, caller_profile_img) => {
-      set(state => {
-        const updatedCalls = state.incomingCalls.set(callerID, {
-=======
+    setCallSnapshot: snapshot => set({ callSnapshot: snapshot }),
+    deleteCallSnapShot: () => set({ callSnapshot: null }),
     setIncomingCall: (caller, callerID, caller_profile_img, callId, ttlMs) => {
-      set(state => {
-        const audioCall = state.audioCall;
-        const incomingCalls = new Map(state.incomingCalls);
-        // not sure about these if(s)
-        if (incomingCalls.get(callerID)?.callId === callId)
-          return { ...state, incomingCalls: state.incomingCalls }; // duplicate resend: idempotent
-        if (audioCall.callState === 'ACCEPTED' && audioCall.friendId === callerID) {
-          return { ...state, incomingCalls: state.incomingCalls }; // already in a call with them
-        }
-        clearExpiry(callerID);
-        const updatedIncomingCalls = incomingCalls.set(callerID, {
->>>>>>> Stashed changes
-          friend_profile_img: caller_profile_img,
-          callState: 'PENDING',
-          friendId: callerID,
-          friendName: caller,
-          isMuted: false,
-          localPeer: null,
-          bufferedIceCandidates: [],
-<<<<<<< Updated upstream
-        });
-
-        return {
-          ...state,
-          incomingCalls: new Map(updatedCalls),
-        };
+      const { incomingCalls, audioCall } = get();
+      const previous = incomingCalls.get(callerID);
+      if (previous?.callId === callId) return; // duplicate resend: idempotent, and NO new timer
+      if (audioCall.callState === 'ACCEPTED') return; // already in a call
+      if (previous) clearCallTimer(`incoming:${previous.callId}`); // a newer call replaces the old modal
+      const next = new Map(incomingCalls);
+      next.set(callerID, {
+        friend_profile_img: caller_profile_img,
+        callState: 'PENDING',
+        friendId: callerID,
+        friendName: caller,
+        isMuted: false,
+        localPeer: null,
+        bufferedIceCandidates: [],
+        callId,
       });
-    },
-    deleteIncomingCall: (callerID: string) => {
-      set(state => {
-        const updatedIncomingCalls = new Map(state.incomingCalls);
-        updatedIncomingCalls.delete(callerID);
-        return {
-          incomingCalls: updatedIncomingCalls,
-        };
-      });
-    },
-
-    rejectCall: callerID => {
-      set(state => {
-        const incomingCalls = new Map(state.incomingCalls);
-        incomingCalls.delete(callerID);
-        return {
-          incomingCalls,
-        };
-      });
-    },
-=======
-          callId,
-        });
-        return {
-          ...state,
-          incomingCalls: updatedIncomingCalls,
-        };
-      });
-      //  the timeout of the client is not working
-      // // failsafe only: the server's cancel normally arrives first
-      callsExpiryTimers.set(
-        callerID,
-        setTimeout(() => get().deleteIncomingCall(callerID, callId), ttlMs)
+      set({ incomingCalls: next });
+      // failsafe only: the server's cancel normally arrives first
+      scheduleCallTimer(`incoming:${callId}`, ttlMs, () =>
+        get().deleteIncomingCall(callerID, callId)
       );
     },
     deleteIncomingCall: (callerID, callId) => {
+      const entry = get().incomingCalls.get(callerID);
+      if (!entry) return;
+      if (callId && entry.callId !== callId) return; // late event about an OLDER call: ignore
+      clearCallTimer(`incoming:${entry.callId}`);
       set(state => {
-        const entry = get().incomingCalls.get(callerID); // the modal currently shown for this caller (if any)
-        // (not sure if `!callId` is correct here )
-        const matches = !!entry && (!callId || entry.callId === callId); // "is this delete really about THAT modal?"
-        if (matches) clearExpiry(callerID); // only then stop its failsafe timer
-        const updatedIncomingCalls = new Map(state.incomingCalls);
-        updatedIncomingCalls.delete(callerID);
-        return {
-          incomingCalls: updatedIncomingCalls,
-        };
+        const next = new Map(state.incomingCalls);
+        next.delete(callerID);
+        return { incomingCalls: next };
       });
     },
 
     rejectCall: callerID => get().deleteIncomingCall(callerID),
->>>>>>> Stashed changes
     answerCall: (callerID, localStream, localPeer) => {
+      const entry = get().incomingCalls.get(callerID);
+      if (!entry) return; // if there is no entry  does that mean it was already answered by another tab, or the callerId is invalid
+      clearCallTimer(`incoming:${entry.callId}`);
       set(state => {
         const incomingCalls = new Map(state.incomingCalls);
-        const currentAudioCall = incomingCalls.get(callerID)!;
         incomingCalls.delete(callerID);
         return {
           audioCall: {
-            ...currentAudioCall,
+            ...entry,
             localPeer,
             callState: 'ACCEPTED',
             friendId: callerID,
             localStream,
-<<<<<<< Updated upstream
-            bufferedIceCandidates:[]
-=======
             bufferedIceCandidates: [],
->>>>>>> Stashed changes
           },
           incomingCalls,
         };
@@ -183,72 +114,32 @@ export const createUserStore = () => {
     },
 
     resetAudioCallState: () => {
-      set(() => {
-        return {
-          audioCall: {
-            callState: null,
-            friend_profile_img: '',
-            remoteStream: null,
-            localStream: null,
-            friendId: '',
-            friendName: '',
-            isMuted: false,
-            localPeer: null,
-            bufferedIceCandidates: [],
-<<<<<<< Updated upstream
-=======
-            callId: '',
-            ttlMs: 0,
->>>>>>> Stashed changes
-          },
-        };
-      });
+      // shouldn't we clear incomings calls, or is it handled somewhere else in the code
+      clearCallTimer(`out:${get().audioCall.callId}`);
+      console.warn('resetAudioCallState()');
+      set({ audioCall: createDefaultAudioCall() });
     },
 
-<<<<<<< Updated upstream
-    setOutgoingCall: (calleeID, friend_profile_img, localStream, localPeer) => {
-=======
     setOutgoingCall: (calleeID, friend_profile_img, localStream, localPeer, friendName, callId) => {
->>>>>>> Stashed changes
       console.log('set outgoing call');
       set(state => ({
         audioCall: {
           callState: 'OUT-GOING',
           friendId: calleeID,
-<<<<<<< Updated upstream
-          friendName: '',
-=======
           friendName: friendName,
->>>>>>> Stashed changes
           friend_profile_img,
           remoteStream: null,
           localStream,
           isMuted: false,
           localPeer,
           bufferedIceCandidates: state.audioCall.bufferedIceCandidates,
-<<<<<<< Updated upstream
-        },
-      }));
-=======
           callId,
         },
       }));
-      callsExpiryTimers.set(
-        calleeID,
-        setTimeout(() => {
-          if (get().audioCall.callState === 'ACCEPTED') {
-             clearExpiry(calleeID);
-             return ;
-          }
-          get().resetAudioCallState();
-          // clearExpiry(calleeID);
-        }, 22000) // this is 22 sec in case server sends answer response late
-      );
->>>>>>> Stashed changes
     },
     toggleMic: () => {
       const localStream = get().audioCall.localStream!;
-      const track = localStream.getAudioTracks()[0];
+      const track = localStream?.getAudioTracks()[0];
       if (track) {
         track.enabled = !track.enabled;
         set(state => ({
@@ -263,13 +154,14 @@ export const createUserStore = () => {
     },
 
     onIceCandidate: event => {
-      if (event.candidate) {
-        const { audioCall } = get();
-        socketClient.emit(SOCKET_EVENTS.NEW_ICE_CANDIDATE, {
-          to: audioCall.friendId,
-          candidate: event.candidate,
-        });
-      }
+      const { audioCall } = get();
+      // `callId` is REQUIRED: the server routes ICE by (user, callId) and silently drops anything else.
+      if (!event.candidate || !audioCall.callId) return;
+      socketClient.emit(SOCKET_EVENTS.NEW_ICE_CANDIDATE, {
+        to: audioCall.friendId, // informational only: the server derives the destination itself
+        callId: audioCall.callId,
+        candidate: event.candidate,
+      });
     },
 
     onIceCandidateError: event => {
@@ -287,7 +179,6 @@ export const createUserStore = () => {
     onTrack: event => {
       console.log('Track event:', event);
       const [remoteStream] = event.streams;
-
       set(state => ({
         audioCall: {
           ...state.audioCall,

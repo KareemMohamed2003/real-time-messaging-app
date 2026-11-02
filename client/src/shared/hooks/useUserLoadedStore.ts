@@ -3,7 +3,7 @@ import { getUserQuery } from '@/shared/api/queries';
 
 import { useQuery } from '@tanstack/react-query';
 import { userKeys } from '../api/QueryKeys';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useUserStore } from '@/app/store/use-user-store';
 
 export default function useUserLoadedStore() {

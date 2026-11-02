@@ -1,14 +1,15 @@
 'use client';
-
-import { Box, IconButton, Tooltip, Typography, alpha, useTheme } from '@mui/material';
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import CallIcon from '@mui/icons-material/Call';
 import CallEndIcon from '@mui/icons-material/CallEnd';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import CallWaveBars from './CallWaveBars';
+import { Box, IconButton, Tooltip, Typography, alpha, useTheme } from '@mui/material';
+import { useUserStore } from '@/app/store/use-user-store';
+import { useEffect, useRef } from 'react';
 
 export type MiniCallBarVariant = 'connected' | 'outgoing' | 'incoming';
 
@@ -21,6 +22,7 @@ export interface MiniCallBarProps {
   isMuted?: boolean;
   onToggleMic?: () => void;
   isCamOff?: boolean;
+  isOwnerTab: boolean;
   onToggleCam?: () => void;
   /** connected (end) / outgoing (cancel) */
   onEnd?: () => void;
@@ -32,7 +34,9 @@ export interface MiniCallBarProps {
 const ICON_BTN_SX = { width: 29, height: 29 };
 
 /**
- * a single docked-bar component behind all three call states
+ * The single docked-bar component behind all three call states — the
+ * reference re-skins one `.mini-call-bar` via a state-* class rather than
+ * building three components, so this does the same via `variant`.
  */
 export default function MiniCallBar({
   variant,
@@ -46,6 +50,7 @@ export default function MiniCallBar({
   onEnd,
   onAccept,
   onDecline,
+  isOwnerTab,
 }: MiniCallBarProps) {
   const theme = useTheme();
   const color =
@@ -54,7 +59,15 @@ export default function MiniCallBar({
       : variant === 'incoming'
         ? theme.palette.warning.main
         : theme.palette.success.main;
+  const { audioCall } = useUserStore(state => state);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
+  useEffect(() => {
+    if (audioRef.current && audioCall.remoteStream) {
+      audioRef.current.srcObject = audioCall.remoteStream ?? null;
+    }
+    return () => audioCall.remoteStream?.getTracks().forEach(track => track.stop());
+  }, []);
   return (
     <Box
       onClick={onExpand}
@@ -104,7 +117,6 @@ export default function MiniCallBar({
       <Box sx={{ display: 'flex', flexShrink: 0 }} onClick={e => e.stopPropagation()}>
         {variant === 'incoming' && (
           <>
-    
             <Tooltip title="Accept">
               <IconButton
                 size="small"
@@ -121,7 +133,7 @@ export default function MiniCallBar({
               </IconButton>
             </Tooltip>
 
-                    <Tooltip title="Decline">
+            <Tooltip title="Decline">
               <IconButton
                 size="small"
                 onClick={onDecline}
@@ -152,14 +164,14 @@ export default function MiniCallBar({
                 },
               }}
             >
-              <CallEndIcon fontSize="small"  />
+              <CallEndIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         )}
 
         {variant === 'connected' && (
           <>
-            {onToggleMic && (
+            {isOwnerTab && onToggleMic && (
               <Tooltip title={isMuted ? 'Unmute' : 'Mute'}>
                 <IconButton size="small" onClick={onToggleMic} sx={ICON_BTN_SX}>
                   {isMuted ? <MicOffIcon fontSize="small" /> : <MicIcon fontSize="small" />}
@@ -194,11 +206,13 @@ export default function MiniCallBar({
                   },
                 }}
               >
-                <CallEndIcon fontSize="small"  />
+                <CallEndIcon fontSize="small" />
               </IconButton>
             </Tooltip>
           </>
         )}
+
+        <audio ref={audioRef} autoPlay />
       </Box>
     </Box>
   );

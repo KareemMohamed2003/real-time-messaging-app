@@ -1,40 +1,29 @@
 import { Socket } from 'socket.io-client';
 import { SOCKET_EVENTS } from '../constants';
-import { userStoreApi } from '@/app/store/store.types';
-import { TCallerInfo } from './private-call-service';
-const { PRIVATE_VOICE_CALL_ANSWER, NEW_ICE_CANDIDATE, PRIVATE_VOICE_CALL } = SOCKET_EVENTS;
-<<<<<<< Updated upstream
-type signalingHandler = {
-=======
+import { TCallSnapshot, userStoreApi } from '@/app/store/store.types';
+import { TCallerInfo } from './webrtc.types';
+
+const { PRIVATE_VOICE_CALL_ANSWER, NEW_ICE_CANDIDATE, PRIVATE_VOICE_CALL, CALL_STATE, CALL_SYNC } =
+  SOCKET_EVENTS;
 
 type createSignaling = {
->>>>>>> Stashed changes
   userStore: userStoreApi;
   socketClient: Socket;
   handlePrivateCall: ({ callerInfo }: { callerInfo: TCallerInfo }) => void;
   destroyPeerConnection: () => void;
+  /** asks the server for this user's call and reconciles local state with it */
+  syncCallState: () => void;
 };
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 export default function createSignaling({
   userStore,
   socketClient,
   handlePrivateCall,
   destroyPeerConnection,
-<<<<<<< Updated upstream
-}: signalingHandler) {
-  const userStoreState = () => userStore.getState();
-  // we need to check if the two users are calling each other at the same time .
-  // we need to know who is calling us let's say we send a call to user a at the same time we recieved a call
-  // from user a then we should have the socket id of user a .
-  // collect ice candidates
-=======
+  syncCallState,
 }: createSignaling) {
   const userStoreState = () => userStore.getState();
 
->>>>>>> Stashed changes
   const createOffer = async (localPeer: RTCPeerConnection) => {
     const offer = await localPeer.createOffer({
       offerToReceiveAudio: true,
@@ -45,11 +34,7 @@ export default function createSignaling({
 
   const handleOffer = async (message: any, socket: Socket, localPeer: RTCPeerConnection) => {
     const desc = new RTCSessionDescription(message.offer);
-<<<<<<< Updated upstream
-    await localPeer.setRemoteDescription(desc); // in the webrtc docs example the await keyword wasn't there
-=======
     await localPeer.setRemoteDescription(desc);
->>>>>>> Stashed changes
     await assignPeerIceCandidates(localPeer);
     const answer = await localPeer.createAnswer();
     await localPeer.setLocalDescription(answer);
@@ -57,14 +42,13 @@ export default function createSignaling({
       calleeID: message.calleeID,
       type: 'answer',
       answer,
+      // REQUIRED: the server routes the answer by (user, callId) and silently drops it otherwise
+      callId: message.callId,
     });
   };
 
   const handlePeerAnswer = async (message: any, localPeer: RTCPeerConnection) => {
-<<<<<<< Updated upstream
-=======
     console.log('signaling state at handlePeerAnswer() ', localPeer.signalingState);
->>>>>>> Stashed changes
     if (localPeer.signalingState !== 'have-local-offer') return;
     try {
       const answer = new RTCSessionDescription(message.answer);
@@ -75,11 +59,7 @@ export default function createSignaling({
     }
   };
   /**
-<<<<<<< Updated upstream
-   * assigns buffered Ice-Candidates (when remoteDescription was not set) to local peer
-=======
    * assigns buffered ICE-Candidates (stored when remoteDescription was not set) to local peer
->>>>>>> Stashed changes
    * @param localPeer
    */
   const assignPeerIceCandidates = async (localPeer: RTCPeerConnection) => {
@@ -106,65 +86,87 @@ export default function createSignaling({
    * socket listeners and media device event listeners to prevent memory leaks.
    */
   const initWebRtc = () => {
-    console.log('web rtc signaling channel init');
+    const handleCallState = (snapshot: TCallSnapshot | null) => {
+      userStoreState().setCallSnapshot(snapshot ?? null);
+      console.log('call snapshot from server', snapshot);
+    };
+
     socketClient.on(PRIVATE_VOICE_CALL, handlePrivateCall);
     socketClient.on(PRIVATE_VOICE_CALL_ANSWER, handlePeerResponse);
     socketClient.on(NEW_ICE_CANDIDATE, handleIceCandidate);
+    socketClient.on(CALL_STATE, handleCallState);
+    socketClient.on('connect', syncCallState); // first connect, new tab, every reconnect(btw there is already a handler for the `connect`  event in socket.ts)
+    if (socketClient.connected) syncCallState(); // socket was already up before listeners attached
 
     return function tearDownListeners() {
-      console.log('tearDownListeners listeners()');
       socketClient.off(PRIVATE_VOICE_CALL, handlePrivateCall);
       socketClient.off(PRIVATE_VOICE_CALL_ANSWER, handlePeerResponse);
       socketClient.off(NEW_ICE_CANDIDATE, handleIceCandidate);
+      socketClient.off(CALL_STATE, handleCallState);
+      socketClient.off('connect', syncCallState);
     };
   };
 
   const handlePeerResponse = async (message: any) => {
     const { audioCall } = userStoreState()!;
     const peer = audioCall.localPeer;
+    // Media/negotiation messages must be about THIS tab's call; otherwise they belong to another call.
+    // do we have t0 check if the current call belongs to this tab
+    const isCurrentCall = !!message.callId && message.callId === audioCall.callId;
     try {
       switch (message.type) {
         case 'offer':
-          if (peer && audioCall.callState === 'OUT-GOING')
+          if (peer && audioCall.callState === 'OUT-GOING' && isCurrentCall)
             await handleOffer(message, socketClient, peer);
           break;
         case 'answer':
-          if (peer && audioCall.callState === 'ACCEPTED') await handlePeerAnswer(message, peer);
+          if (peer && audioCall.callState === 'ACCEPTED' && isCurrentCall)
+            await handlePeerAnswer(message, peer);
           break;
         case 'rejected':
-<<<<<<< Updated upstream
-          if (audioCall.callState === 'OUT-GOING') destroyPeerConnection();
-=======
-          if (
-            audioCall.callState === 'OUT-GOING' &&
-            (!message.callId || message.callId === audioCall.callId)
-          ) {
+          if (audioCall.callState === 'OUT-GOING' && isCurrentCall) {
+            if (message.reason === 'busy') {
+              
+              userStoreState().setNotification({
+                type: 'error',
+                message: 'That user is on another call.',
+              });
+            }
             destroyPeerConnection();
           }
->>>>>>> Stashed changes
           break;
-        case 'cancelled':
-          if (audioCall.callState && audioCall.friendId === message.callerID) {
-            destroyPeerConnection();
-          }
-          userStoreState().deleteIncomingCall(message.callerID);
+        case 'cancelled': {
+          const concernsLocalCall = message.callId
+            ? message.callId === audioCall.callId
+            : audioCall.friendId === message.callerID;
+          if (audioCall.callState && concernsLocalCall) destroyPeerConnection();
+          userStoreState().deleteIncomingCall(message.callerID, message.callId);
           break;
+        }
       }
     } catch (e) {
       console.error('signaling error', e);
     }
   };
 
-  const handleIceCandidate = async ({ candidate }: { candidate: RTCIceCandidate }) => {
+  const handleIceCandidate = async ({
+    candidate,
+    callId,
+  }: {
+    candidate: RTCIceCandidate;
+    callId?: string;
+  }) => {
+    const { localPeer, callId: currentCallId } = userStoreState().audioCall;
+    // no call in THIS tab, or a late candidate from another call: ignore (never buffer it)
+    if (!localPeer || (callId && callId !== currentCallId)) return;
     try {
-      const localPeer = userStoreState().audioCall.localPeer;
-      if (!localPeer?.remoteDescription) {
+      if (!localPeer.remoteDescription) {
         userStoreState().addBufferedIceCandidate(candidate);
         return;
       }
       await localPeer.addIceCandidate(candidate);
     } catch (error) {
-      console.log(error);
+      console.warn('addIceCandidate failed', error);
     }
   };
 

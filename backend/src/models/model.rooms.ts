@@ -5,7 +5,7 @@ import { Rooms } from '@prisma/client';
 import { createRoomPayload } from '../controllers/controllers.types.ts';
 export const createRoom = async (payload: createRoomPayload) => {
   const newRoom = await prisma.rooms.create({
-    data: { ...payload},
+    data: { ...payload },
   });
   await prisma.roomMember.create({
     data: {
@@ -35,10 +35,14 @@ export const getUserJoinedRooms = async (userId: string) => {
         },
         select: { role: true },
       },
+      _count: { select: { members: true } },
     },
   });
+  console.log(joinedRooms);
+
   const userRooms = joinedRooms.map(({ members, ...joinedRoom }) => ({
     role: members[0].role,
+    membersCount: joinedRoom._count.members,
     ...joinedRoom,
   }));
 

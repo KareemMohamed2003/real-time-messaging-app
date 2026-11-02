@@ -5,9 +5,9 @@ export const selectInputMedia = async () => {
     audio: true,
   });
   console.log('audio stream', localStream);
-
   return localStream;
 };
+
 export const mediaDeviceOnChange = async (event: Event) => {
   console.log('media device changed :', event);
   const devices = await navigator.mediaDevices.enumerateDevices();

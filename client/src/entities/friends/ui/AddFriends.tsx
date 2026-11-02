@@ -46,11 +46,7 @@ export default function AddFriends({ closeAddFriendForm, open }: props) {
     );
   };
 
-  // register('friendInput') returns its own onChange (needed for RHF's
-  // validation/dirty-state tracking). The original spread it onto <Input>
-  // and then passed a second onChange prop right after it — in JSX, the
-  // later prop wins, so that second onChange silently replaced RHF's
-  // entirely instead of running alongside it. Composing both here instead.
+
   const { onChange: rhfOnChange, ...friendInputField } = register('friendInput');
 
   return (

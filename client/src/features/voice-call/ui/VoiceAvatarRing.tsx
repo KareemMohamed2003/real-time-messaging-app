@@ -12,7 +12,9 @@ const sonar = keyframes`
 export interface VoiceAvatarRingProps {
   src?: string;
   initials: string;
+  /** stable id (friendUUID) for a deterministic avatar color — see avatarGradient.ts */
   colorSeed?: string;
+  /** overall wrap diameter — the ring sits flush with this, the avatar is inset a few px */
   size?: number;
   ringColor?: 'accent' | 'success';
   /** sonar animation duration in seconds — the header state pulses slower (2.2s) than the ringing card (1.6s) */

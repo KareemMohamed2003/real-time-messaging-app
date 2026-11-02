@@ -8,6 +8,8 @@ import { userKeys } from '@/shared/api/QueryKeys';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { IDirectMessage } from '@/shared/types/api.types';
 import useSearch from '@/shared/hooks/useSearch';
+import { useRouter } from 'next/navigation';
+import { AppRoutes } from '@/shared/lib/utils';
 
 export interface DmListProps {
   activeFriendUUID?: string | null;
@@ -15,11 +17,10 @@ export interface DmListProps {
 }
 
 export default function DmList({ activeFriendUUID, onSelectConversation }: DmListProps) {
-
+  AppRoutes.HOME_ROUTE;
   const { data: conversations } = useSuspenseQuery<IDirectMessage[]>({
     queryKey: userKeys.recentDMs,
     queryFn: getRecentConversations,
-    
   });
   const {
     filteredList: filteredConversations,
@@ -27,7 +28,7 @@ export default function DmList({ activeFriendUUID, onSelectConversation }: DmLis
     setSearch,
   } = useSearch(conversations, 'username');
   console.log(conversations);
-
+  const router = useRouter();
   const isEmpty = conversations.length === 0;
 
   return (
@@ -57,7 +58,6 @@ export default function DmList({ activeFriendUUID, onSelectConversation }: DmLis
           Chats
         </Typography>
       </Box>
-
 
       <Box sx={{ px: 2.25, py: 1.5, flexShrink: 0 }}>
         <TextField
@@ -96,7 +96,10 @@ export default function DmList({ activeFriendUUID, onSelectConversation }: DmLis
             colorSeed={c.uuid}
             preview={c.lastMessage}
             active={c.uuid === activeFriendUUID}
-            onClick={() => onSelectConversation(c.uuid)}
+            onClick={() => {
+              onSelectConversation(c.uuid);
+              router.push(AppRoutes.HOME_CHAT(c.uuid));
+            }}
           />
         ))}
       </Box>

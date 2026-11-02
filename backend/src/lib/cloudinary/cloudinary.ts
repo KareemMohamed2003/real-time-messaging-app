@@ -1,21 +1,18 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { Multer } from 'multer';
-import multer from 'multer';
 
 // Configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET, // Click 'View API Keys' above to copy your API secret
+  api_secret: process.env.CLOUDINARY_API_SECRET, 
 });
-// console.log("cloudinary config", cloudinary.config());
 
 export const deleteCloudinaryImage = async (id: string) => {
   const assetToDelete = await cloudinary.uploader.destroy(id, {
     resource_type: 'image',
   });
   if (assetToDelete.result !== 'ok') {
-    console.log('failed to delete image');
+    console.error('failed to delete image at cloudinary');
     throw new Error('Deletion failed: ' + assetToDelete.result);
   }
 };

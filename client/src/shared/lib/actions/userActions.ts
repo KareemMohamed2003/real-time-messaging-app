@@ -13,14 +13,14 @@ export const updateProfilePic = async (
   setError: Dispatch<SetStateAction<string>>,
   setFile: Dispatch<SetStateAction<selectedFile>>,
   hasProfileImg: boolean,
-  updateProfile:(newProfileData:any)=>void
+  updateProfile: (newProfileData: any) => void
 ) => {
   event.preventDefault();
   try {
     console.log(hasProfileImg);
     if (!selectedFile.file && hasProfileImg) {
       await deleteProfilePic();
-  updateProfile({ profile_img: '' });
+      updateProfile({ profile_img: '' });
       return;
     }
     console.log('image File', selectedFile);
@@ -36,7 +36,7 @@ export const updateProfilePic = async (
       console.log('error occured while sending profile Img to server');
       setError('something went wrong');
     }
-   updateProfile({ profile_img: res.profile_img });
+    updateProfile({ profile_img: res.profile_img });
     setFile({ file: null, url: res.profile_img });
     setError('');
   } catch (e) {

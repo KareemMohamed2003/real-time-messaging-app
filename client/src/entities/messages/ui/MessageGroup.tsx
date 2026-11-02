@@ -1,3 +1,5 @@
+
+'use client'
 import { Avatar, Box, Stack, Typography } from '@mui/material';
 import MessageRow from './MessageRow';
 import UseRoom from '@/entities/rooms/api/useRoom';
@@ -30,18 +32,21 @@ export default function MessageGroup({
   roomUUID,
   queryKey
 }: MessageGroupProps) {
-  if (messages.length === 0) return null;
+  console.log(messages.length);
   const room = UseRoom(roomUUID!);
+  if (messages.length === 0) return null;
   const isRoomOwner = room?.role === 'OWNER';
   const canDeleteMessage = self || isRoomOwner;
 
   return (
     <Stack
+
       direction={self ? 'row-reverse' : 'row'}
       sx={{
         gap: 1,
         maxWidth: '64%',
         alignSelf: self ? 'flex-end' : 'flex-start',
+
       }}
     >
       <Avatar src={senderAvatar} sx={{ width: 30, height: 30, fontSize: 11, flexShrink: 0 }}>

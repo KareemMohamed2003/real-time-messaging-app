@@ -1,9 +1,8 @@
 'use client';
-
 import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
-import { useParams, usePathname, useRouter } from 'next/navigation';
-import { AppRoutes } from '@/shared/lib/utils';
+import { usePathname, useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/use-user-store';
+import { AppRoutes } from '@/shared/lib/utils';
 
 interface CallDockContextValue {
   /** DM call (ringing or connected) is docked to the floating mini bar */
@@ -11,33 +10,44 @@ interface CallDockContextValue {
   minimize: () => void;
   expand: () => void;
   /** seconds since the call became ACCEPTED — single source of truth so the
-   *  header state and the docked mini bar always agree */
+   *  header state and the docked mini bar always agree, even across a
+   *  minimize/expand that unmounts one and mounts the other. 0 while ringing. */
   elapsedSeconds: number;
   /** incoming call modal is docked to the floating mini bar instead */
   incomingMinimized: boolean;
   minimizeIncoming: () => void;
   expandIncoming: () => void;
   isCallActive: boolean;
+  isOwnerTab: boolean;
 }
 
 const CallDockContext = createContext<CallDockContextValue | null>(null);
-
+/**
+ * New piece of app infrastructure the previous design didn't need — a call
+ * can now be "docked" to a floating mini bar, either explicitly (Minimize)
+ * or automatically by navigating away from the conversation page, and
+ * un-docks automatically on returning. That state has to be readable from
+ * both the conversation page (does it show its inline call header?) and
+ * the globally-mounted mini bar (does it render at all?), so it's a context
+ * provider mounted once near the app root — not new state bolted onto the
+ * existing call store.
+ */
 export function CallDockProvider({ children }: { children: ReactNode }) {
   const [minimized, setMinimized] = useState(false);
   const [incomingMinimized, setIncomingMinimized] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const startedAtRef = useRef<number | null>(null);
   const pathname = usePathname();
-  const params = useParams<{ friendId: string }>();
-  const { audioCall, incomingCalls } = useUserStore(state => state);
-  const isCallActive = audioCall.callState === 'ACCEPTED' || audioCall.callState === 'OUT-GOING';
-  const friendId = params.friendId;
-  const conversationRoute = friendId ? AppRoutes.PRIVATE_CHAT_ROUTE(friendId) : null;
-  const onConversationScreen = conversationRoute !== null && pathname.includes(conversationRoute);
+  const { incomingCalls, callSnapshot } = useUserStore(state => state);
+  const { callState, friendId, callId } = useUserStore(state => state.audioCall);
+  const isOwnerTab = callId ? true : false;
+  const friendUUID = friendId ? friendId : callSnapshot?.peerId!;
 
-  console.log(conversationRoute);
-  console.log(`pathname: ${pathname}`);
-
+  const isCallActive =
+    callState === 'ACCEPTED' || callState === 'OUT-GOING' || callSnapshot?.status == 'active';
+  const onConversationScreen =
+    /^\/home\/chats\/[^/]+$/.test(pathname) || /^\/home\/friends\/[^/]+$/.test(pathname);
+  const router = useRouter();
   useEffect(() => {
     if (!isCallActive) {
       setMinimized(false);
@@ -47,7 +57,7 @@ export function CallDockProvider({ children }: { children: ReactNode }) {
   }, [isCallActive, onConversationScreen]);
 
   useEffect(() => {
-    if (audioCall.callState === 'ACCEPTED') {
+    if (callState === 'ACCEPTED') {
       if (startedAtRef.current === null) startedAtRef.current = Date.now();
       const id = setInterval(() => {
         setElapsedSeconds(Math.floor((Date.now() - startedAtRef.current!) / 1000));
@@ -56,8 +66,7 @@ export function CallDockProvider({ children }: { children: ReactNode }) {
     }
     startedAtRef.current = null;
     setElapsedSeconds(0);
-  }, [audioCall.callState]);
-
+  }, [callState]);
 
   useEffect(() => {
     if (incomingCalls.size === 0) setIncomingMinimized(false);
@@ -69,11 +78,15 @@ export function CallDockProvider({ children }: { children: ReactNode }) {
         isCallActive,
         minimized,
         minimize: () => setMinimized(true),
-        expand: () => setMinimized(false),
+        expand: () => {
+          router.push(AppRoutes.PRIVATE_CHAT_ROUTE(friendUUID));
+          // setMinimized(false);
+        },
         elapsedSeconds,
         incomingMinimized,
         minimizeIncoming: () => setIncomingMinimized(true),
         expandIncoming: () => setIncomingMinimized(false),
+        isOwnerTab,
       }}
     >
       {children}

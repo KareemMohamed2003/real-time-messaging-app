@@ -17,11 +17,6 @@ export interface MessageMenuProps {
   onDelete: () => void;
 }
 
-/**
- * When a room owner opens this on someone else's message, canEdit is
- * false and only "Delete message" renders — editing someone else's words
- * was never on the table, only removing them.
- */
 export default function MessageMenu({
   anchorEl,
   onClose,

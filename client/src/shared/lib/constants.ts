@@ -20,7 +20,7 @@ export const get_recent_conversations_URL = `${serverURL}/user/recent_conversati
 export const delete_room_URL = `${serverURL}/user/delete_room`;
 export const update_room_URL = `${serverURL}/user/update_room_profile`;
 export const delete_room_member_URL = `${serverURL}/user/delete_room_member`;
-export const deleteChannel_URL = (channelId: number,roomUUID:string) => {
+export const deleteChannel_URL = (channelId: number, roomUUID: string) => {
   return `${serverURL}/user/delete_channel/${roomUUID}/${channelId}`;
 };
 export const updateChannel_URL = `${serverURL}/user/update_channel`;
@@ -37,8 +37,9 @@ export const SOCKET_EVENTS = {
   PRIVATE_VOICE_CALL: 'voiceCall',
   PRIVATE_VOICE_CALL_ANSWER: 'VoiceCall:answer',
   ONLINE_FRIENDS: 'friends:online',
+  CALL_STATE: 'call:state',
+  CALL_SYNC: 'call:sync',
 } as const;
-
 
 export const RTCConfiguration = {
   iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }],

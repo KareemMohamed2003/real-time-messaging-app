@@ -17,4 +17,6 @@ export const SOCKET_EVENTS = {
   PRIVATE_VOICE_CALL: 'voiceCall',
   PRIVATE_VOICE_CALL_ANSWER: 'VoiceCall:answer',
   ONLINE_FRIENDS: 'friends:online',
+  CALL_STATE:"call:state",
+  CALL_SYNC:"call:sync"
 } as const;

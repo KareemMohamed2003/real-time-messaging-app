@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Box, InputAdornment,  Typography } from '@mui/material';
+import { Box, InputAdornment, Typography } from '@mui/material';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { useUserStore } from '@/app/store/use-user-store';
@@ -21,7 +21,7 @@ export default function Rooms() {
 
   const closeRoomForm = () => setDisplayForm(false);
   const openRoomForm = () => setDisplayForm(true);
-
+console.log(filteredRooms);
   return (
     <Box height="100%" width="100%" sx={{ overflowY: 'auto' }}>
       <Box px={4} py={3.25}>
@@ -81,6 +81,7 @@ export default function Rooms() {
           ) : (
             filteredRooms?.map((room: IRoom) => (
               <RoomCard
+                membersCount={room.membersCount}
                 key={room.roomUUID}
                 roomName={room.roomName}
                 roomUUID={room.roomUUID}

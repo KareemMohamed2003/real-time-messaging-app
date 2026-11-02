@@ -76,6 +76,7 @@ export const addUserSession = async (
       }
     );
     console.log(insert);
+    return true;
   } catch (e) {
     console.log('insertion failed at addUserSession: ', e);
     return false;

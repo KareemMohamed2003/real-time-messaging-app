@@ -13,11 +13,7 @@ export interface FriendProps extends IFriend {
 
 /**
  * Renders every friend-row state through one component — accepted friend,
- * incoming request, outgoing request — driven entirely by props you
- * already pass in. Previously this only handled the two request states;
- * a plain accepted friend fell through with no card styling, no status
- * line, and no action button at all, which is what showed up as bare
- * avatar+name rows with the rest of the width empty.
+ * incoming request, outgoing request 
  */
 export default function Friend({
   username,

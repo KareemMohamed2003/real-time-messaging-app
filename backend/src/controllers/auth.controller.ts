@@ -2,11 +2,7 @@ import { Request, Response } from "express";
 import { signInUser, registerUser } from "../models/model.users.ts";
 import { generateEncryptedJwt } from "../auth/auth.js";
 import { randomId } from "../lib/helpers.ts";
-<<<<<<< Updated upstream
-import { AuthRequest } from "./db.controller.ts";
-=======
 import { AuthRequest } from "./controllers.types.ts";
->>>>>>> Stashed changes
 import { deleteUserSession } from "../lib/db.ts";
 export const loginAction = async (req: Request, res: Response) => {
   console.log("login end point");
@@ -29,7 +25,7 @@ export const loginAction = async (req: Request, res: Response) => {
     ...authenticateUser?.user,
     sessionId,
   });
-  console.log("acces token", {
+  console.log("access token", {
     it: new Date(),
     exp: expirationTime,
     ...authenticateUser?.user,
