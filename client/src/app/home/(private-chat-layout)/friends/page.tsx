@@ -9,19 +9,14 @@ import { useEffect, useState } from 'react';
 import { SOCKET_EVENTS } from '@/shared/lib/constants';
 import { Box, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { getFriendsQuery } from '@/shared/api/queries';
-import { friendsKeys } from '@/shared/api/QueryKeys';
 import useSearch from '@/shared/hooks/useSearch';
+import { friendsQueryOptions } from '@/shared/api/friendsQueryOptions';
 type FriendsFilter = 'all' | 'online' | 'pending';
 
 export default function FriendsPage() {
-  
   const [selectedList, setList] = useState<FriendsFilter>('all');
   const [isAddFriendOpen, setAddFriendOpen] = useState(false);
-  const { data: friends, isLoading } = useQuery({
-    queryKey: friendsKeys.defaultKey,
-    queryFn: () => getFriendsQuery(),
-  });
+  const { data: friends, isLoading } = useQuery(friendsQueryOptions());
   const { onlineFriends } = useUserStore(state => state);
   console.log(friends, isLoading);
   useEffect(() => {

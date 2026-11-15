@@ -50,7 +50,7 @@ userRouter.post(
   updateUserProfileAction
 );
 userRouter.delete('/profile_pic', deleteProfileImgAction);
-userRouter.get('/private-messages/:userId/:friendId', getPrivateMessagesAction);
+userRouter.get('/private-messages/:friendId', getPrivateMessagesAction);
 userRouter.get('/recent_conversations', getRecentDMconversationsAction);
 userRouter.post('/update_message', updateMessageAction);
 userRouter.delete('/delete_message/:messageId', deleteMessageAction);

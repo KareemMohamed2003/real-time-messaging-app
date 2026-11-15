@@ -1,21 +1,27 @@
-import { getRoomMembersQuery } from '@/shared/api/queries';
 import { useQuery } from '@tanstack/react-query';
 import { roomKeys } from '@/shared/api/QueryKeys';
 import { IRoomMember } from '@/shared/types/api.types';
 import { useMemo } from 'react';
 import { IAddableRoomMember } from '@/features/add-room-member/model/types';
 import { filterAddableFriends } from '../model/utilis';
+import { apiClient } from '@/shared/api/client';
+import { get_roomMembers_URL } from '@/shared/lib/constants';
 interface useRoomMembers {
   roomMembers: IRoomMember[];
   addableFriends: IAddableRoomMember[];
-  isLoading:boolean
+  isLoading: boolean;
 }
 export default function useRoomMembers(
   roomUUID: string,
   friends: IAddableRoomMember[]
 ): useRoomMembers {
-  const { data,isLoading } = useQuery<IRoomMember[]>({
-    queryFn: () => getRoomMembersQuery(roomUUID),
+  const { data, isLoading } = useQuery<IRoomMember[]>({
+    queryFn: ({ signal }) =>
+      apiClient<IRoomMember[]>(get_roomMembers_URL, {
+        method: 'POST',
+        body: { roomUUID },
+        signal,
+      }),
     queryKey: roomKeys.roomMembers(roomUUID),
     enabled: !!roomUUID,
   });
@@ -28,8 +34,8 @@ export default function useRoomMembers(
   }, [friends, data]);
 
   return {
-    roomMembers: data!  ,
+    roomMembers: data!,
     addableFriends,
-    isLoading
+    isLoading,
   };
 }

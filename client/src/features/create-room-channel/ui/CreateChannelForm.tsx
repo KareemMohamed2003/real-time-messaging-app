@@ -20,7 +20,7 @@ const CHANNEL_TYPE_OPTIONS = [
   { value: 'voice', label: '🔊 Voice' },
 ];
 
- const CreateChannelForm = forwardRef<HTMLFormElement, CreateChannelFormProps>(
+const CreateChannelForm = forwardRef<HTMLFormElement, CreateChannelFormProps>(
   function CreateChannelForm({ closeChannelForm, roomUUID }, ref) {
     const { handleSubmit, reset, register, onSubmit, errors, control, isPending } = useAddChannels({
       roomUUID,

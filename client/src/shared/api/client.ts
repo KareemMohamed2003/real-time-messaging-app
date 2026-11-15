@@ -1,14 +1,7 @@
 import { createApiErrorFromResponse } from './errors';
 type RequestOptions = Omit<RequestInit, 'body'> & { body?: unknown };
-export const requestAborter = () => {
-  const controller = new AbortController();
-  const timeout = 60000; // 1 min timeout
-  setTimeout(() => {
-    controller.abort();
-  }, timeout);
-  return controller.signal;
-};
 
+export const requestAborter = (timeout = 60000) => AbortSignal.timeout(timeout);
 export async function apiClient<T>(
   url: string,
   options: RequestOptions = {},
@@ -23,9 +16,14 @@ export async function apiClient<T>(
     ...options.headers,
     ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
   };
+  const signals = [
+    options.signal ?? undefined,
+    timeout !== undefined ? AbortSignal.timeout(timeout) : undefined,
+  ].filter((s): s is AbortSignal => !!s);
+  const signal = signals.length > 1 ? AbortSignal.any(signals) : signals[0];
   const response = await fetch(url, {
-    signal: timeout !== undefined ? AbortSignal.timeout(timeout) : undefined,
     ...options,
+    signal,
     credentials: 'include',
     headers: headers,
     body: processedBody as BodyInit,
@@ -40,14 +38,12 @@ export async function apiClient<T>(
     }
     throw createApiErrorFromResponse(response.status, body);
   }
-
-  // // check if response body is empty , prevents silent errors
+  // Empty body (204, or 200 with no content): resolve with null instead of throwing on JSON.parse.
+  // check if response body is empty , prevents silent errors
   const responseText = await response.text();
   if (!responseText.trim()) return null as T;
 
   return JSON.parse(responseText);
-
-  // return
 }
 // we will use this function later to display error notifications as we haven't yet implemented them in our app .
 function handleApiError(error: unknown) {}

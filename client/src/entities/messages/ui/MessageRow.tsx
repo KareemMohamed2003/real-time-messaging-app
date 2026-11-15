@@ -12,7 +12,6 @@ import { useState } from 'react';
 import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateMessageQuery, deleteMessageQuery } from '@/shared/api/queries';
 import { IMessage } from '@/shared/types/api.types';
-import { channelKeys } from '@/shared/api/QueryKeys';
 import { updateMessageInCache } from '@/shared/lib/queryMessagesCacheUtils';
 //
 export interface MessageRowProps {

@@ -45,6 +45,7 @@ export const updateProfilePic = async (
   }
 };
 
+
 export const deleteProfilePic = async () => {
   try {
     console.log('delete profile pic');

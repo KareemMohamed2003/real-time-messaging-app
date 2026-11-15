@@ -3,17 +3,17 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import MessageOutlinedIcon from '@mui/icons-material/MessageOutlined';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import { useAcceptFriendRequest } from '@/features/accept-friend-request';
-import { useUserStore } from '@/app/store/use-user-store';import { IFriend } from '@/shared/types/api.types';
+import { useUserStore } from '@/app/store/use-user-store';
+import { IFriend } from '@/shared/types/api.types';
 import User from '@/shared/components/User';
 
 export interface FriendProps extends IFriend {
-
   isOnline?: boolean;
 }
 
 /**
  * Renders every friend-row state through one component — accepted friend,
- * incoming request, outgoing request 
+ * incoming request, outgoing request
  */
 export default function Friend({
   username,
@@ -21,10 +21,10 @@ export default function Friend({
   profile_img,
   isRequestSender,
   friendId,
-  isOnline ,
+  isOnline,
 }: FriendProps) {
-  const { acceptFriendRequest } = useAcceptFriendRequest();
-  const { profile } = useUserStore((state) => state);
+  const { acceptFriendRequest, isPending } = useAcceptFriendRequest();
+  const { profile } = useUserStore(state => state);
 
   const isIncomingRequest = request_status === 'SENT' && isRequestSender;
   const isOutgoingRequest = request_status === 'SENT' && !isRequestSender;
@@ -43,7 +43,7 @@ export default function Friend({
       alignItems="center"
       justifyContent="space-between"
       gap={1.5}
-      sx={(theme) => ({
+      sx={theme => ({
         px: 1.75,
         py: 1.5,
         border: `1px solid ${theme.palette.divider}`,
@@ -60,18 +60,19 @@ export default function Friend({
       <User
         name={username}
         profilePic={profile_img}
-        status={isIncomingRequest || isOutgoingRequest ? undefined : isOnline ? 'online' : 'offline'}
+        status={
+          isIncomingRequest || isOutgoingRequest ? undefined : isOnline ? 'online' : 'offline'
+        }
         subtitle={subtitle}
       />
 
       {isIncomingRequest && (
         <Box display="flex" gap={1} flexShrink={0}>
           <IconButton
+            disabled={isPending}
             aria-label="Accept friend request"
-            onClick={() =>
-              acceptFriendRequest({ receiverId: profile.id, senderId: friendId })
-            }
-            sx={(theme) => ({
+            onClick={() => acceptFriendRequest({ receiverId: profile.id, senderId: friendId })}
+            sx={theme => ({
               bgcolor: theme.palette.success.main,
               color: '#fff',
               width: 32,
@@ -82,8 +83,9 @@ export default function Friend({
             <CheckRoundedIcon sx={{ fontSize: 18 }} />
           </IconButton>
           <IconButton
+            disabled={isPending}
             aria-label="Decline friend request"
-            sx={(theme) => ({
+            sx={theme => ({
               bgcolor: theme.palette.error.main,
               color: '#fff',
               width: 32,
@@ -99,7 +101,7 @@ export default function Friend({
       {isOutgoingRequest && (
         <Box
           flexShrink={0}
-          sx={(theme) => ({
+          sx={theme => ({
             fontSize: 11,
             fontWeight: 600,
             color: theme.palette.warning.main,

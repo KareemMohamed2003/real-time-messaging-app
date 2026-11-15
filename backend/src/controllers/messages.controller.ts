@@ -10,14 +10,11 @@ import { AuthRequest } from './controllers.types';
 import { DEFAULT_MESSAGE_INCLUDE } from '../models/model.messages';
 export const getPrivateMessagesAction = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.params.userId;
     const friendId = req.params.friendId;
-    const messageId = req.query.messageId;
     const userMessages = await getPrivateMessages(
-      userId,
+      req.token?.uuid!,
       friendId,
       DEFAULT_MESSAGE_INCLUDE
-      // Number(messageId),
     );
     res.json({ privateMessages: userMessages });
   } catch (e) {
@@ -70,7 +67,7 @@ export const getRecentDMconversationsAction = async (req: AuthRequest, res: Resp
   try {
     const uuid = req.token?.uuid!;
     const recentDMConversations = await getRecentDMConversations(uuid);
-    console.log(recentDMConversations)
+    console.log(recentDMConversations);
     res.json(recentDMConversations);
   } catch (e) {
     handleDbError(res, e, 'Messages');

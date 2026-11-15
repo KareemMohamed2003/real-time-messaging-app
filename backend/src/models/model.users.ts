@@ -6,6 +6,7 @@ import {
 import bc from 'bcryptjs';
 import { checkPassword } from '../auth/auth.js';
 import { $Enums } from '@prisma/client';
+import { BadRequestError } from '../prisma/prismaHandlers/AppError.ts';
 type TUser = {
   username: string;
   email: string;
@@ -55,42 +56,32 @@ export const registerUser = async (data: TUser) => {
         email,
         password: passwordHash,
       },
-      //  when we register the data in the database we need to handle the errors
     });
-    // user.username
     const newUser = user ? user : null;
     return { user: { ...newUser }, errorMsg: null };
   } catch (error) {
     console.log(error);
     handleRegisterationError(error);
   }
-  // there is a problem here the sceham wasn't updated i removed the country column if it's still expects it
-  // look up the docs to find out how to update the schema
 };
 
 export const signInUser = async (data: { email: string; password: string }) => {
-  try {
-    const { email, password } = data;
-    console.log(data);
-    const user = await prisma.users.findUnique({
-      where: {
-        email: email,
-      },
-    });
-    console.log('user : ', user);
-    if (!user) return { success: false, errorMsg: 'invalid credentials' };
-    if (!checkPassword(password, user!.password)) {
-      return { success: false, errorMsg: 'invalid credentials' };
-    }
-
-    return {
-      success: true,
-      user: { email, username: user.username, uuid: user.uuid },
-    };
-  } catch (error) {
-    console.log(error);
-    return handleAuthError(error);
+  const { email, password } = data;
+  console.log(data);
+  const user = await prisma.users.findUnique({
+    where: {
+      email: email,
+    },
+  });
+  console.log('user : ', user);
+  if (!user || !checkPassword(password, user!.password)) {
+    throw new BadRequestError('user', 'invalid credentials');
   }
+
+  return {
+    success: true,
+    user: { email, username: user.username, uuid: user.uuid },
+  };
 };
 
 export const getLoggedUserData = async (username: string, email: string) => {

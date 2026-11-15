@@ -16,7 +16,7 @@ export default function useAddRoomMembers({
   onClose,
   onInviteByTag,
 }: UseAddRoomMemberOptions) {
-  const { friends, isLoading } = UseFriendsQuery();
+  const { friends } = UseFriendsQuery();
   // refactor this code if possible
   const userFriends: IAddableRoomMember[] = friends?.all;
   const { addableFriends } = useRoomMembers(roomUUID, userFriends);

@@ -1,26 +1,24 @@
 'use client';
-import useLogin from '@/features/authentication/api/useLogin';
 import Button from '@/shared/components/UI/Button';
 import Input from '@/shared/components/UI/Input';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import { Typography, Stack, Box, Paper, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { AppRoutes } from '@/shared/lib/utils';
-
+import useLoginUser from '@/features/authentication/api/login-user';
 
 export default function LoginPage() {
-  const [formState, dispatchForm] = useLogin();
   const router = useRouter();
-
+  const { handleSubmit, formErrors, loginUser, isPending, register, isError, isSuccess } = useLoginUser();
   return (
     <Stack
       alignItems="center"
       justifyContent="center"
       height="100%"
-      sx={(theme) => ({ backgroundImage: theme.gradients.auth })}
+      sx={theme => ({ backgroundImage: theme.gradients.auth })}
     >
       <Paper
-        sx={(theme) => ({
+        sx={theme => ({
           width: 400,
           maxWidth: '92vw',
           borderRadius: `${theme.radius.lg}px`,
@@ -30,14 +28,14 @@ export default function LoginPage() {
         {/* logo mark  */}
         <Box display="flex" alignItems="center" gap={1.25} mb={3.25}>
           <Typography variant="h6" fontWeight={700}>
-          Relay 
+            Relay
           </Typography>
         </Box>
 
         {/* tab-pill switcher */}
         <Box
           display="flex"
-          sx={(theme) => ({
+          sx={theme => ({
             background: theme.palette.surface.elevated,
             borderRadius: 999,
             p: 0.5,
@@ -47,7 +45,7 @@ export default function LoginPage() {
           <Box
             component="button"
             type="button"
-            sx={(theme) => ({
+            sx={theme => ({
               all: 'unset',
               flex: 1,
               textAlign: 'center',
@@ -66,7 +64,7 @@ export default function LoginPage() {
             component="button"
             type="button"
             onClick={() => router.push(AppRoutes.REGISTER_ROUTE)}
-            sx={(theme) => ({
+            sx={theme => ({
               all: 'unset',
               flex: 1,
               textAlign: 'center',
@@ -87,35 +85,37 @@ export default function LoginPage() {
           display="flex"
           flexDirection="column"
           gap={2}
-          onSubmit={dispatchForm}
+          onSubmit={handleSubmit(credentials => loginUser({ credentials }))}
         >
-          {/* this field doesn't use the error handling of the zod schema */}
-          <Input label="Email" name="email" type="email" required />
+          <Input
+            label="Email"
+            type="email"
+            required
+            error={!!formErrors?.email}
+            helperText={formErrors?.email?.message}
+            {...register('email')}
+          />
 
           <Input
             label="Password"
-            name="password"
             type="password"
             required
-            error={!!formState?.errors?.password}
-            helperText={formState?.errors?.password?._errors[0]}
+            error={!!formErrors?.password}
+            helperText={formErrors?.password?.message}
+            {...register('password')}
           />
 
           <Button
             type="submit"
             variant="solid"
             fullWidth
-            disabled={formState.disableForm}
+            disabled={isPending || isSuccess}
             sx={{ mt: 0.5, justifyContent: 'center', py: 1.25 }}
           >
-            {formState.disableForm ? (
-              <CircularProgress size={20} color="inherit" />
-            ) : (
-              'Sign in'
-            )}
+            {isPending ? <CircularProgress size={20} color="inherit" /> : 'Sign in'}
           </Button>
 
-          {formState?.internalError && (
+          {isError && (
             <Box
               display="flex"
               alignItems="center"
@@ -124,20 +124,7 @@ export default function LoginPage() {
               sx={{ color: 'error.main', fontSize: 12.5 }}
             >
               <ErrorOutlineRoundedIcon sx={{ fontSize: 15 }} />
-              {formState.internalError}
-            </Box>
-          )}
-
-          {formState?.errors?.credentials && (
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              gap={0.75}
-              sx={{ color: 'error.main', fontSize: 12.5 }}
-            >
-              <ErrorOutlineRoundedIcon sx={{ fontSize: 15 }} />
-              {formState.errors.credentials._errors[0]}
+              {'we are having trouble signing  you in'}
             </Box>
           )}
         </Box>

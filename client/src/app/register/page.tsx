@@ -1,26 +1,24 @@
 'use client';
-
 import { Typography, Stack, Box, Paper, CircularProgress } from '@mui/material';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import { useRouter } from 'next/navigation';
 import Button from '@/shared/components/UI/Button';
 import Input from '@/shared/components/UI/Input';
-import useRegister from '@/features/authentication/api/useRegister';
 import { AppRoutes } from '@/shared/lib/utils';
+import useRegisterUser from '@/features/register-user';
 
 export default function RegisterPage() {
-  const [formState, dispatchForm] = useRegister();
   const router = useRouter();
-
+  const { handleSubmit, register, formErrors, registerUser, isPending, isError, isSuccess } = useRegisterUser();
   return (
     <Stack
       alignItems="center"
       justifyContent="center"
       height="100%"
-      sx={(theme) => ({ backgroundImage: theme.gradients.auth })}
+      sx={theme => ({ backgroundImage: theme.gradients.auth })}
     >
       <Paper
-        sx={(theme) => ({
+        sx={theme => ({
           width: 400,
           maxWidth: '92vw',
           borderRadius: `${theme.radius.lg}px`,
@@ -35,7 +33,7 @@ export default function RegisterPage() {
 
         <Box
           display="flex"
-          sx={(theme) => ({
+          sx={theme => ({
             background: theme.palette.surface.elevated,
             borderRadius: 999,
             p: 0.5,
@@ -46,7 +44,7 @@ export default function RegisterPage() {
             component="button"
             type="button"
             onClick={() => router.push(AppRoutes.LOGIN_ROUTE)}
-            sx={(theme) => ({
+            sx={theme => ({
               all: 'unset',
               flex: 1,
               textAlign: 'center',
@@ -63,7 +61,7 @@ export default function RegisterPage() {
           <Box
             component="button"
             type="button"
-            sx={(theme) => ({
+            sx={theme => ({
               all: 'unset',
               flex: 1,
               textAlign: 'center',
@@ -85,50 +83,46 @@ export default function RegisterPage() {
           display="flex"
           flexDirection="column"
           gap={2}
-          onSubmit={dispatchForm}
+          onSubmit={handleSubmit(credentials => registerUser({ credentials }))}
         >
           <Input
             label="Username"
-            name="username"
             type="text"
             required
-            error={!!formState?.errors?.username?._errors[0]}
-            helperText={formState?.errors?.username?._errors[0]}
+            error={!!formErrors.username?.message}
+            helperText={formErrors.username?.message}
+            {...register('username')}
           />
 
           <Input
             label="Email"
-            name="email"
             type="email"
             required
-            error={!!formState?.errors?.email?._errors[0]}
-            helperText={formState?.errors?.email?._errors[0]}
+            error={!!formErrors.email?.message}
+            helperText={formErrors.email?.message}
+            {...register('email')}
           />
 
           <Input
             label="Password"
-            name="password"
             type="password"
             required
-            error={!!formState?.errors?.password?._errors[0]}
-            helperText={formState?.errors?.password?._errors[0]}
+            error={!!formErrors.password?.message}
+            helperText={formErrors.password?.message}
+            {...register('password')}
           />
 
           <Button
             type="submit"
             variant="solid"
             fullWidth
-            disabled={formState.disableForm}
+            disabled={isPending || isSuccess}
             sx={{ mt: 0.5, justifyContent: 'center', py: 1.25 }}
           >
-            {formState.disableForm ? (
-              <CircularProgress size={20} color="inherit" />
-            ) : (
-              'Sign up'
-            )}
+            {isPending ? <CircularProgress size={20} color="inherit" /> : 'Sign up'}
           </Button>
 
-          {formState?.internalError && (
+          {isError && (
             <Box
               display="flex"
               alignItems="center"
@@ -137,16 +131,12 @@ export default function RegisterPage() {
               sx={{ color: 'error.main', fontSize: 12.5 }}
             >
               <ErrorOutlineRoundedIcon sx={{ fontSize: 15 }} />
-              {formState.internalError}
+              {'an unexpected error occured'}
             </Box>
           )}
         </Box>
 
-        <Box
-          mt={2.5}
-          textAlign="center"
-          sx={{ fontSize: 12.5, color: 'text.secondary' }}
-        >
+        <Box mt={2.5} textAlign="center" sx={{ fontSize: 12.5, color: 'text.secondary' }}>
           Already have an account?{' '}
           <Box
             component="span"

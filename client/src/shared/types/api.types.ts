@@ -12,6 +12,15 @@ export interface IUser {
   status?: number;
 }
 
+export interface ILoggedUser {
+  success: string;
+  email: string;
+  username: string;
+  uuid: string;
+  expires: string;
+  sessionId: string;
+}
+
 export interface ChannelParticipant {
   id: number;
   channelId: number;
@@ -64,7 +73,7 @@ export interface IRoom {
   roomUUID: string;
   ownerId?: string;
   icon?: string;
-  membersCount?:number;
+  membersCount?: number;
 }
 export interface IJoinedRoom extends IRoom {
   role: UserRole;

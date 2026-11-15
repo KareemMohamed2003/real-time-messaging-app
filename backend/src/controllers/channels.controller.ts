@@ -45,8 +45,8 @@ export const getChannelMessagesAction = async (req: AuthRequest, res: Response) 
 
 export const updateChannelAction = async (req: AuthRequest, res: Response) => {
   try {
-    const { channelId, name, roomUUID } = req.body;
-    await updateChannel(channelId, name, roomUUID);
+    const { channelId, name } = req.body;
+    await updateChannel(channelId, name);
     res.status(200).end();
   } catch (e) {
     handleDbError(res, e, 'channel');

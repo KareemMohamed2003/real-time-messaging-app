@@ -110,7 +110,7 @@ export const deleteChannel = async (channelId: number, roomUUID: string) => {
   });
 };
 
-export const updateChannel = async (channelId: number, name: string, roomUUID: string) => {
+export const updateChannel = async (channelId: number, name: string) => {
   await prisma.channel.update({
     data: {
       channelName: name,
