@@ -1,4 +1,4 @@
-import ConfirmDialog from '@/shared/components/UI/ConfirmDialog';
+import ConfirmDialog from '@/shared/components/modals/ConfirmDialog';
 import useRemoveRoomMember from '@/features/remove-room-member';
 import { GhostButton } from '@/shared/components/UI/Button';
 import { getAvatarGradient, getInitials } from '@/shared/lib/avatar';

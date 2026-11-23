@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import AddIcon from '@mui/icons-material/Add';
 import Channel from './Channel';
-import { ChannelRowSkeleton } from '@/shared/components/UI/Skeletons';
+import { ChannelRowSkeleton } from '@/shared/components/UI/loaders/Skeletons';
 import { TChannel } from '@/shared/types/api.types';
 
 interface ChannelsNavProps {

@@ -44,12 +44,8 @@ userRouter.post('/accept_friend_request', acceptFriendRequestAction);
 userRouter.post('/reject_friend_request', rejectFriendAction);
 userRouter.get('/friends', getFriendsAction);
 userRouter.get('/profile/:id', getUserAction);
-userRouter.post(
-  '/upload_profile_pic/:uuid',
-  multerUpload.single('uploaded_file'),
-  updateUserProfileAction
-);
-userRouter.delete('/profile_pic', deleteProfileImgAction);
+userRouter.patch('/upload_profile_pic', multerUpload.single('profile_img'), updateUserProfileAction);
+userRouter.delete('/delete_profile_pic', deleteProfileImgAction);
 userRouter.get('/private-messages/:friendId', getPrivateMessagesAction);
 userRouter.get('/recent_conversations', getRecentDMconversationsAction);
 userRouter.post('/update_message', updateMessageAction);

@@ -1,5 +1,5 @@
 'use client';
-import ModalShell from '@/shared/components/UI/ModalShell';
+import ModalShell from '@/shared/components/modals/ModalShell';
 import Button, { GhostButton, DangerButton } from '@/shared/components/UI/Button';
 
 export interface ConfirmDialogProps {

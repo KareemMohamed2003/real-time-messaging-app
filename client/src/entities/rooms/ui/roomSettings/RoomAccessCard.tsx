@@ -6,7 +6,7 @@ import { Input } from "@mui/base";
 import { Box } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import SettingsCard from "../SettingsCard";
+import SettingsCard from "../../../../shared/components/UI/SettingsCard";
 import SettingsToggleRow from "../SettingsToggleRow";
 
 // ---------------------------------------------------------------------------

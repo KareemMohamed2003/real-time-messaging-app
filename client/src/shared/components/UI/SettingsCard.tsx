@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { Box, Typography, alpha } from '@mui/material';
+import { Box, SxProps, Typography, alpha } from '@mui/material';
 
 export interface SettingsCardProps {
   title: ReactNode;
@@ -11,18 +11,13 @@ export interface SettingsCardProps {
   danger?: boolean;
   /** lets the card stretch to fill its column and scroll internally — used for the Members card, so it can line up with the Danger zone card at the bottom of the other column */
   fillHeight?: boolean;
+  sx?: SxProps;
 }
 
-export default function SettingsCard({
-  title,
-  description,
-  children,
-  danger,
-  fillHeight,
-}: SettingsCardProps) {
+export default function SettingsCard({ title, description, children, danger, fillHeight, sx }: SettingsCardProps) {
   return (
     <Box
-      sx={(theme) => ({
+      sx={theme => ({
         background: theme.palette.surface.paper,
         border: `1px solid ${danger ? alpha(theme.palette.error.main, 0.35) : theme.palette.divider}`,
         borderRadius: `${theme.radius.md}px`,
@@ -33,15 +28,11 @@ export default function SettingsCard({
           flexDirection: 'column',
           minHeight: 0,
           mb: 0,
-        }),
+        })
+        
       })}
     >
-      <Typography
-        fontWeight={700}
-        fontSize={14.5}
-        color={danger ? 'error.main' : 'text.primary'}
-        mb={0.5}
-      >
+      <Typography fontWeight={700} fontSize={14.5} color={danger ? 'error.main' : 'text.primary'} mb={0.5}>
         {title}
       </Typography>
       {description && (

@@ -1,5 +1,4 @@
 'use client';
-import { useRouter } from 'next/navigation';
 import { Avatar, Stack, Typography, Box } from '@mui/material';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { NavLink } from '@/shared/components/UI/NavLink';
@@ -8,10 +7,8 @@ import { primaryNavItems } from './nav-items';
 
 
 export default function Sidebar() {
-  const { PROFILE_ROUTE } = AppRoutes;
-  const router = useRouter();
-  const { profile } = useUserStore((state) => state);
 
+  const { profile } = useUserStore((state) => state);
   return (
     <Stack
       alignItems="center"
@@ -23,9 +20,9 @@ export default function Sidebar() {
       display={{ xs: 'none', md: 'flex' }} // hidden below md — BottomNav takes over
       sx={(theme) => ({ borderRight: `1px solid ${theme.palette.divider}` })}
     >
-      <Box onClick={() => router.push(PROFILE_ROUTE)} sx={{ cursor: 'pointer', mb: 1 }}>
+      <Box  sx={{ cursor: 'pointer', mb: 1 }}>
         <Avatar
-          src={profile.profile_img || undefined}
+          src={profile.profile_img! }
           sx={(theme) => ({ width: 36, height: 36, background: theme.gradients.avatar[0] })}
         >
           {profile?.username?.slice(0, 2).toUpperCase()}

@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 import { Controller } from 'react-hook-form';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import ModalShell from '@/shared/components/UI/ModalShell';
+import ModalShell from '@/shared/components/modals/ModalShell';
 import Input from '@/shared/components/UI/Input';
 import Button, { GhostButton } from '@/shared/components/UI/Button';
 import SegmentedControl from '@/shared/components/UI/SegmentedControl';

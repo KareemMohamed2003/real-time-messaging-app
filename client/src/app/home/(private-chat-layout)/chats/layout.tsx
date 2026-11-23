@@ -1,5 +1,5 @@
 'use client';
-import { DmListSkeleton } from '@/shared/components/UI/Skeletons';
+import { DmListSkeleton } from '@/shared/components/UI/loaders/Skeletons';
 import DmList from '@/widgets/dm-list/ui/DmList';
 import { Box, Stack } from '@mui/material';
 import React, { Suspense, useState } from 'react';

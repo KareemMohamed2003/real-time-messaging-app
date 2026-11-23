@@ -11,7 +11,7 @@ import {
   FriendRequestFormValues,
 } from '@/entities/friends/model/friendRequestSchema';
 import { useSendFriendRequest } from '@/features/send-friend-request';
-import ModalShell from '@/shared/components/UI/ModalShell';
+import ModalShell from '@/shared/components/modals/ModalShell';
 
 interface props {
   closeAddFriendForm: () => void;

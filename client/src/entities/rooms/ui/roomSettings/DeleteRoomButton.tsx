@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
 // Delete room
 'use client';
-import { useUserStore } from '@/app/store/use-user-store';import ConfirmDialog from '@/shared/components/UI/ConfirmDialog';
+import { useUserStore } from '@/app/store/use-user-store';import ConfirmDialog from '@/shared/components/modals/ConfirmDialog';
 import useDeleteRoom from '@/features/delete-room';
 import { DangerButton } from '@/shared/components/UI/Button';
 import { AppRoutes } from '@/shared/lib/utils';

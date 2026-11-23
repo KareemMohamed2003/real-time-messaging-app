@@ -5,7 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import TagIcon from '@mui/icons-material/AlternateEmail';
 import SendIcon from '@mui/icons-material/Send';
-import ModalShell from '@/shared/components/UI/ModalShell';
+import ModalShell from '@/shared/components/modals/ModalShell';
 import Button from '@/shared/components/UI/Button';
 import useAddRoomMemberMember from '../model/useAddRoomMembers';
 import AddableRoomMember from '@/entities/rooms/ui/AddableRoomMember';

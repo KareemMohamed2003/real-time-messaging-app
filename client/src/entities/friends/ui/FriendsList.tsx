@@ -2,7 +2,7 @@ import { Box, Stack } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/app/store/use-user-store';import { AppRoutes } from '@/shared/lib/utils';
 import Friend from './Friend';
-import { FriendRowSkeleton } from '@/shared/components/UI/Skeletons';
+import { FriendRowSkeleton } from '@/shared/components/UI/loaders/Skeletons';
 import { TOnlineFriend } from '@/app/store/store.types';
 type FriendsFilter = 'all' | 'online' | 'pending';
 

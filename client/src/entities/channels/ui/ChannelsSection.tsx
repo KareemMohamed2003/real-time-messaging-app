@@ -9,7 +9,7 @@ import { getRoomChannelsQuery } from '@/shared/api/queries';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { channelKeys } from '@/shared/api/QueryKeys';
-import { ChannelRowSkeleton, RoomConversationSkeleton } from '@/shared/components/UI/Skeletons';
+import { ChannelRowSkeleton, RoomConversationSkeleton } from '@/shared/components/UI/loaders/Skeletons';
 
 interface props {
   roomUUID: string;

@@ -2,7 +2,7 @@
 import UseSuspenseFriendsQuery from '@/entities/friends/api/useSuspenseFriendsQuery';
 import CallManager from '@/features/voice-call/ui/CallManager';
 import PrivateChatComponent from '@/shared/components/PrivateChatComponent';
-import { DmConversationSkeleton } from '@/shared/components/UI/Skeletons';
+import { DmConversationSkeleton } from '@/shared/components/UI/loaders/Skeletons';
 import { getFriendSocketId } from '@/shared/lib/utils';
 import { Stack } from '@mui/material';
 import { Suspense } from 'react';

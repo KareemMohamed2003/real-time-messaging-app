@@ -2,8 +2,8 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import authRouter from './routers/authRouter.ts';
-import userRouter from './routers/userRouter.ts';
+import authRouter from './routes/authRouter.ts';
+import userRouter from './routes/userRouter.ts';
 import { urlencoded } from 'express';
 import { createServer } from 'http';
 import { initSocketServer } from './lib/socket/socket.ts';

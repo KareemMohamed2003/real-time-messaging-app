@@ -5,7 +5,7 @@ import { channelKeys } from '@/shared/api/QueryKeys';
 import { IMessage } from '@/shared/types/api.types';
 import { useUserStore } from '@/app/store/use-user-store';import MessageGroup from '@/entities/messages/ui/MessageGroup';
 import { groupMessagesBySender } from '@/entities/messages/ui/groupMessagesBySender';
-import { RoomConversationSkeleton } from '@/shared/components/UI/Skeletons';
+import { RoomConversationSkeleton } from '@/shared/components/UI/loaders/Skeletons';
 interface props {
   channelId: number;
   roomUUID: string;

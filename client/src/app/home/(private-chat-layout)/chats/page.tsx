@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { Box } from '@mui/material';
-import { useUserStore } from '@/app/store/use-user-store';
 import { useQuery } from '@tanstack/react-query';
 import { getRecentConversations } from '@/shared/api/queries';
 import { userKeys } from '@/shared/api/QueryKeys';

@@ -1,5 +1,5 @@
 'use client';
-import SettingsCard from '@/entities/rooms/ui/SettingsCard';
+import SettingsCard from '@/shared/components/UI/SettingsCard';
 import ChannelSettingRow from './ChannelSettingRow';
 import { useMemo, useState } from 'react';
 import { Typography } from '@mui/material';

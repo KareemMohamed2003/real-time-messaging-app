@@ -1,7 +1,7 @@
 'use client';
 import { ReactNode } from 'react';
 import Button, { GhostButton, DangerButton } from '@/shared/components/UI/Button';
-import ModalShell from '@/shared/components/UI/ModalShell';
+import ModalShell from '@/shared/components/modals/ModalShell';
 
 export interface ConfirmDialogProps {
   open: boolean;

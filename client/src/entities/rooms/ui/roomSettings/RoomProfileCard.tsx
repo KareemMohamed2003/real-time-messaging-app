@@ -3,13 +3,14 @@ import { getAvatarGradient, getInitials } from '@/shared/lib/avatar';
 import { IRoom } from '@/shared/types/api.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Avatar, Typography } from '@mui/material';
-import { Controller, useForm } from 'react-hook-form';
+import { useController, useForm } from 'react-hook-form';
 import Input from '@/shared/components/UI/Input';
 import Button, { GhostButton } from '@/shared/components/UI/Button';
 import useUpdateRoomProfile from '@/features/update-room-profile';
-import ImagePicker from '../ImagePicker';
-import SettingsCard from '../SettingsCard';
+import ImagePicker from '../../../../shared/components/UI/ImagePicker';
+import SettingsCard from '../../../../shared/components/UI/SettingsCard';
 import { RoomProfileSchema, TRoomForm } from '../../model/types';
+import useImagePicker from '@/shared/hooks/useImagePicker';
 interface props {
   room: IRoom;
   roomUUID: string;
@@ -28,38 +29,44 @@ export default function RoomProfileCard({ room, roomUUID, isOwner }: props) {
     resolver: zodResolver(RoomProfileSchema),
     values: { name: room.roomName, room_image: room.icon!, uuid: '' },
   });
+  const { field } = useController({
+    name: 'room_image',
+    control,
+  });
   const { updateRoom, isPending } = useUpdateRoomProfile();
+  const useImagePickerProps = useImagePicker({
+    onChange: field.onChange,
+  });
+
+  const resetFormState = () => {
+    useImagePickerProps.remove();
+    reset();
+  };
   return (
     <SettingsCard title="Room profile" description="customize your room profile" fillHeight>
-      <form
-        onSubmit={handleSubmit(({ name, room_image }) => updateRoom({name, roomUUID, room_image}))}
-      >
+      <form onSubmit={handleSubmit(({ name, room_image }) => updateRoom({ name, roomUUID, room_image }))}>
         <Box display="flex" alignItems="center" gap={2} mb={0.5}>
           {isOwner ? (
             <>
-              <Controller
-                control={control}
-                name="room_image"
-                render={({ field }) => (
-                  <ImagePicker
-                    removePhoto={() => resetField('room_image')}
-                    name={field.name}
-                    onChange={field.onChange}
-                    fallback={
-                      <Avatar
-                        src={room.icon}
-                        sx={theme => ({
-                          width: '100%',
-                          height: '100%',
-                          background: getAvatarGradient(room.roomName, theme),
-                        })}
-                      >
-                        {getInitials(room.roomName)}
-                      </Avatar>
-                    }
-                  />
-                )}
+              <ImagePicker
+                {...useImagePickerProps}
+                size={70}
+                removePhoto={() => resetField('room_image')}
+                name={field.name}
+                fallback={
+                  <Avatar
+                    src={room.icon}
+                    sx={theme => ({
+                      width: '100%',
+                      height: '100%',
+                      background: getAvatarGradient(room.roomName, theme),
+                    })}
+                  >
+                    {getInitials(room.roomName)}
+                  </Avatar>
+                }
               />
+
               <Box>
                 <Typography fontSize={12.5} fontWeight={600}>
                   Room photo
@@ -110,7 +117,7 @@ export default function RoomProfileCard({ room, roomUUID, isOwner }: props) {
           </Button>
 
           {isDirty && !isPending && (
-            <GhostButton size="small" sx={{ mt: 1.75 }} onClick={() => reset()}>
+            <GhostButton size="small" sx={{ mt: 1.75 }} onClick={() => resetFormState()}>
               reset
             </GhostButton>
           )}

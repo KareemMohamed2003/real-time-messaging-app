@@ -3,19 +3,20 @@ import { type ReactNode } from 'react';
 import { Box, IconButton, Typography } from '@mui/material';
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 import CloseIcon from '@mui/icons-material/Close';
-import useImagePicker from '@/shared/lib/useImagePicker';
 export interface ImagePickerProps {
-  /** existing image URL, if one is already set */
-  value?: string | null;
   /** shown inside the circle when there's no image — typically initials in an Avatar */
   fallback?: ReactNode;
-  onChange: (file: File | null) => void;
   size?: number;
   maxSizeMB?: number;
   label?: string;
   name: string;
   /** removes photo preview by reseting image field */
   removePhoto?: () => void;
+  preview: string | null;
+  hasImage: boolean;
+  pick: () => void | undefined;
+  remove: () => void;
+  inputProps: Object;
 }
 
 /**
@@ -25,20 +26,17 @@ export interface ImagePickerProps {
  * reach for `useImagePicker` directly instead of this component.
  */
 export default function ImagePicker({
-  value,
   fallback,
-  onChange,
   size = 64,
-  maxSizeMB = 5,
   label = 'Change photo',
   name,
   removePhoto = () => {},
+  pick,
+  preview,
+  hasImage,
+  remove,
+  inputProps,
 }: ImagePickerProps) {
-  const { preview, hasImage, pick, remove, inputProps } = useImagePicker({
-    value,
-    maxSizeMB,
-    onChange,
-  });
   return (
     <Box sx={{ position: 'relative', flexShrink: 0, width: size, height: size }}>
       <Box
@@ -58,9 +56,7 @@ export default function ImagePicker({
           alignItems: 'center',
           justifyContent: 'center',
           background: theme.palette.surface.elevated,
-          border: hasImage
-            ? `1px solid ${theme.palette.divider}`
-            : `1.5px dashed ${theme.palette.divider}`,
+          border: hasImage ? `1px solid ${theme.palette.divider}` : `1.5px dashed ${theme.palette.divider}`,
           color: theme.palette.text.disabled,
           '&:hover .image-picker-hover, &:focus-visible .image-picker-hover': { opacity: 1 },
         })}

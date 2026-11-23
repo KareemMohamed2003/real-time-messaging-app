@@ -9,7 +9,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import Input from '@/shared/components/UI/Input';
-import ConfirmDialog from '@/shared/components/UI/ConfirmDialog';
+import ConfirmDialog from '@/shared/components/modals/ConfirmDialog';
 import ChannelTypeIcon from '@/entities/channels/ui/ChannelTypeIcon';
 import useUpdateChannel from '@/features/update-room-channel';
 import useDeleteChannels from '@/features/delete-room-channel';

@@ -1,6 +1,6 @@
 import { Stack } from '@mui/material';
 
-import User from './User';
+import User from './UI/User';
 
 export default function SearchResult({ results, component }: any) {
   //this component takes  results array , a component that will be used to render the results

@@ -7,8 +7,8 @@ import { Response } from 'express';
 export const createRoomAction = async (req: AuthRequest, res: Response) => {
   try {
     const imageFile = req?.file!;
-    const { name, } = req.body;
-    const userId=req.token?.uuid!
+    const { name } = req.body;
+    const userId = req.token?.uuid!;
     console.log(name);
     const roomPayload = await handleRoomFileUpload(imageFile, name, userId);
     const newRoom = await createRoom(roomPayload);

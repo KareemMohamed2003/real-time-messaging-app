@@ -1,5 +1,4 @@
 'use client';
-
 import { useRef, useState, type ChangeEvent } from 'react';
 
 export interface UseImagePickerOptions {
@@ -8,14 +7,14 @@ export interface UseImagePickerOptions {
   maxSizeMB?: number;
   onChange?: (file: File | null) => void;
   onError?: (message: string) => void;
+  
 }
 
 /**
  * Shared state/logic behind every "pick an image, preview it, remove it"
  * spot in the app (room photo, profile photo, create-room photo, …).
  * Returns everything a picker UI needs; doesn't render anything itself, so
- * it works whether the trigger is a circular avatar button, a plain
- * "Upload" link, a drag-and-drop zone, etc.
+ * "default upload limit 5 MB"
  */
 export default function useImagePicker({
   value,

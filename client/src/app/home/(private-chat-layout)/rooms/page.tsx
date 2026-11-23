@@ -8,7 +8,7 @@ import useRooms from '@/entities/rooms/api/useRooms';
 import CreateRoomForm from '@/entities/rooms/ui/CreateRoomForm';
 import RoomCard from '@/entities/rooms/ui/RoomCard';
 import Button from '@/shared/components/UI/Button';
-import { RoomCardSkeleton } from '@/shared/components/UI/Skeletons';
+import { RoomCardSkeleton } from '@/shared/components/UI/loaders/Skeletons';
 import Input from '@/shared/components/UI/Input';
 import { IRoom } from '@/shared/types/api.types';
 import useSearch from '@/shared/hooks/useSearch';

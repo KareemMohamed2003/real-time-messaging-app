@@ -47,7 +47,6 @@ export default function Main({ children }: { children: ReactNode }) {
               flexGrow={1}
               height={'100%'}
               flexDirection={'column'}
-              alignItems={'center'}
             >
               <GlobalMiniCallBar />
               <IncomingCallModal />

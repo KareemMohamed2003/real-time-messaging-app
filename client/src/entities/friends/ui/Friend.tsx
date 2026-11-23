@@ -5,7 +5,7 @@ import { Box, IconButton, Tooltip } from '@mui/material';
 import { useAcceptFriendRequest } from '@/features/accept-friend-request';
 import { useUserStore } from '@/app/store/use-user-store';
 import { IFriend } from '@/shared/types/api.types';
-import User from '@/shared/components/User';
+import User from '@/shared/components/UI/User';
 
 export interface FriendProps extends IFriend {
   isOnline?: boolean;

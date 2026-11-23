@@ -10,7 +10,7 @@ import { useParams } from 'next/navigation';
 import { Stack } from '@mui/material';
 import { socketClient } from '@/shared/lib/socket';
 import { useQueryClient } from '@tanstack/react-query';
-import { RoomConversationSkeleton } from '@/shared/components/UI/Skeletons';
+import { RoomConversationSkeleton } from '@/shared/components/UI/loaders/Skeletons';
 import { IMessage } from '@/shared/types/api.types';
 import { SOCKET_EVENTS } from '@/shared/lib/constants';
 import { channelKeys } from '@/shared/api/QueryKeys';

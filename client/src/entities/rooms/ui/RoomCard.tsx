@@ -3,11 +3,7 @@ import { IRoom } from '@/shared/types/api.types';
 import { Avatar, Box, Stack, Typography } from '@mui/material';
 import { getAvatarGradient, getInitials } from '@/shared/lib/avatar';
 import Link from 'next/link';
-/**
- * Renamed from RoomLink -> RoomCard: this renders the
- * a rooms grid (avatar + name + link), not an inline text link, so "Card"
- * describes what it actually is. Update imports at call sites accordingly.
- */
+
 export default function RoomCard({ roomName, icon, roomUUID, membersCount }: IRoom) {
   const { ROOM_ROUTE } = AppRoutes;
 

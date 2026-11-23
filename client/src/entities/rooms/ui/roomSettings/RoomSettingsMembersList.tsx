@@ -3,7 +3,7 @@ import GroupLabel from './GroupLabel';
 import MemberRow from './MemberRow';
 import useRoomMembers from '@/entities/rooms/api/useRoomMembers';
 import { useUserStore } from '@/app/store/use-user-store';
-import { RowSkeleton } from '@/shared/components/UI/Skeletons';
+import { RowSkeleton } from '@/shared/components/UI/loaders/Skeletons';
 
 // ---------------------------------------------------------------------------
 // Members list — grouped by role, Kick on non-owners only
